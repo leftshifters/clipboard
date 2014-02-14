@@ -1,0 +1,46 @@
+extends layout
+
+block content
+
+  .container
+    h1 Leftload
+    .row
+      .well
+        form.upload-form(role='form', method='post', action='/upload', enctype='multipart/form-data')
+          .form-group
+            button.btn.btn-default.btn-block.btn-select Select a file
+
+          .form-group
+            label(for='name')
+              span Name
+              span.color-9a
+                small
+                  em  (optional)
+            input.form-control(type='text', name='name', id='name', placeholder='leftload')
+
+          .form-group
+            label(for='bundleId')
+              span Bundle Identifier
+              span.color-9a
+                small
+                  em  (optional)
+            input.form-control(type='text', name='bundleId', id='bundleId', placeholder='io.leftshift.leftload')
+
+          button.btn.btn-primary.btn-submit.center-block(disabled='disabled') Upload
+          input(type='file', class='input-file', name='content')
+
+    .row
+      +items(items)
+
+mixin items(items)
+  - each item in items
+    .col-lg-2.item-row
+      .item
+        a.link(href='#{item.url}', target='_blank')
+          if item.type === 'image'
+            img.fixed-image(src='#{item.url}')
+          else
+            .unknown
+              .file-block
+                div File
+        p.title-block(title='#{item.originalName}') #{item.name}
