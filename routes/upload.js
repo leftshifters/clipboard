@@ -2,17 +2,20 @@ var multiparty = require('multiparty');
 var path = require('path');
 var mime = require('mime');
 var fs = require('fs');
-var Hashids = require('hashids');
-
-var getDb = require('../lib/connect');
+var gm = require('gm');
+var db = require('../lib/db');
 
 var uploadDir = 'public/uploads';
+var thumbsDir = 'public/thumbs';
 var uploadPath = path.join(process.cwd(), uploadDir);
-
-var hash = new Hashids('', 5);
+var thumbsPath = path.join(process.cwd(), thumbsDir);
 
 if (!fs.existsSync(uploadPath)) {
   fs.mkdirSync(uploadPath);
+}
+
+if (!fs.existsSync(thumbsPath)) {
+  fs.mkdirSync(thumbsPath);
 }
 
 var imageMimes = [
@@ -25,7 +28,7 @@ var imageMimes = [
   'image/x-icon'
 ];
 
-exports.upload = function(req, res) {
+exports.upload = function(req, res, next) {
 
   var form = new multiparty.Form({
     autoFiles: true,
@@ -48,6 +51,8 @@ exports.upload = function(req, res) {
         originalName: file.originalFilename,
         relativePathShort: 'uploads/' + basename,
         relativePathLong: uploadDir + '/' + basename,
+        relativeThumbPathShort: '',
+        relativeThumbPathLong: '',
         mime: mimetype,
         name: fields.name && fields.name.shift() || 'untitled',
         type: '',
@@ -60,26 +65,35 @@ exports.upload = function(req, res) {
         item.type = 'image';
       }
 
-      getDb(function(err, db) {
-        if (err) return console.error(err);
-        var itemsCollection = db.collection('uploads');
-
-        itemsCollection.count(function count(err, count) {
-          if (err) return console.error(err);
-
-          item.hash = hash.encrypt(count);
-
-          itemsCollection.insert(item, function(err) {
-            if (err) return res.send(500);
-
-            res.redirect('/');
-          });
-
-        });
+      db.insertItem(item, function(err, results) {
+        if (err) return res.send(500);
+        req.store.item = item;
+        next();
       });
 
     }
 
   });
 
+};
+
+exports.thumb = function(req, res, next) {
+  var item = req.store.item;
+  if (!item) return next();
+  if (item.type !== 'image') return next();
+
+  var inp = path.join(process.cwd(), item.relativePathLong);
+  var out = path.join(thumbsPath, item.basename);
+
+  gm(inp)
+    .resize(300, 300)
+    .write(out, function done(err) {
+      if (err) return console.error(err);
+      next();
+    });
+
+};
+
+exports.done = function(req, res, next) {
+  res.redirect('/');
 };

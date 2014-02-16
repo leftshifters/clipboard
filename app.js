@@ -9,7 +9,7 @@ var user = require('./routes/user');
 var upload = require('./routes/upload');
 var http = require('http');
 var path = require('path');
-// var busboy = require('connect-busboy');
+var reqstore = require('reqstore');
 
 var app = express();
 
@@ -22,7 +22,7 @@ app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
-// app.use(busboy());
+app.use(reqstore());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -34,7 +34,7 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/users', user.list);
 
-app.post('/upload', upload.upload);
+app.post('/upload', upload.upload, upload.thumb, upload.done);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
