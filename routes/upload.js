@@ -2,11 +2,14 @@ var multiparty = require('multiparty');
 var path = require('path');
 var mime = require('mime');
 var fs = require('fs');
+var Hashids = require('hashids');
 
 var getDb = require('../lib/connect');
 
 var uploadDir = 'public/uploads';
 var uploadPath = path.join(process.cwd(), uploadDir);
+
+var hash = new Hashids('', 5);
 
 if (!fs.existsSync(uploadPath)) {
   fs.mkdirSync(uploadPath);
@@ -40,6 +43,7 @@ exports.upload = function(req, res) {
       date = new Date();
 
       var item = {
+        hash: '',
         basename: basename,
         originalName: file.originalFilename,
         relativePathShort: 'uploads/' + basename,
@@ -58,13 +62,20 @@ exports.upload = function(req, res) {
 
       getDb(function(err, db) {
         if (err) return console.error(err);
+        var itemsCollection = db.collection('uploads');
 
-        db.collection('uploads').insert(item, function(err) {
-          if (err) res.send(500);
+        itemsCollection.count(function count(err, count) {
+          if (err) return console.error(err);
 
-          res.redirect('/');
+          item.hash = hash.encrypt(count);
+
+          itemsCollection.insert(item, function(err) {
+            if (err) return res.send(500);
+
+            res.redirect('/');
+          });
+
         });
-
       });
 
     }

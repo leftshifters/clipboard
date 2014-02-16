@@ -2,3 +2,4 @@ node_modules
 public/uploads
 .npm-debug
 *.sublime-*
+.DS_Store
