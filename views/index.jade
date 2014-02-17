@@ -4,11 +4,12 @@ block content
 
   .container
     h1 Leftload
+      span.small  #{version}
     .row
       .well
         form.upload-form(role='form', method='post', action='/upload', enctype='multipart/form-data')
           .form-group
-            button.btn.btn-default.btn-block.btn-select Select a file
+            button.btn.btn-default.btn-block.btn-select(type='button') Select a file
 
           .form-group
             label(for='name')
@@ -26,7 +27,7 @@ block content
                   em  (optional)
             input.form-control(type='text', name='bundleId', id='bundleId', placeholder='io.leftshift.leftload')
 
-          button.btn.btn-primary.btn-submit.center-block(disabled='disabled') Upload
+          button.btn.btn-primary.btn-submit.center-block(type='submit', disabled='disabled') Upload
           input(type='file', class='input-file', name='content')
 
     .row
@@ -42,5 +43,5 @@ mixin items(items)
           else
             .unknown
               .file-block
-                div File
+                div #{item.type || file}
         p.title-block(title='#{item.originalName}') #{item.name}

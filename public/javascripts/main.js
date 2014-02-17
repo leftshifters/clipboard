@@ -4,6 +4,7 @@
   var fileInput = document.querySelector('.input-file');
   var form = document.querySelector('.upload-form');
   var btnSubmit = document.querySelector('.btn-submit');
+  var namefield = document.querySelector('#name');
 
   var shouldSubmit = false;
 
@@ -20,8 +21,8 @@
   });
 
   fileInput.addEventListener('change', function onChange(e) {
-    console.log(e);
     btnSubmit.removeAttribute('disabled');
+    namefield.focus();
   });
 
 })(window);
