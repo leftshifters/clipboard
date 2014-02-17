@@ -10,6 +10,7 @@ var upload = require('./routes/upload');
 var http = require('http');
 var path = require('path');
 var reqstore = require('reqstore');
+var version = require('./package').version;
 
 var app = express();
 
@@ -17,6 +18,7 @@ var app = express();
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+app.set('version', version);
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());
@@ -25,6 +27,10 @@ app.use(express.methodOverride());
 app.use(reqstore());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.locals({
+  version: version
+});
 
 // development only
 if ('development' == app.get('env')) {
