@@ -30,3 +30,12 @@ To run
 ````
 node app.js
 ````
+
+If you want to run the server till eternity, you can copy the upstart config file `leftload.init` to `/etc/init` and use service to start the process
+
+````
+$ sudo service start leftload
+````
+
+## Have fun!
+Tell your browser to open `http://localhost:3000` and have fun!
