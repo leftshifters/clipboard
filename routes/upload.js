@@ -49,11 +49,12 @@ exports.upload = function(req, res, next) {
   form.parse(req, function(err, fields, files) {
 
     var file = files.content && files.content[0];
-    var basename, mimetype, date, basenameWithoutExt;
+    var basename, mimetype, date, basenameWithoutExt, extension;
 
     if (file && file.fieldName === 'content') {
       basename = path.basename(file.path);
       basenameWithoutExt = path.basename(file.path, path.extname(file.path));
+      extension = path.extname(file.path);
       mimetype = mime.lookup(file.path);
       date = new Date();
 
@@ -61,6 +62,7 @@ exports.upload = function(req, res, next) {
         hash: '',
         basename: basename,
         basenameWithoutExt: basenameWithoutExt,
+        extension:extension,
         originalName: file.originalFilename,
         relativePathShort: 'uploads/' + basename,
         relativePathLong: uploadDir + '/' + basename,

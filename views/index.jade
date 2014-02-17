@@ -43,5 +43,5 @@ mixin items(items)
           else
             .unknown
               .file-block
-                div File
+                div #{item.type || file}
         p.title-block(title='#{item.originalName}') #{item.name}

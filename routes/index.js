@@ -16,9 +16,12 @@ exports.index = function(req, res) {
       for(var i = 0, len = items.length; i < len; ++i) {
         items[i].url = baseurl + '/' + items[i].relativePathShort;
 
+
         if(items[i].type === 'ipa') {
           items[i].url = ipaurl(items[i], baseurl);
         }
+
+        type(items[i]);
       }
 
       res.render('index', { title: 'Leftload', items: items, baseurl: baseurl });
@@ -30,10 +33,16 @@ exports.index = function(req, res) {
 
 
 function ipaurl(item, baseurl) {
-  console.log(item);
   return 'itms-services://?action=download-manifest&url='
           + baseurl
           + '/uploads/'
           + item.basenameWithoutExt
           + '.plist';
+}
+
+function type(item) {
+  item.type = item.type || item.extension || 'file';
+  if ('.' === item.type[0]) {
+    item.type = item.type.slice(1);
+  }
 }
