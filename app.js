@@ -7,10 +7,12 @@ var express = require('express');
 var routes = require('./routes');
 var user = require('./routes/user');
 var upload = require('./routes/upload');
+var bootcheck = require('./lib/bootcheck');
 var http = require('http');
 var path = require('path');
 var reqstore = require('reqstore');
 var version = require('./package').version;
+
 
 var app = express();
 
@@ -41,6 +43,8 @@ app.get('/', routes.index);
 app.get('/users', user.list);
 
 app.post('/upload', upload.upload, upload.thumb, upload.done);
+
+bootcheck();
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
