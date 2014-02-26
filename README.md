@@ -37,5 +37,9 @@ If you want to run the server till eternity, you can copy the upstart config fil
 $ sudo service start leftload
 ````
 
+## Color Palette
+
+Using this [color palette](http://www.colourlovers.com/palette/3259773/Snowbound)
+
 ## Have fun!
 Tell your browser to open `http://localhost:3000` and have fun!
