@@ -13,15 +13,18 @@ exports.index = function(req, res) {
       if (err) return res.send(500);
       var baseurl = req.protocol + '://' + req.headers.host;
 
-      for(var i = 0, len = items.length; i < len; ++i) {
+      for (var i = 0, len = items.length; i < len; ++i) {
         items[i].url = baseurl + '/' + items[i].relativePathShort;
 
 
-        if(items[i].type === 'ipa') {
+        if (items[i].type === 'ipa') {
           items[i].url = ipaurl(items[i], baseurl);
         }
 
-        type(items[i]);
+        if (items[i].type === 'image') {
+          items[i].imageurl = '../' + items[i].relativePathShort;
+        }
+
       }
 
       res.render('index', { title: 'Leftload', items: items, baseurl: baseurl });

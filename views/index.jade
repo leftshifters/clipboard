@@ -35,13 +35,16 @@ block content
 
 mixin items(items)
   - each item in items
-    .col-lg-2.item-row
+    .col-lg-3.item-row
       .item
         a.link(href='#{item.url}', target='_blank')
-          if item.type === 'image'
-            img.fixed-image(src='#{item.url}')
-          else
-            .unknown
-              .file-block
-                div #{item.type || file}
-        p.title-block(title='#{item.originalName}') #{item.name}
+          .item-inner
+            if item.type === 'image'
+              .fixed-image(style="background-image: url('#{item.imageurl}')")
+            else
+              .unknown
+                .file-block
+                  div #{item.type || file}
+        .title-block
+          a.title-link(href='#{item.url}')
+            span.title(title='#{item.originalName}') #{item.name}
