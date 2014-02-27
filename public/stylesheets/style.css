@@ -29,8 +29,7 @@ a:hover {
 .item {
   vertical-align: top;
   display: inline-block;
-  width: 262px;
-  max-width: 262px;
+  width: 100%;
   background-color: white;
   border-radius: 6px;
   box-shadow: 0 1px 2px #DCDADB;
@@ -43,7 +42,6 @@ a:hover {
 
 .link {
   display: block;
-  text-decoration: none;
   overflow: hidden;
   text-align: center;
   height: 200px;
@@ -66,7 +64,6 @@ a:hover {
   border-radius: 50%;
   position: relative;
   top: 36%;
-
 }
 
 .unknown:hover {
@@ -74,7 +71,7 @@ a:hover {
 }
 
 .unknown .file-block:hover {
-  /*background-color: rgba(37, 153, 172, 0.9);*/
+  text-decoration: none;
 }
 
 .file-block div {
@@ -96,6 +93,14 @@ a:hover {
   color: rgba(37, 153, 172, 1);
   border-bottom-right-radius: 6px;
   border-bottom-left-radius: 6px;
+}
+
+.title-block .title {
+  white-space: nowrap;
+  width: 50%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: inline-block;
 }
 
 .color-9a {

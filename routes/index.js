@@ -25,6 +25,8 @@ exports.index = function(req, res) {
           items[i].imageurl = '../' + items[i].relativePathShort;
         }
 
+        type(items[i]);
+        setname(items[i]);
       }
 
       res.render('index', { title: 'Leftload', items: items, baseurl: baseurl });
@@ -45,7 +47,14 @@ function ipaurl(item, baseurl) {
 
 function type(item) {
   item.type = item.type || item.extension || 'file';
+
   if ('.' === item.type[0]) {
     item.type = item.type.slice(1);
+  }
+}
+
+function setname(item) {
+  if ('untitled' === item.name) {
+    item.name = item.originalName;
   }
 }
