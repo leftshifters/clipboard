@@ -36,14 +36,21 @@ block content
 mixin items(items)
   - each item in items
     .col-lg-3.col-xs-12.col-md-4.col-sm-6.item-row
-      .item
-        a.link(href='#{item.url}', target='_blank')
-          .item-inner
-            if item.type === 'image'
-              .fixed-image(style="background-image: url('#{item.imageurl}')")
-            else
-              .unknown
-                .file-block
-                  div #{item.type || "file"}
-        .title-block
-            a.title(title='#{item.originalName}', href='#{item.url}') #{item.name}
+      +eachitem(item)
+
+mixin eachitem(item)
+  .item
+    .item-overlay.hide
+    a.link(href='#{item.url}', target='_blank')
+      .item-inner
+        if item.type === 'image'
+          .fixed-image(style="background-image: url('#{item.imageurl}')")
+        else
+          .unknown
+            .file-block
+              div #{item.type || "file"}
+    .title-block
+        a.title(title='#{item.originalName}', href='#{item.url}') #{item.name}
+        span.cog
+          span.cog-inner
+            span.glyphicon.glyphicon-cog.js-cog

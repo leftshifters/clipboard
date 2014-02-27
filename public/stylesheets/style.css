@@ -42,7 +42,6 @@ a:hover {
 
 .link {
   display: block;
-  overflow: hidden;
   text-align: center;
   height: 200px;
 }
@@ -85,6 +84,16 @@ a:hover {
   margin-top: 16px;
 }
 
+.item-row .item-overlay {
+  position: absolute;
+  width: 90%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 6px;
+  z-index: 1;
+  -webkit-transition: opacity 2s;
+}
+
 .title-block {
   display: block;
   margin: 0;
@@ -101,6 +110,28 @@ a:hover {
   text-overflow: ellipsis;
   overflow: hidden;
   display: inline-block;
+  vertical-align: top;
+}
+
+.cog {
+  position: relative;
+  float: right;
+}
+
+.cog .cog-inner {
+  top: 0;
+  right: 0;
+
+  color: #EFF0EB;
+  text-decoration: none;
+  position: absolute;
+  line-height: 10px;
+  padding: 1px;
+  cursor: pointer;
+}
+
+.cog-inner:hover {
+  color: #121212;
 }
 
 .color-9a {
@@ -109,4 +140,12 @@ a:hover {
 
 .row:last-child {
   margin-bottom: 2em;
+}
+
+.show {
+  display: block;
+}
+
+.hide {
+  display: none;
 }
