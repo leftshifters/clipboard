@@ -82,6 +82,8 @@ a:hover {
 
 .item-row {
   margin-top: 16px;
+  -webkit-transition: all 1s;
+  transition: all 1s;
 }
 
 .item-row .item-overlay {
@@ -91,6 +93,7 @@ a:hover {
   background-color: rgba(0, 0, 0, 0.8);
   border-radius: 6px;
   z-index: 1;
+  opacity: 0;
   -webkit-transition: opacity 2s;
 }
 
@@ -136,6 +139,23 @@ a:hover {
 
 .color-9a {
   color: #9a9a9a;
+}
+
+.cog-inner.remove {
+  font-size: 24px;
+  top: -10px;
+  right: -10px;
+  color: #FFF;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  padding: 0px;
+  margin: 1px;
+  z-index: 1;
+}
+
+.cog-inner.remove:hover {
+  background: white;
+  color: rgba(0,0,0,0.6);
 }
 
 .row:last-child {

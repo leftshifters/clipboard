@@ -6,6 +6,9 @@
   var btnSubmit = document.querySelector('.btn-submit');
   var namefield = document.querySelector('#name');
   var items = document.querySelectorAll('.item');
+  var tips = document.querySelectorAll('.js-copy-link');
+  // var move = require('move');
+
 
   var shouldSubmit = false;
 
@@ -26,8 +29,50 @@
     namefield.focus();
   });
 
-
   bind(items, delegate);
+
+  $('.item').on('click', '.js-remove', onCrossClick);
+
+  function onCrossClick(e) {
+    var item = e.delegateTarget;
+    var id = item.getAttribute('data-id');
+
+    if (item) {
+      deleteItem(id, function() {
+        item.parentNode.remove();
+      });
+    }
+  }
+
+  function deleteItem(id, done) {
+    $.ajax({
+      url: '/v1/delete',
+      type: 'delete',
+      data: { id: id }
+    }).done(function() {
+      done();
+    }).fail(function(jqXhr, statusText, msg) {
+      notify('Failed to delete', jqXhr.responseText);
+    }).always(function() {
+
+    });
+  }
+
+  function notify(msgHuman, msgMachine) {
+    console.log(msgHuman, ' - ', msgMachine);
+  }
+
+  // Show remove
+  bind(items, function(e) {
+    var remove = this.querySelector('.js-remove');
+    remove.classList.remove('hide');
+  }, 'mouseenter');
+
+  // Hide remove
+  bind(items, function(e) {
+    var remove = this.querySelector('.js-remove');
+    remove.classList.add('hide');
+  }, 'mouseleave');
 
   function bind(els, listener, eventName, capture) {
     eventName = eventName || 'click';
@@ -38,20 +83,32 @@
   }
 
   function delegate(e) {
-    var overlay = this.querySelector('.item-overlay');
     var el = e.target;
-    console.log(overlay);
-    toggleClass(overlay, 'hide');
-    // if (el.classList.contains('js-cog')) {
-    //   oncogclick(el);
-    // } else if (e.target === '') {
 
-    // }
+    // toggleClass(overlay, 'hide');
+
+    if (el.classList.contains('js-cog')) {
+      oncogclick(el, this);
+    } else if (e.target === '') {
+
+    }
   }
 
-  function oncogclick(el) {
-    console.log(el.parentNode);
-    document.querySelector()
+  function oncogclick(el, parent) {
+    console.log(parent);
+    var overlay = parent.querySelector('.item-overlay');
+    overlay.classList.remove('hide');
+
+    setTimeout(function() {
+      overlay.style.opacity = '1.0';
+    }, 1)
+
+    // move(parent)
+    //   .scale(0)
+    //   .duration(400)
+    //   .end(function() {
+    //     parent.parentNode.remove();
+    //   });
   }
 
   function toggleClass(el, className) {

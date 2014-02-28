@@ -3,31 +3,38 @@
  * GET home page.
  */
 
+var path = require('path');
+var fs = require('fs');
+var async = require('async');
 var getDb = require('../lib/connect');
+var ObjectId = require('mongodb').ObjectID;
 
 exports.index = function(req, res) {
 
   getDb(function(err, db) {
 
-    db.collection('uploads').find().sort({ createdms: -1 }).toArray(function(err, items) {
-      if (err) return res.send(500);
-      var baseurl = req.protocol + '://' + req.headers.host;
+    db.collection('uploads')
+      .find()
+      .sort({ createdms: -1 })
+      .toArray(function(err, items) {
+        if (err) return res.send(500);
+        var baseurl = req.protocol + '://' + req.headers.host;
 
-      for (var i = 0, len = items.length; i < len; ++i) {
-        items[i].url = baseurl + '/' + items[i].relativePathShort;
+        for (var i = 0, len = items.length; i < len; ++i) {
+          items[i].url = baseurl + '/' + items[i].relativePathShort;
 
 
-        if (items[i].type === 'ipa') {
-          items[i].url = ipaurl(items[i], baseurl);
+          if (items[i].type === 'ipa') {
+            items[i].url = ipaurl(items[i], baseurl);
+          }
+
+          if (items[i].type === 'image') {
+            items[i].imageurl = '../' + items[i].relativePathShort;
+          }
+
+          type(items[i]);
+          setname(items[i]);
         }
-
-        if (items[i].type === 'image') {
-          items[i].imageurl = '../' + items[i].relativePathShort;
-        }
-
-        type(items[i]);
-        setname(items[i]);
-      }
 
       res.render('index', { title: 'Leftload', items: items, baseurl: baseurl });
     });
@@ -36,6 +43,62 @@ exports.index = function(req, res) {
 
 };
 
+exports.deleteItem = function(req, res, next) {
+  var id = req.store.id;
+  var toremove = [];
+  var uploadpath = req.app.get('uploadpath');
+  var items;
+
+  getDb(function(err, db) {
+    if (err) return console.error(err);
+    items = db.collection('uploads');
+    items
+      .findOne({ _id: ObjectId(id) }, function(err, item) {
+        if (err) return next(err);
+
+        toremove.push(path.join(process.cwd(), item.relativePathLong));
+
+        if ('ipa' === item.type) {
+          toremove.push(
+            path.join(
+              process.cwd(),
+              uploadpath,
+              item.basenameWithoutExt
+              + '.plist'));
+        }
+
+        items.remove({ _id: ObjectId(id) }, function(err) {
+          if (err) return next(err);
+
+          removeFiles(toremove, function(err) {
+            if (err) return res.send(500);
+            res.send(200);
+          });
+
+        });
+
+      });
+  });
+};
+
+exports.validateId = function(req, res, next) {
+  var id = req.body.id;
+  id = id && id.trim();
+  if (!id) return res.send(400, 'Need item id');
+
+  req.store.id = id;
+  next();
+};
+
+function removeFiles(paths, done) {
+  var tasks = paths.map(function(path) {
+    return function(done) {
+      fs.unlink(path, done);
+    };
+  });
+
+  async.series(tasks, done);
+}
 
 function ipaurl(item, baseurl) {
   return 'itms-services://?action=download-manifest&url='
