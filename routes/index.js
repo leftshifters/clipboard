@@ -6,6 +6,7 @@
 var path = require('path');
 var fs = require('fs');
 var async = require('async');
+var moment = require('moment');
 var getDb = require('../lib/connect');
 var ObjectId = require('mongodb').ObjectID;
 
@@ -34,6 +35,7 @@ exports.index = function(req, res) {
 
           type(items[i]);
           setname(items[i]);
+          settimeago(items[i]);
         }
 
       res.render('index', { title: 'Leftload', items: items, baseurl: baseurl });
@@ -120,4 +122,8 @@ function setname(item) {
   if ('untitled' === item.name) {
     item.name = item.originalName;
   }
+}
+
+function settimeago(item) {
+  item.timeago = moment(item.created).fromNow() || '';
 }

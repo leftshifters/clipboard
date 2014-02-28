@@ -30,7 +30,7 @@ a:hover {
   vertical-align: top;
   display: inline-block;
   width: 100%;
-  background-color: white;
+  background-color: #fefefe;
   border-radius: 6px;
   box-shadow: 0 1px 2px #DCDADB;
 }
@@ -82,8 +82,8 @@ a:hover {
 
 .item-row {
   margin-top: 16px;
-  -webkit-transition: all 1s;
-  transition: all 1s;
+  -webkit-transition: all 0.66s;
+  transition: all 0.66s;
 }
 
 .item-row .item-overlay {
@@ -166,6 +166,11 @@ a:hover {
   display: block;
 }
 
-.hide {
-  display: none;
+.remove-circle {
+  top: 0;
+}
+
+.timeago-text {
+  font-size: 12px;
+  color: #988D79;
 }

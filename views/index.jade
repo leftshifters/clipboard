@@ -43,7 +43,7 @@ mixin eachitem(item)
     .item-overlay.hide
     span.cog.js-remove.hide
       span.cog-inner.remove
-        span.glyphicon.glyphicon-remove-circle
+        span.glyphicon.glyphicon-remove-circle.remove-circle
     a.link(href='#{item.url}', target='_blank')
       .item-inner
         if item.type === 'image'
@@ -55,11 +55,13 @@ mixin eachitem(item)
     .title-block
       span.title
         a(title='#{item.originalName}', href='#{item.url}') #{item.name}
-      //- .btn-group.pull-right
-      //-   button.js-edit-name.btn.btn-default.btn-xs(type='button', data-toggle='tooltip', data-placement='top', title="Edit name")
-      //-     span.glyphicon.glyphicon-pencil
-      //-   button.js-copy-link.btn.btn-default.btn-xs(type='button', data-toggle='tooltip', data-placement='top', title="Copy link")
-      //-     span.glyphicon.glyphicon-link
+      .btn-group.pull-right
+        button.js-edit-name.btn.btn-default.btn-xs(type='button', data-toggle='tooltip', data-placement='top', title="Edit name")
+          span.glyphicon.glyphicon-pencil
+        button.js-copy-link.btn.btn-default.btn-xs(type='button', data-toggle='tooltip', data-placement='top', title="Copy link")
+          span.glyphicon.glyphicon-link
+      div
+        span.small.timeago-text #{item.timeago}
         //- span.cog
         //-   span.cog-inner
         //-     span.glyphicon.glyphicon-cog.js-cog
