@@ -166,6 +166,6 @@ a:hover {
   display: block;
 }
 
-.hide {
-  display: none;
+.remove-circle {
+  top: 0;
 }
