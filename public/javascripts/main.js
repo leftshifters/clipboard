@@ -32,6 +32,9 @@
   bind(items, delegate);
 
   $('.item').on('click', '.js-remove', onCrossClick);
+  $('.item').on('click', '.js-edit-button', onEditClick);
+  $('.item').on('change', '.js-edit-name', onNameChange);
+  $('.item').on('submit', '.edit-name-form', onNameSubmit);
 
   function onCrossClick(e) {
     var item = e.delegateTarget;
@@ -44,15 +47,83 @@
     }
   }
 
+  function onEditClick(e) {
+    var item = e.delegateTarget;
+    var anchor = item.querySelector('.js-item-link');
+    var form = item.querySelector('.edit-name-form');
+    var button = item.querySelector('.js-edit-button');
+    var input = form.querySelector('.js-edit-name');
+    var editon = button.classList.contains('active');
+    console.log(editon);
+    if (editon) {
+      showNode(anchor);
+      hideNode(form);
+      deactivateNode(button);
+    } else {
+      hideNode(anchor);
+      showNode(form);
+      activateNode(button);
+      input.focus();
+    }
+  }
+
+  function onNameChange(e) {
+    var item = e.delegateTarget;
+    var id = item.getAttribute('data-id');
+    var button = item.querySelector('.js-edit-button');
+    var form = item.querySelector('.edit-name-form');
+    var anchor = item.querySelector('.js-item-link');
+    var input = item.querySelector('.js-edit-name');
+    anchor.innerHTML = input.value;
+    deactivateNode(button);
+    hideNode(button);
+    hideNode(form);
+    showNode(anchor);
+    saveName(id, input.value, function() { });
+  }
+
+  function onNameSubmit(e) {
+    e.preventDefault();
+  }
+
+  function activateNode(node) {
+    node.classList.add('active');
+  }
+
+  function deactivateNode(node) {
+    node.classList.remove('active');
+  }
+
+  function showNode(node) {
+    node.classList.remove('hide');
+  }
+
+  function hideNode(node) {
+    node.classList.add('hide');
+  }
+
   function deleteItem(id, done) {
     $.ajax({
-      url: '/v1/delete',
-      type: 'delete',
-      data: { id: id }
+      url: '/v1/items/' + id,
+      type: 'delete'
     }).done(function() {
       done();
     }).fail(function(jqXhr, statusText, msg) {
       notify('Failed to delete', jqXhr.responseText);
+    }).always(function() {
+
+    });
+  }
+
+  function saveName(id, name, done) {
+    $.ajax({
+      url: '/v1/items/' + id,
+      type: 'put',
+      data: { name: name }
+    }).done(function() {
+      // done();
+    }).fail(function() {
+      notify('Failed to change name', jqXhr.responseText);
     }).always(function() {
 
     });
@@ -65,13 +136,17 @@
   // Show remove
   bind(items, function(e) {
     var remove = this.querySelector('.js-remove');
-    remove.classList.remove('hide');
+    var edit = this.querySelector('.js-edit-button');
+    showNode(remove);
+    showNode(edit);
   }, 'mouseenter');
 
   // Hide remove
   bind(items, function(e) {
     var remove = this.querySelector('.js-remove');
-    remove.classList.add('hide');
+    var edit = this.querySelector('.js-edit-button');
+    hideNode(remove);
+    if (!edit.classList.contains('active')) hideNode(edit);
   }, 'mouseleave');
 
   function bind(els, listener, eventName, capture) {

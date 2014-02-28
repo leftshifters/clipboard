@@ -45,6 +45,22 @@ exports.index = function(req, res) {
 
 };
 
+exports.editItem = function(req, res, next) {
+  var id = req.store.id;
+  var name = req.store.name;
+
+  getDb(function(err, db) {
+    if (err) return res.send(500);
+    db.collection('uploads')
+      .update({ _id: ObjectId(id) }, { "$set": { name: name }}, done)
+  });
+
+  function done(err) {
+    if (err) return res.send(500);
+    res.send(200);
+  }
+};
+
 exports.deleteItem = function(req, res, next) {
   var id = req.store.id;
   var toremove = [];
@@ -52,7 +68,7 @@ exports.deleteItem = function(req, res, next) {
   var items;
 
   getDb(function(err, db) {
-    if (err) return console.error(err);
+    if (err) return res.send(500);
     items = db.collection('uploads');
     items
       .findOne({ _id: ObjectId(id) }, function(err, item) {
@@ -84,11 +100,20 @@ exports.deleteItem = function(req, res, next) {
 };
 
 exports.validateId = function(req, res, next) {
-  var id = req.body.id;
+  var id = req.params.id;
   id = id && id.trim();
   if (!id) return res.send(400, 'Need item id');
 
   req.store.id = id;
+  next();
+};
+
+exports.validateName = function(req, res, next) {
+  var name = req.body.name;
+  name = name && name.trim();
+  if (!name) return res.send(400, 'Need name');
+
+  req.store.name = name;
   next();
 };
 

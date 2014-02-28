@@ -43,7 +43,8 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/users', user.list);
 
-app.delete('/v1/delete', routes.validateId, routes.deleteItem);
+app.put('/v1/items/:id', routes.validateId, routes.validateName, routes.editItem);
+app.delete('/v1/items/:id', routes.validateId, routes.deleteItem);
 
 app.post('/upload', upload.upload, upload.thumb, upload.done);
 

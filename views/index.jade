@@ -54,9 +54,11 @@ mixin eachitem(item)
               div #{item.type || "file"}
     .title-block
       span.title
-        a(title='#{item.originalName}', href='#{item.url}') #{item.name}
+        a.item-link.js-item-link(title='#{item.originalName}', href='#{item.url}') #{item.name}
+        form.edit-name-form.hide(action='v1/items/#{item._id}', method='POST', role='form')
+          input.js-edit-name.edit-name(type="text", value='#{item.name}')
       .btn-group.pull-right
-        button.js-edit-name.btn.btn-default.btn-xs(type='button', data-toggle='tooltip', data-placement='top', title="Edit name")
+        button.js-edit-button.btn.btn-default.btn-xs.hide(type='button', data-toggle='tooltip', data-placement='top', title="Edit name")
           span.glyphicon.glyphicon-pencil
         //- button.js-copy-link.btn.btn-default.btn-xs(type='button', data-toggle='tooltip', data-placement='top', title="Copy link", data-clipboard-text="Copy this")
         //-   span.glyphicon.glyphicon-link
