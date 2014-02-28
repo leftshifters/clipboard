@@ -21,6 +21,7 @@ app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.set('version', version);
+app.set('uploadpath', 'public/uploads');
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());
@@ -41,6 +42,8 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 app.get('/users', user.list);
+
+app.delete('/v1/delete', routes.validateId, routes.deleteItem);
 
 app.post('/upload', upload.upload, upload.thumb, upload.done);
 

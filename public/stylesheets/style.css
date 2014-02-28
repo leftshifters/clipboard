@@ -42,7 +42,6 @@ a:hover {
 
 .link {
   display: block;
-  overflow: hidden;
   text-align: center;
   height: 200px;
 }
@@ -83,6 +82,19 @@ a:hover {
 
 .item-row {
   margin-top: 16px;
+  -webkit-transition: all 1s;
+  transition: all 1s;
+}
+
+.item-row .item-overlay {
+  position: absolute;
+  width: 90%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 6px;
+  z-index: 1;
+  opacity: 0;
+  -webkit-transition: opacity 2s;
 }
 
 .title-block {
@@ -101,12 +113,59 @@ a:hover {
   text-overflow: ellipsis;
   overflow: hidden;
   display: inline-block;
+  vertical-align: top;
+}
+
+.cog {
+  position: relative;
+  float: right;
+}
+
+.cog .cog-inner {
+  top: 0;
+  right: 0;
+
+  color: #EFF0EB;
+  text-decoration: none;
+  position: absolute;
+  line-height: 10px;
+  padding: 1px;
+  cursor: pointer;
+}
+
+.cog-inner:hover {
+  color: #121212;
 }
 
 .color-9a {
   color: #9a9a9a;
 }
 
+.cog-inner.remove {
+  font-size: 24px;
+  top: -10px;
+  right: -10px;
+  color: #FFF;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  padding: 0px;
+  margin: 1px;
+  z-index: 1;
+}
+
+.cog-inner.remove:hover {
+  background: white;
+  color: rgba(0,0,0,0.6);
+}
+
 .row:last-child {
   margin-bottom: 2em;
+}
+
+.show {
+  display: block;
+}
+
+.hide {
+  display: none;
 }
