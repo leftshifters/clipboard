@@ -5,7 +5,7 @@
   var form = document.querySelector('.upload-form');
   var btnSubmit = document.querySelector('.btn-submit');
   var namefield = document.querySelector('#name');
-  var items = document.querySelectorAll('.item');
+  var items = document.querySelectorAll('.js-item');
   var tips = document.querySelectorAll('.js-copy-link');
   // var move = require('move');
 
@@ -31,10 +31,10 @@
 
   bind(items, delegate);
 
-  $('.item').on('click', '.js-remove', onCrossClick);
-  $('.item').on('click', '.js-edit-button', onEditClick);
-  $('.item').on('change', '.js-edit-name', onNameChange);
-  $('.item').on('submit', '.edit-name-form', onNameSubmit);
+  $('.js-item').on('click', '.js-remove', onCrossClick);
+  $('.js-item').on('click', '.js-edit-button', onEditClick);
+  $('.js-item').on('change', '.js-edit-name', onNameChange);
+  $('.js-item').on('submit', '.edit-name-form', onNameSubmit);
 
   function onCrossClick(e) {
     var item = e.delegateTarget;
@@ -54,7 +54,7 @@
     var button = item.querySelector('.js-edit-button');
     var input = form.querySelector('.js-edit-name');
     var editon = button.classList.contains('active');
-    console.log(editon);
+
     if (editon) {
       showNode(anchor);
       hideNode(form);
@@ -170,7 +170,6 @@
   }
 
   function oncogclick(el, parent) {
-    console.log(parent);
     var overlay = parent.querySelector('.item-overlay');
     overlay.classList.remove('hide');
 
