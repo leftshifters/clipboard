@@ -191,3 +191,29 @@ a:hover {
 .item-link {
   border-bottom: 1px dashed white;
 }
+
+.search-form {
+  position: fixed;
+  top: 20px;
+  right: 85px;
+}
+
+.pages {
+  display: inline-block;
+  float: right;
+  font-size: 0.8em;
+}
+
+.page {
+  color: #988D79;
+  opacity: 0.8;
+}
+
+.pages .glyphicon-chevron-right, .pages .glyphicon-chevron-left {
+  color: #988D79;
+  opacity: 0.8;
+}
+
+.pages .glyphicon-chevron-right:hover, .pages .glyphicon-chevron-left:hover {
+  opacity: 1;
+}

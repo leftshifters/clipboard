@@ -8,41 +8,52 @@ var fs = require('fs');
 var async = require('async');
 var moment = require('moment');
 var getDb = require('../lib/connect');
+var db = require('../lib/db');
 var ObjectId = require('mongodb').ObjectID;
 
 exports.index = function(req, res) {
+  var page = req.store.page || 0;
 
-  getDb(function(err, db) {
+  db.fetchItems(page, function(err, items, more) {
+    if (err) return res.send(500);
+    var baseurl = req.protocol + '://' + req.headers.host;
 
-    db.collection('uploads')
-      .find()
-      .sort({ createdms: -1 })
-      .toArray(function(err, items) {
-        if (err) return res.send(500);
-        var baseurl = req.protocol + '://' + req.headers.host;
+    for (var i = 0, len = items.length; i < len; ++i) {
+      items[i].url = baseurl + '/' + items[i].relativePathShort;
 
-        for (var i = 0, len = items.length; i < len; ++i) {
-          items[i].url = baseurl + '/' + items[i].relativePathShort;
+      if (items[i].type === 'ipa') {
+        items[i].url = ipaurl(items[i], baseurl);
+      }
 
+      if (items[i].type === 'image') {
+        items[i].imageurl = '../' + items[i].relativePathShort;
+      }
 
-          if (items[i].type === 'ipa') {
-            items[i].url = ipaurl(items[i], baseurl);
-          }
+      type(items[i]);
+      setname(items[i]);
+      settimeago(items[i]);
+    }
 
-          if (items[i].type === 'image') {
-            items[i].imageurl = '../' + items[i].relativePathShort;
-          }
-
-          type(items[i]);
-          setname(items[i]);
-          settimeago(items[i]);
-        }
-
-      res.render('index', { title: 'Leftload', items: items, baseurl: baseurl });
+    res.render('index', {
+      title: 'Leftload',
+      items: items,
+      baseurl: baseurl,
+      page: page,
+      more: more
     });
-
   });
 
+};
+
+exports.page = function(req, res, next) {
+  var page = parseInt(req.params.page, 10);
+
+  if (page > 0) {
+    page = page - 1;
+  }
+
+  req.store.page = page || 0;
+  next();
 };
 
 exports.editItem = function(req, res, next) {

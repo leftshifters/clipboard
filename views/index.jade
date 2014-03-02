@@ -2,9 +2,24 @@ extends layout
 
 block content
 
+  //- a.next-page(href='#')
+  //-   span.glyphicon.glyphicon-chevron-right
+
   .container
     h1 Leftload
       span.small  #{version}
+
+      .pages
+        if page > 0
+          a.page.prev-page(href='/page/#{page}', title='Page #{page}')
+            span.glyphicon.glyphicon-chevron-left
+        if more
+          a.page.next-page(href='/page/#{page + 2}', title='Page #{page + 2}')
+            span.glyphicon.glyphicon-chevron-right
+    .row
+      form.search-form.form-inline.hide
+        .form-group
+          input.form-control(type="text", placeholder="type to search")
 
     .row
       .col-lg-3.col-xs-12.col-md-4.col-sm-6.item-row
