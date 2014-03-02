@@ -36,6 +36,16 @@
   $('.item').on('change', '.js-edit-name', onNameChange);
   $('.item').on('submit', '.edit-name-form', onNameSubmit);
 
+  // $(document).on('keyup', onKeytype);
+  // var searchform = document.querySelector('.search-form');
+
+  // function onKeytype(e) {
+  //   console.log('typed');
+  //   showNode(searchform);
+  //   var input = this.querySelector('.search-form input');
+  //   input.focus();
+  // }
+
   function onCrossClick(e) {
     var item = e.delegateTarget;
     var id = item.getAttribute('data-id');

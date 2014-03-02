@@ -186,3 +186,26 @@ a:hover {
 .item-link {
   border-bottom: 1px dashed white;
 }
+
+.search-form {
+  position: fixed;
+  top: 20px;
+  right: 85px;
+}
+
+.next-page {
+  padding: 3px 10px;
+  background-color: rgba(0, 0, 0, 0.9);
+  position: fixed;
+  right: 1%;
+  top: 50%;
+}
+
+.next-page .glyphicon-chevron-right {
+  font-size: 2em;
+  opacity: 0.8;
+}
+
+.next-page .glyphicon-chevron-right:hover {
+  opacity: 1;
+}

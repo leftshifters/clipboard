@@ -41,6 +41,7 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
+app.get('/page/:page', routes.page, routes.index);
 app.get('/users', user.list);
 
 app.put('/v1/items/:id', routes.validateId, routes.validateName, routes.editItem);
