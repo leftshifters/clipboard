@@ -193,19 +193,22 @@ a:hover {
   right: 85px;
 }
 
-.next-page {
-  padding: 3px 10px;
-  background-color: rgba(0, 0, 0, 0.9);
-  position: fixed;
-  right: 1%;
-  top: 50%;
+.pages {
+  display: inline-block;
+  float: right;
+  font-size: 0.8em;
 }
 
-.next-page .glyphicon-chevron-right {
-  font-size: 2em;
+.page {
+  color: #988D79;
   opacity: 0.8;
 }
 
-.next-page .glyphicon-chevron-right:hover {
+.pages .glyphicon-chevron-right, .pages .glyphicon-chevron-left {
+  color: #988D79;
+  opacity: 0.8;
+}
+
+.pages .glyphicon-chevron-right:hover, .pages .glyphicon-chevron-left:hover {
   opacity: 1;
 }

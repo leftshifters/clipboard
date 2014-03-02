@@ -14,7 +14,7 @@ var ObjectId = require('mongodb').ObjectID;
 exports.index = function(req, res) {
   var page = req.store.page || 0;
 
-  db.fetchItems(page, function(err, items) {
+  db.fetchItems(page, function(err, items, more) {
     if (err) return res.send(500);
     var baseurl = req.protocol + '://' + req.headers.host;
 
@@ -34,20 +34,25 @@ exports.index = function(req, res) {
       settimeago(items[i]);
     }
 
-    res.render('index', { title: 'Leftload', items: items, baseurl: baseurl });
+    res.render('index', {
+      title: 'Leftload',
+      items: items,
+      baseurl: baseurl,
+      page: page,
+      more: more
+    });
   });
 
 };
 
 exports.page = function(req, res, next) {
-  console.log(req.params.page);
   var page = parseInt(req.params.page, 10);
+
   if (page > 0) {
     page = page - 1;
   }
 
   req.store.page = page || 0;
-  console.log(req.store.page);
   next();
 };
 
