@@ -123,7 +123,7 @@ a.head-logo:hover {
 
 .title-block .title {
   white-space: nowrap;
-  width: 50%;
+  width: 75%;
   text-overflow: ellipsis;
   overflow: hidden;
   display: inline-block;
