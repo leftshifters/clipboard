@@ -20,6 +20,15 @@ a:hover {
   color: #349E97;
 }
 
+a.head-logo {
+  color: inherit;
+}
+
+a.head-logo:hover {
+  color: inherit;
+  text-decoration: none;
+}
+
 .fixed-image {
   background-size: cover;
   background-position: 50% 10%;

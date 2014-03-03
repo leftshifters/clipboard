@@ -35,7 +35,7 @@ exports.index = function(req, res) {
     }
 
     res.render('index', {
-      title: 'Leftload',
+      title: 'Clipboard',
       items: items,
       baseurl: baseurl,
       page: page,
