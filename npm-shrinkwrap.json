@@ -1,6 +1,6 @@
 {
-  "name": "leftload",
-  "version": "0.0.1",
+  "name": "clipboard",
+  "version": "0.0.2",
   "dependencies": {
     "express": {
       "version": "3.4.8",
@@ -429,6 +429,16 @@
       "version": "1.6.0",
       "from": "underscore@",
       "resolved": "https://registry.npmjs.org/underscore/-/underscore-1.6.0.tgz"
+    },
+    "async": {
+      "version": "0.2.10",
+      "from": "async@0.2.10",
+      "resolved": "https://registry.npmjs.org/async/-/async-0.2.10.tgz"
+    },
+    "moment": {
+      "version": "2.5.1",
+      "from": "moment@",
+      "resolved": "https://registry.npmjs.org/moment/-/moment-2.5.1.tgz"
     }
   }
 }

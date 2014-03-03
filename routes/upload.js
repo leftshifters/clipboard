@@ -95,6 +95,7 @@ exports.upload = function(req, res, next) {
 };
 
 exports.thumb = function(req, res, next) {
+  return next();
   var item = req.store.item;
   if (!item) return next();
   if (item.type !== 'image') return next();
@@ -122,14 +123,14 @@ function type(item) {
     item.type = 'ipa';
     manifest(item);
   } else if ('.apk' === ext) {
-    itme.type = 'apk';
+    item.type = 'apk';
   }
 }
 
 function manifest(item) {
   var basename = path.basename(item.basename, '.ipa');
   var plistfile = basename + '.plist';
-  var url = baseurl + '/uploads/' + plistfile;
+  var url = baseurl + '/' + item.relativePathShort;
 
   var manifest = _.template(manifestTemplate, {
     name: item.name || 'untitled',
