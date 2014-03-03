@@ -7,6 +7,7 @@ var path = require('path');
 var fs = require('fs');
 var async = require('async');
 var moment = require('moment');
+var _s = require('underscore.string');
 var getDb = require('../lib/connect');
 var db = require('../lib/db');
 var ObjectId = require('mongodb').ObjectID;
@@ -19,7 +20,7 @@ exports.index = function(req, res) {
     var baseurl = req.protocol + '://' + req.headers.host;
 
     for (var i = 0, len = items.length; i < len; ++i) {
-      items[i].url = baseurl + '/' + items[i].relativePathShort;
+      seturl(items[i], baseurl);
 
       if (items[i].type === 'ipa') {
         items[i].url = ipaurl(items[i], baseurl);
@@ -162,4 +163,17 @@ function setname(item) {
 
 function settimeago(item) {
   item.timeago = moment(item.created).fromNow() || '';
+}
+
+function seturl(item, baseurl) {
+  var name = item.name;
+  if ('untitled' === item.name) {
+    name = item.originalName.substr(0, item.originalName.length - 4);
+  }
+
+  item.url = baseurl
+            + '/clip/'
+            + item.basenameWithoutExt
+            + '/'
+            + _s.slugify(name || item.originalName);
 }

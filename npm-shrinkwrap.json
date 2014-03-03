@@ -439,6 +439,10 @@
       "version": "2.5.1",
       "from": "moment@",
       "resolved": "https://registry.npmjs.org/moment/-/moment-2.5.1.tgz"
+    },
+    "underscore.string": {
+      "version": "2.3.3",
+      "from": "underscore.string@"
     }
   }
 }
