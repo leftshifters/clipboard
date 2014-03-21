@@ -9,6 +9,7 @@ var url = require('url');
 var async = require('async');
 var moment = require('moment');
 var _s = require('underscore.string');
+var marked = require('marked');
 var getDb = require('../lib/connect');
 var db = require('../lib/db');
 var ObjectId = require('mongodb').ObjectID;
@@ -68,6 +69,19 @@ exports.detail = function(req, res, next) {
   }
 
   res.render('detail', { title: item.name, item: item });
+};
+
+exports.changelog = function(req, res) {
+  fs.readFile('CHANGELOG.md', { encoding: 'utf8' }, function(err, data) {
+    if (err) {
+      console.error(err);
+      res.send(500);
+    }
+    
+    console.log(marked(data));
+
+    res.render('changelog', { title: 'Changelog', html: marked(data) });
+  });
 };
 
 exports.page = function(req, res, next) {

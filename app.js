@@ -43,6 +43,7 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
+app.get('/changelog', routes.changelog);
 app.get('/page/:page', routes.page, routes.index);
 app.get('/clip/:hash/:name?', clip.fetch, clip.send);
 app.get('/clipd/:hash/:name?', clip.fetch, routes.detail);
