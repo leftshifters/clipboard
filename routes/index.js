@@ -77,8 +77,6 @@ exports.changelog = function(req, res) {
       console.error(err);
       res.send(500);
     }
-    
-    console.log(marked(data));
 
     res.render('changelog', { title: 'Changelog', html: marked(data) });
   });
