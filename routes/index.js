@@ -42,7 +42,9 @@ exports.index = function(req, res) {
       items: items,
       baseurl: baseurl,
       page: page,
-      more: more
+      more: more,
+      leftArrow: !!page > 0 ? '' : 'invisible',
+      rightArrow: more ? '' : 'invisible'
     });
   });
 

@@ -7,13 +7,8 @@ block content
       a.head-logo(href='/') Clipboard
       span.small  #{version}
 
-      .pages
-        if page > 0
-          a.page.prev-page(href='/page/#{page}', title='Page #{page}')
-            span.glyphicon.glyphicon-chevron-left
-        if more
-          a.page.next-page(href='/page/#{page + 2}', title='Page #{page + 2}')
-            span.glyphicon.glyphicon-chevron-right
+      +pagination()
+
     .row
       form.search-form.form-inline.hide
         .form-group
@@ -45,6 +40,9 @@ block content
             button.btn.btn-primary.btn-submit.center-block(type='submit', disabled='disabled') Upload
             input(type='file', class='input-file', name='content')
       +items(items)
+
+    h1
+      +pagination()
 
 mixin items(items)
   - each item in items
@@ -80,3 +78,10 @@ mixin eachitem(item)
         //- span.cog
         //-   span.cog-inner
         //-     span.glyphicon.glyphicon-cog.js-cog
+
+mixin pagination()
+  .pages
+    a.page.prev-page(href='/page/#{page}', title='Page #{page}', class='#{leftArrow}')
+      span.glyphicon.glyphicon-chevron-left
+    a.page.next-page(href='/page/#{page + 2}', title='Page #{page + 2}', class='#{rightArrow}')
+      span.glyphicon.glyphicon-chevron-right
