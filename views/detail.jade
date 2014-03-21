@@ -1,0 +1,26 @@
+extends layout
+
+block content
+
+  .container
+    .row.center-block
+      h2 #{item.name}
+      
+      if 'image' === item.type
+        .item
+          .item-inner.item-detail
+            img(src='#{item.url}')
+
+      .download
+        .btn-group
+          if 'ipa' === item.type
+            a.btn.btn-primary.btn-lg(href='#{item.installUrl}') Install IPA
+          if 'apk' === item.type
+            a.btn.btn-primary.btn-lg(href='#{item.downloadUrl}') Install APK
+          a.btn.btn-primary.btn-lg(href='#{item.downloadUrl}', title="Download #{item.originalName}") #{item.buttonText}
+
+      .stats-details.panel.panel-body
+        .interests.col-xs-5.col-lg-2
+          span #{item.downloaded} interests
+        .added.col-xs-7.col-lg-2.pull-right
+          span.pull-right Added on #{item.added}

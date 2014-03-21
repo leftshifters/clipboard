@@ -5,7 +5,7 @@
 
 var express = require('express');
 var routes = require('./routes');
-var user = require('./routes/user');
+var clip = require('./routes/clip');
 var upload = require('./routes/upload');
 var bootcheck = require('./lib/bootcheck');
 var http = require('http');
@@ -22,6 +22,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.set('version', version);
 app.set('uploadpath', 'public/uploads');
+app.use(express.compress());
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());
@@ -42,12 +43,14 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 app.get('/page/:page', routes.page, routes.index);
-app.get('/users', user.list);
+app.get('/clip/:hash/:name?', clip.fetch, clip.send);
+app.get('/clipd/:hash/:name?', clip.fetch, routes.detail);
+app.post('/upload', upload.upload, upload.thumb, upload.done);
 
 app.put('/v1/items/:id', routes.validateId, routes.validateName, routes.editItem);
 app.delete('/v1/items/:id', routes.validateId, routes.deleteItem);
 
-app.post('/upload', upload.upload, upload.thumb, upload.done);
+
 
 bootcheck();
 
