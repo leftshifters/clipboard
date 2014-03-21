@@ -7,13 +7,8 @@ block content
       a.head-logo(href='/') Clipboard
       span.small  #{version}
 
-      .pages
-        if page > 0
-          a.page.prev-page(href='/page/#{page}', title='Page #{page}')
-            span.glyphicon.glyphicon-chevron-left
-        if more
-          a.page.next-page(href='/page/#{page + 2}', title='Page #{page + 2}')
-            span.glyphicon.glyphicon-chevron-right
+      +pagination()
+
     .row
       form.search-form.form-inline.hide
         .form-group
@@ -46,6 +41,10 @@ block content
             input(type='file', class='input-file', name='content')
       +items(items)
 
+    h1
+      +pagination()
+    +freespace()
+
 mixin items(items)
   - each item in items
     .col-lg-3.col-xs-12.col-md-4.col-sm-6.item-row
@@ -57,7 +56,7 @@ mixin eachitem(item)
     span.cog.js-remove.hide
       span.cog-inner.remove
         span.glyphicon.glyphicon-remove-circle.remove-circle
-    a.link(href='#{item.url}', target='_blank')
+    a.link(href='#{item.detailUrl}')
       .item-inner
         if item.type === 'image'
           .fixed-image(style="background-image: url('#{item.imageurl}')")
@@ -80,3 +79,13 @@ mixin eachitem(item)
         //- span.cog
         //-   span.cog-inner
         //-     span.glyphicon.glyphicon-cog.js-cog
+
+mixin pagination()
+  .pages
+    a.page.prev-page(href='/page/#{page}', title='Page #{page}', class='#{leftArrow}')
+      span.glyphicon.glyphicon-chevron-left
+    a.page.next-page(href='/page/#{page + 2}', title='Page #{page + 2}', class='#{rightArrow}')
+      span.glyphicon.glyphicon-chevron-right
+
+mixin freespace()
+  span.lead #{disksize.free}

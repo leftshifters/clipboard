@@ -54,6 +54,14 @@ a.head-logo:hover {
   height: inherit;
 }
 
+.item-detail {
+  text-align: center;
+}
+
+.item-detail img {
+  max-width: 100%;
+}
+
 .link {
   display: block;
   text-align: center;
@@ -123,7 +131,7 @@ a.head-logo:hover {
 
 .title-block .title {
   white-space: nowrap;
-  width: 50%;
+  width: 75%;
   text-overflow: ellipsis;
   overflow: hidden;
   display: inline-block;
@@ -225,4 +233,13 @@ a.head-logo:hover {
 
 .pages .glyphicon-chevron-right:hover, .pages .glyphicon-chevron-left:hover {
   opacity: 1;
+}
+
+.download {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.stats-details {
+  margin-top: 10px;
 }

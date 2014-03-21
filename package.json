@@ -1,6 +1,6 @@
 {
   "name": "clipboard",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "scripts": {
     "start": "node app.js"
@@ -16,6 +16,10 @@
     "reqstore": "0.0.1",
     "underscore": "~1.6.0",
     "async": "~0.2.10",
-    "moment": "~2.5.1"
+    "moment": "~2.5.1",
+    "underscore.string": "~2.3.3",
+    "marked": "^0.3.2",
+    "bytes": "^0.3.0",
+    "diskspace": "^0.1.5"
   }
 }
