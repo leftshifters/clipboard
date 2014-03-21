@@ -43,6 +43,7 @@ block content
 
     h1
       +pagination()
+    +freespace()
 
 mixin items(items)
   - each item in items
@@ -85,3 +86,6 @@ mixin pagination()
       span.glyphicon.glyphicon-chevron-left
     a.page.next-page(href='/page/#{page + 2}', title='Page #{page + 2}', class='#{rightArrow}')
       span.glyphicon.glyphicon-chevron-right
+
+mixin freespace()
+  span.lead #{disksize.free}

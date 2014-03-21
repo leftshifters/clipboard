@@ -8,6 +8,7 @@ var routes = require('./routes');
 var clip = require('./routes/clip');
 var upload = require('./routes/upload');
 var bootcheck = require('./lib/bootcheck');
+var disksize = require('./lib/disksize');
 var http = require('http');
 var path = require('path');
 var reqstore = require('reqstore');
@@ -53,9 +54,10 @@ app.put('/v1/items/:id', routes.validateId, routes.validateName, routes.editItem
 app.delete('/v1/items/:id', routes.validateId, routes.deleteItem);
 
 
-
 bootcheck();
+disksize(app);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+

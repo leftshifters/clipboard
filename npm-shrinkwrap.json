@@ -7,6 +7,14 @@
       "from": "https://registry.npmjs.org/async/-/async-0.2.10.tgz",
       "resolved": "https://registry.npmjs.org/async/-/async-0.2.10.tgz"
     },
+    "bytes": {
+      "version": "0.3.0",
+      "from": "bytes@"
+    },
+    "diskspace": {
+      "version": "0.1.5",
+      "from": "diskspace@"
+    },
     "express": {
       "version": "3.4.8",
       "from": "https://registry.npmjs.org/express/-/express-3.4.8.tgz",

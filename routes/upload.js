@@ -5,6 +5,7 @@ var fs = require('fs');
 var gm = require('gm');
 var _ = require('underscore');
 var db = require('../lib/db');
+var disksize = require('../lib/disksize');
 
 var uploadDir = 'public/uploads';
 var thumbsDir = 'public/thumbs';
@@ -113,6 +114,7 @@ exports.thumb = function(req, res, next) {
 };
 
 exports.done = function(req, res, next) {
+  disksize(req.app);
   res.redirect('/');
 };
 
