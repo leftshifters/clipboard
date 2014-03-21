@@ -44,6 +44,7 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/page/:page', routes.page, routes.index);
 app.get('/clip/:hash/:name?', clip.fetch, clip.send);
+app.get('/clipd/:hash/:name?', clip.fetch, routes.detail);
 app.post('/upload', upload.upload, upload.thumb, upload.done);
 
 app.put('/v1/items/:id', routes.validateId, routes.validateName, routes.editItem);

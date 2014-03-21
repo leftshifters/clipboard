@@ -10,7 +10,8 @@ exports.fetch = function(req, res, next) {
   db.fetchItemByHash(hash, function(err, item) {
     if (err) res.send(500);
 
-    res.sendfile(path.join(process.cwd(), item.relativePathLong));
+    req.store.item = item;
+    next();
   });
 };
 
@@ -19,5 +20,12 @@ exports.fetch = function(req, res, next) {
  * Handle clip downloading
  */
 exports.send = function(req, res, next) {
-  res.send('download file here');
+  var item = req.store.item;
+
+  if ('image' === item.type) {
+    res.sendfile(path.join(process.cwd(), item.relativePathLong));
+  } else {
+    res.download(path.join(process.cwd(), item.relativePathLong), item.originalName);
+  }
+  
 };

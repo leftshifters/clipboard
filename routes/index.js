@@ -5,6 +5,7 @@
 
 var path = require('path');
 var fs = require('fs');
+var url = require('url');
 var async = require('async');
 var moment = require('moment');
 var _s = require('underscore.string');
@@ -44,6 +45,29 @@ exports.index = function(req, res) {
     });
   });
 
+};
+
+exports.detail = function(req, res, next) {
+  var item = req.store.item;
+  var baseurl = req.protocol + '://' + req.headers.host;
+  var nameslug = _s.slugify(item.name);
+
+  item.url = url.resolve(baseurl, item.relativePathShort);
+  item.downloadUrl = url.resolve(baseurl, ['clip', item.basenameWithoutExt, nameslug].join('/'));
+  item.added = moment(item.createdms).format('MMM Do YY');
+  item.buttonText = 'Download';
+
+  // Set ipa download url
+  if ('ipa' === item.type) {
+    item.installUrl = ipaurl(item, baseurl);
+    item.buttonText = 'Download IPA';
+  }
+
+  if ('apk' === item.type) {
+    item.buttonText = 'Download APK';
+  }
+
+  res.render('detail', { title: item.name, item: item });
 };
 
 exports.page = function(req, res, next) {
@@ -173,6 +197,12 @@ function seturl(item, baseurl) {
 
   item.url = baseurl
             + '/clip/'
+            + item.basenameWithoutExt
+            + '/'
+            + _s.slugify(name || item.originalName);
+
+  item.detailUrl = baseurl
+            + '/clipd/'
             + item.basenameWithoutExt
             + '/'
             + _s.slugify(name || item.originalName);
