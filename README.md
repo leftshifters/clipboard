@@ -3,20 +3,6 @@ A simple app to upload and share files
 
 ## Install
 
-### Dependencies
-
-Depends on the graphicsmagick v1.3.8 or higher.
-
-### Ubuntu or Debian
-````
-$ sudo apt-get install graphicsmagick
-````
-
-### Homebrew
-````
-$ brew install graphicsmagick
-````
-
 Clone the repository
 
 ````
@@ -31,7 +17,7 @@ To run
 node app.js
 ````
 
-If you want to run the server till eternity, you can copy the upstart config file `clipboard.conf` to `/etc/init` and use service to start the process
+If you want to run the server till eternity, you can copy the upstart config file `clipboard.conf` to `/etc/init` and use service utility to start the process
 
 ````
 $ sudo service start clipboard
