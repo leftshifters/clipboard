@@ -84,6 +84,11 @@ exports.changelog = function(req, res) {
   });
 };
 
+exports.detectify = function(req, res) {
+  res.send('detectify');
+  res.end();
+};
+
 exports.page = function(req, res, next) {
   var page = parseInt(req.params.page, 10);
 

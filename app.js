@@ -49,6 +49,7 @@ app.get('/page/:page', routes.page, routes.index);
 app.get('/clip/:hash/:name?', clip.fetch, clip.send);
 app.get('/clipd/:hash/:name?', clip.fetch, routes.detail);
 app.post('/upload', upload.upload, upload.thumb, upload.done);
+app.get('/8b66041e096772f9c0c3c4adb2f625ab.txt', routes.detectify);
 
 app.put('/v1/items/:id', routes.validateId, routes.validateName, routes.editItem);
 app.delete('/v1/items/:id', routes.validateId, routes.deleteItem);
