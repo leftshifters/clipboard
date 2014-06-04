@@ -113,9 +113,14 @@ exports.thumb = function(req, res, next) {
 
 };
 
-exports.done = function(req, res, next) {
-  disksize(req.app);
-  res.redirect('/');
+exports.diskspace = function(req, res, next) {
+  disksize(function onsize(total, free) {
+    console.log(total);
+    console.log(free);
+    req.app.locals.disksize.total = total;
+    req.app.locals.disksize.free = free;
+    next();
+  });
 };
 
 function type(item) {
