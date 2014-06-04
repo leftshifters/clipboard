@@ -14,3 +14,5 @@ html
     script(src='/bower_components/jquery/dist/jquery.js')
     script(src='/bower_components/bootstrap/dist/js/bootstrap.min.js')
     script(src='/javascripts/main.js')
+    if (settings.env === 'production')
+      script(src='/javascripts/ga.js')
