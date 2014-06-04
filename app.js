@@ -14,7 +14,6 @@ var path = require('path');
 var reqstore = require('reqstore');
 var version = require('./package').version;
 
-
 var app = express();
 
 // all environments
@@ -34,9 +33,7 @@ app.use(reqstore());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.locals({
-  version: version
-});
+app.locals({ version: version });
 
 // development only
 if ('development' == app.get('env')) {
@@ -55,7 +52,9 @@ app.delete('/v1/items/:id', routes.validateId, routes.deleteItem);
 
 
 bootcheck();
-disksize(app);
+disksize(function onsize(total, free) {
+  app.locals({ disksize: { total: total, free: free } });
+});
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
