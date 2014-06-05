@@ -50,7 +50,7 @@ a.head-logo:hover {
 }
 
 .item-inner {
-  margin: 10px 10px 0 10px;
+  margin: 10px;
   height: inherit;
 }
 
@@ -104,8 +104,8 @@ a.head-logo:hover {
 
 .item-row {
   margin-top: 16px;
-  -webkit-transition: all 0.66s;
-  transition: all 0.66s;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
 }
 
 .item-row .item-overlay {
@@ -242,4 +242,8 @@ a.head-logo:hover {
 
 .stats-details {
   margin-top: 10px;
+}
+
+.form-group.extra-margin {
+  margin-bottom: 52px;
 }
