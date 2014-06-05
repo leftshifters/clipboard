@@ -24,7 +24,7 @@
     shouldSubmit = true;
   });
 
-  fileInput.addEventListener('change', function onChange(e) {
+  $(fileInput).on('change', function onChange(e) {
     btnSubmit.removeAttribute('disabled');
     namefield.focus();
   });
