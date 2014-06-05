@@ -18,10 +18,10 @@ block content
       .col-lg-3.col-xs-12.col-md-4.col-sm-6.item-row
         .item.add-dialog
           form.upload-form(role='form', method='post', action='/upload', enctype='multipart/form-data')
-            .form-group
+            .form-group.extra-margin
               button.btn.btn-default.btn-block.btn-select(type='button') Select a file
 
-            .form-group
+            .form-group.extra-margin
               label(for='name')
                 span Name
                 span.color-9a
@@ -29,15 +29,7 @@ block content
                     em  (optional)
               input.form-control(type='text', name='name', id='name', placeholder='clipboard')
 
-            .form-group
-              label(for='bundleId')
-                span Bundle Identifier
-                span.color-9a
-                  small
-                    em  (optional)
-              input.form-control(type='text', name='bundleId', id='bundleId', placeholder='io.leftshift.clipboard')
-
-            button.btn.btn-primary.btn-submit.center-block(type='submit', disabled='disabled') Upload
+            button.btn.btn-primary.btn-submit.center-block.btn-lg(type='submit', disabled='disabled') Upload
             input(type='file', class='input-file', name='content')
       +items(items)
 

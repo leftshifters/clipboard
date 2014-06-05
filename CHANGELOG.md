@@ -1,5 +1,13 @@
 # Changelog
 
+### 0.0.4 (Jun 5, 2014)
+* Fixed a bug where a deleted item would still appear
+* Added Google Analytics
+* Added Detectify module
+* Refactor and improved remaining disk space calculation
+* Smoother IPA deployments, no need to add bundle identifer
+* Populates the filename on file selection before upload
+
 ### 0.0.3 (Mar 21, 2014)
 * Names get truncated only if they are long
 * Changed URL scheme of clips

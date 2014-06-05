@@ -14,7 +14,6 @@ var path = require('path');
 var reqstore = require('reqstore');
 var version = require('./package').version;
 
-
 var app = express();
 
 // all environments
@@ -34,9 +33,7 @@ app.use(reqstore());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.locals({
-  version: version
-});
+app.locals({ version: version });
 
 // development only
 if ('development' == app.get('env')) {
@@ -48,14 +45,16 @@ app.get('/changelog', routes.changelog);
 app.get('/page/:page', routes.page, routes.index);
 app.get('/clip/:hash/:name?', clip.fetch, clip.send);
 app.get('/clipd/:hash/:name?', clip.fetch, routes.detail);
-app.post('/upload', upload.upload, upload.thumb, upload.done);
+app.post('/upload', upload.upload, upload.thumb, upload.diskspace, routes.root);
 
 app.put('/v1/items/:id', routes.validateId, routes.validateName, routes.editItem);
-app.delete('/v1/items/:id', routes.validateId, routes.deleteItem);
+app.delete('/v1/items/:id', routes.validateId, routes.deleteItem, upload.diskspace, routes.ok);
 
 
 bootcheck();
-disksize(app);
+disksize(function onsize(total, free) {
+  app.locals({ disksize: { total: total, free: free } });
+});
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

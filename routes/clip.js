@@ -8,7 +8,8 @@ exports.fetch = function(req, res, next) {
   var hash = req.params.hash;
 
   db.fetchItemByHash(hash, function(err, item) {
-    if (err) res.send(500);
+    if (err) return res.send(500);
+    if (!item) return res.send(404);
 
     req.store.item = item;
     next();

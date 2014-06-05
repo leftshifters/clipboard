@@ -140,7 +140,7 @@ exports.deleteItem = function(req, res, next) {
 
           removeFiles(toremove, function(err) {
             if (err) return res.send(500);
-            res.send(200);
+            next();
           });
 
         });
@@ -165,6 +165,14 @@ exports.validateName = function(req, res, next) {
 
   req.store.name = name;
   next();
+};
+
+exports.root = function(req, res, next) {
+  res.redirect('/');
+};
+
+exports.ok = function(req, res, next) {
+  res.send(200);
 };
 
 function removeFiles(paths, done) {

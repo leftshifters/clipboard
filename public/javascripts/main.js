@@ -24,7 +24,12 @@
     shouldSubmit = true;
   });
 
-  fileInput.addEventListener('change', function onChange(e) {
+  $(fileInput).on('change', function onChange(e) {
+    var filename = $(this).val().split('/').pop().split('\\').pop();
+    if (filename) {
+      $(btnSelect).text('Change file');
+      $(namefield).val(filename).select();
+    }
     btnSubmit.removeAttribute('disabled');
     namefield.focus();
   });
