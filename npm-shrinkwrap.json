@@ -447,6 +447,30 @@
         }
       }
     },
+    "qr": {
+      "version": "0.2.3",
+      "from": "qr@",
+      "dependencies": {
+        "vows": {
+          "version": "0.7.0",
+          "from": "vows@>= 0.5.8",
+          "dependencies": {
+            "eyes": {
+              "version": "0.1.8",
+              "from": "eyes@>=0.1.6"
+            },
+            "diff": {
+              "version": "1.0.8",
+              "from": "diff@~1.0.3"
+            }
+          }
+        },
+        "benchmark": {
+          "version": "1.0.0",
+          "from": "benchmark@"
+        }
+      }
+    },
     "reqstore": {
       "version": "0.0.1",
       "from": "https://registry.npmjs.org/reqstore/-/reqstore-0.0.1.tgz",

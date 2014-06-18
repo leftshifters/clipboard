@@ -1,5 +1,8 @@
 var db = require('../lib/db');
+var baseurl = require('../lib/baseurl');
 var path = require('path');
+var QR = require('qr').Encoder;
+var qr = new QR();
 
 /*
  * Fetch a single clip
@@ -18,6 +21,29 @@ exports.fetch = function(req, res, next) {
 
 
 /*
+ * Generate QR code
+ */
+exports.qr = function(req, res, next) {
+  var item = req.store.item;
+
+  if (!(item.type === 'ipa' || item.type === 'apk')) return next();
+
+  baseurl.set(req.protocol, req.get('host'));
+
+  qr.on('end', function onEncodingComplete(png) {
+    res.locals.qrImage = 'data:image/png;base64,' + png.toString('base64');
+    next();
+  });
+
+  qr.encode([baseurl.get(), item.basenameWithoutExt].join('/'), null, {
+    background_color: 'F8F5EE',
+    margin: 2,
+    dot_size: 5
+  });
+};
+
+
+/*
  * Handle clip downloading
  */
 exports.send = function(req, res, next) {
@@ -28,5 +54,5 @@ exports.send = function(req, res, next) {
   } else {
     res.download(path.join(process.cwd(), item.relativePathLong), item.originalName);
   }
-  
+
 };
