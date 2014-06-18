@@ -2,7 +2,7 @@ var db = require('../lib/db');
 var baseurl = require('../lib/baseurl');
 var path = require('path');
 var QR = require('qr').Encoder;
-var qr = new QR();
+
 
 /*
  * Fetch a single clip
@@ -25,6 +25,7 @@ exports.fetch = function(req, res, next) {
  */
 exports.qr = function(req, res, next) {
   var item = req.store.item;
+  var qr = new QR();
 
   if (!(item.type === 'ipa' || item.type === 'apk')) return next();
 
