@@ -172,7 +172,11 @@ exports.validateName = function(req, res, next) {
 };
 
 exports.root = function(req, res, next) {
-  res.redirect('/');
+  if (req.xhr) {
+    res.send('ok');
+  } else {
+    res.redirect('/');
+  }
 };
 
 exports.ok = function(req, res, next) {
