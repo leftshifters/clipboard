@@ -36,7 +36,7 @@ exports.qr = function(req, res, next) {
     next();
   });
 
-  qr.encode([baseurl.get(), item.basenameWithoutExt].join('/'), null, {
+  qr.encode([baseurl.get(), 'clipd', item.basenameWithoutExt].join('/'), null, {
     background_color: 'F8F5EE',
     margin: 2,
     dot_size: 5
