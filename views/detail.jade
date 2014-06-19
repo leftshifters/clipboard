@@ -5,11 +5,15 @@ block content
   .container
     .row.center-block
       h2 #{item.name}
-      
+
       if 'image' === item.type
         .item
           .item-inner.item-detail
             img(src='#{item.url}')
+
+      if qrImage
+        img.qrcode(src='#{qrImage}', width='165', height='165', alt='QR Code')
+        p.small.center Drag and save this image to share this release
 
       .download
         .btn-group

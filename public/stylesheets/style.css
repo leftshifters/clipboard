@@ -247,3 +247,12 @@ a.head-logo:hover {
 .form-group.extra-margin {
   margin-bottom: 52px;
 }
+
+.qrcode {
+  margin: 0 auto;
+  display: block;
+}
+
+.center {
+  text-align: center;
+}
