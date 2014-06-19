@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.0.5 (Jun 19, 2014)
+* Added QR code as image for releases
+* Exposed `/upload` API for external clients
+
 ### 0.0.4 (Jun 5, 2014)
 * Fixed a bug where a deleted item would still appear
 * Added Google Analytics
