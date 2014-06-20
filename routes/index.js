@@ -173,7 +173,7 @@ exports.validateName = function(req, res, next) {
 
 exports.root = function(req, res, next) {
   if (req.xhr) {
-    res.send('ok');
+    res.json(req.store.item);
   } else {
     res.redirect('/');
   }
