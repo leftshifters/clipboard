@@ -6,13 +6,13 @@
 var path = require('path');
 var fs = require('fs');
 var url = require('url');
-var async = require('async');
 var moment = require('moment');
-var _s = require('underscore.string');
 var marked = require('marked');
+var _s = require('underscore.string');
 var getDb = require('../lib/connect');
 var db = require('../lib/db');
 var ObjectId = require('mongodb').ObjectID;
+var cliputils = require('../lib/cliptils');
 
 exports.index = function(req, res) {
   var page = req.store.page || 0;
@@ -22,19 +22,19 @@ exports.index = function(req, res) {
     var baseurl = req.protocol + '://' + req.headers.host;
 
     for (var i = 0, len = items.length; i < len; ++i) {
-      seturl(items[i], baseurl);
+      cliputils.seturl(items[i], baseurl);
 
       if (items[i].type === 'ipa') {
-        items[i].url = ipaurl(items[i], baseurl);
+        items[i].url = cliputils.ipaurl(items[i], baseurl);
       }
 
       if (items[i].type === 'image') {
         items[i].imageurl = '../' + items[i].relativePathShort;
       }
 
-      type(items[i]);
-      setname(items[i]);
-      settimeago(items[i]);
+      cliputils.type(items[i]);
+      cliputils.setname(items[i]);
+      cliputils.settimeago(items[i]);
     }
 
     res.render('index', {
@@ -52,6 +52,7 @@ exports.index = function(req, res) {
 
 exports.detail = function(req, res, next) {
   var item = req.store.item;
+  console.log(item);
   var baseurl = req.protocol + '://' + req.headers.host;
   var nameslug = _s.slugify(item.name);
 
@@ -62,11 +63,12 @@ exports.detail = function(req, res, next) {
 
   // Set ipa download url
   if ('ipa' === item.type) {
-    item.installUrl = ipaurl(item, baseurl);
+    item.installUrl = cliputils.ipaurl(item, baseurl);
     item.buttonText = 'Download IPA';
   }
 
   if ('apk' === item.type) {
+    item.installUrl = item.downloadUrl;
     item.buttonText = 'Download APK';
   }
 
@@ -142,7 +144,7 @@ exports.deleteItem = function(req, res, next) {
         items.remove({ _id: ObjectId(id) }, function(err) {
           if (err) return next(err);
 
-          removeFiles(toremove, function(err) {
+          cliputils.removeFiles(toremove, function(err) {
             if (err) return res.send(500);
             next();
           });
@@ -182,58 +184,3 @@ exports.root = function(req, res, next) {
 exports.ok = function(req, res, next) {
   res.send(200);
 };
-
-function removeFiles(paths, done) {
-  var tasks = paths.map(function(path) {
-    return function(done) {
-      fs.unlink(path, done);
-    };
-  });
-
-  async.series(tasks, done);
-}
-
-function ipaurl(item, baseurl) {
-  return 'itms-services://?action=download-manifest&url='
-          + baseurl
-          + '/uploads/'
-          + item.basenameWithoutExt
-          + '.plist';
-}
-
-function type(item) {
-  item.type = item.type || item.extension || 'file';
-
-  if ('.' === item.type[0]) {
-    item.type = item.type.slice(1);
-  }
-}
-
-function setname(item) {
-  if ('untitled' === item.name) {
-    item.name = item.originalName;
-  }
-}
-
-function settimeago(item) {
-  item.timeago = moment(item.created).fromNow() || '';
-}
-
-function seturl(item, baseurl) {
-  var name = item.name;
-  if ('untitled' === item.name) {
-    name = item.originalName.substr(0, item.originalName.length - 4);
-  }
-
-  item.url = baseurl
-            + '/clip/'
-            + item.basenameWithoutExt
-            + '/'
-            + _s.slugify(name || item.originalName);
-
-  item.detailUrl = baseurl
-            + '/clipd/'
-            + item.basenameWithoutExt
-            + '/'
-            + _s.slugify(name || item.originalName);
-}
