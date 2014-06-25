@@ -7,6 +7,10 @@ var db = require('../lib/db');
 var disksize = require('../lib/disksize');
 var manifest = require('../lib/manifest');
 var baseurl = require('../lib/baseurl');
+var elasticsearch = require('elasticsearch');
+var client = new elasticsearch.Client( {
+  host : 'localhost:9200',
+});
 
 var uploadDir = 'public/uploads';
 var thumbsDir = 'public/thumbs';
@@ -81,6 +85,7 @@ exports.upload = function(req, res, next) {
         db.insertItem(item, function(err, results) {
           if (err) return res.send(500);
           req.store.item = item;
+          req.store._id = results[0]._id
           next();
         });
       });
@@ -116,6 +121,35 @@ exports.diskspace = function(req, res, next) {
     next();
   });
 };
+
+
+exports.uploadElastic = function(req, res, next) {
+    console.log(req.url);
+    var item = req.store.item;
+    var originalName = item.originalName;
+    var name = item.name;
+    var type = item.type;
+    var id = req.store._id;
+    id = id.toString();
+
+    console.log(id);
+
+    client.create({
+      index: 'clipboard',
+      type: 'uploads',
+      id: id,
+      body: {
+        originalName: originalName,
+        name: name,
+        type: type
+      }
+      }, function(err, response) {
+          if(err) throw err;
+          client.close();
+          next();
+    });
+}
+
 
 function type(item, done) {
   var ext = path.extname(item.basename);

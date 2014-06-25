@@ -13,6 +13,10 @@ var getDb = require('../lib/connect');
 var db = require('../lib/db');
 var ObjectId = require('mongodb').ObjectID;
 var cliputils = require('../lib/cliptils');
+var elasticsearch = require('elasticsearch');
+var client = new elasticsearch.Client({
+  host : 'localhost:9200',
+});
 
 exports.index = function(req, res) {
   var page = req.store.page || 0;
@@ -114,6 +118,7 @@ exports.editItem = function(req, res, next) {
   function done(err) {
     if (err) return res.send(500);
     res.send(200);
+    next();
   }
 };
 
@@ -171,6 +176,92 @@ exports.validateName = function(req, res, next) {
 
   req.store.name = name;
   next();
+};
+
+exports.updateElastic = function(req, res, next) {
+  var id = req.store.id;
+  var name = req.store.name;
+  id = id.toString();
+
+  client.update({
+    index: 'clipboard',
+    type: 'uploads',
+    id: id,
+    body: {
+      doc: {
+        name: name
+      }
+    }
+  }, function(err, response) {
+    client.close();
+  });
+
+}
+
+exports.deleteElastic = function(req, res, next) {
+  var id = req.store.id;
+  id = id.toString();
+
+  client.delete({
+    index: 'clipboard',
+    type: 'uploads',
+    id: id
+  }, function(err, response) {
+    if (err) return next(err);
+    next();
+  });
+}
+
+exports.show = function(req, res, next) {
+  var html = '<html><head><title>Search</title></head><body>'
+  + '<h1>Search Results</h1>'
+  + '<form method="post" action="/search">'
+  + '<p><input type="text" name="item" /></p>'
+  + '<p><input type="submit" value="Search Item" /></p>'
+  + '</form></body></html>';
+    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Content-Length', Buffer.byteLength(html));
+    res.end(html);
+}
+
+
+
+exports.searchElastic = function(req, res, next) {
+  var query_name = req.body.item;
+
+  console.time('took');
+  client.search({
+    index: 'clipboard',
+    type: 'uploads',
+    body: {
+      query: {
+        match: {
+          name : query_name
+        }
+    }
+    }
+  }, function(err, response) {
+    if(err) return next(err);
+
+    console.timeEnd('took');
+    console.log('es took', response.took);
+
+    var hits = response.hits.hits;
+    var count = hits.length;
+    console.log('number of hits ', count);
+
+    for(var i = 0; i < count; i++) {
+      var score = hits[i]._score;
+      var originalName = hits[i]._source.originalName || 'not mentioned';
+      var name = hits[i]._source.name || 'not mentioned';
+      var type = hits[i]._source.type || 'not mentioned';
+      console.log('Score is', hits[i]._score, 'and result is ', hits[i]._source);
+    }
+
+    res.redirect('/search');
+
+  });
+
 };
 
 exports.root = function(req, res, next) {
