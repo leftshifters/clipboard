@@ -216,7 +216,9 @@ exports.show = function(req, res, next) {
   var html = '<html><head><title>Search</title></head><body>'
   + '<h1>Search Results</h1>'
   + '<form method="post" action="/search">'
-  + '<p><input type="text" name="item" /></p>'
+  + '<p>Name: <input type="text" name="name" /></p>'
+  + '<p>Original Name: <input type="text" name="origName" /></p>'
+  + '<p>Type: <input type="text" name="type" /></p>'
   + '<p><input type="submit" value="Search Item" /></p>'
   + '</form></body></html>';
     res.setHeader('Content-Type', 'text/html');
@@ -227,24 +229,29 @@ exports.show = function(req, res, next) {
 
 
 exports.searchElastic = function(req, res, next) {
-  var query_name = req.body.item;
+  var queryName = req.body.name || '';
+  var queryType = req.body.type || '';
+  var queryorigName = req.body.origName || '';
 
-  console.time('took');
   client.search({
     index: 'clipboard',
     type: 'uploads',
     body: {
       query: {
-        match: {
-          name : query_name
+        bool: {
+          should: [
+            { match: { name: queryName } },
+            { match: { type: queryType } },
+            { match: { originalName: queryType} }
+          ]
         }
-    }
+
+      }
+
     }
   }, function(err, response) {
     if(err) return next(err);
 
-    console.timeEnd('took');
-    console.log('es took', response.took);
 
     var hits = response.hits.hits;
     var count = hits.length;
@@ -265,7 +272,7 @@ exports.searchElastic = function(req, res, next) {
 };
 
 exports.root = function(req, res, next) {
-  if (req.xhr) {
+  if (req.xhr)   {
     res.json(req.store.item);
   } else {
     res.redirect('/');
