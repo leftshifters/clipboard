@@ -8,15 +8,17 @@ var fs = require('fs');
 var url = require('url');
 var moment = require('moment');
 var marked = require('marked');
+var debug = require('debug')('clipboard:index');
 var _s = require('underscore.string');
 var getDb = require('../lib/connect');
 var db = require('../lib/db');
 var ObjectId = require('mongodb').ObjectID;
 var cliputils = require('../lib/cliptils');
+var search = require('../lib/search');
 var elasticsearch = require('elasticsearch');
-var client = new elasticsearch.Client({
-  host : 'localhost:9200',
-});
+// var client = new elasticsearch.Client({
+//   host : 'localhost:9200',
+// });
 
 exports.index = function(req, res) {
   var page = req.store.page || 0;
@@ -56,7 +58,6 @@ exports.index = function(req, res) {
 
 exports.detail = function(req, res, next) {
   var item = req.store.item;
-  console.log(item);
   var baseurl = req.protocol + '://' + req.headers.host;
   var nameslug = _s.slugify(item.name);
 
@@ -82,7 +83,7 @@ exports.detail = function(req, res, next) {
 exports.changelog = function(req, res) {
   fs.readFile('CHANGELOG.md', { encoding: 'utf8' }, function(err, data) {
     if (err) {
-      console.error(err);
+      debug(err);
       res.send(500);
     }
 
@@ -117,7 +118,6 @@ exports.editItem = function(req, res, next) {
 
   function done(err) {
     if (err) return res.send(500);
-    res.send(200);
     next();
   }
 };
@@ -178,39 +178,15 @@ exports.validateName = function(req, res, next) {
   next();
 };
 
-exports.updateElastic = function(req, res, next) {
-  var id = req.store.id;
-  var name = req.store.name;
-  id = id.toString();
+exports.updateSearchIndex = function(req, res, next) {
+  search.update({ id: req.store.id, name: req.store.name });
+  next();
+};
 
-  client.update({
-    index: 'clipboard',
-    type: 'uploads',
-    id: id,
-    body: {
-      doc: {
-        name: name
-      }
-    }
-  }, function(err, response) {
-    client.close();
-  });
-
-}
-
-exports.deleteElastic = function(req, res, next) {
-  var id = req.store.id;
-  id = id.toString();
-
-  client.delete({
-    index: 'clipboard',
-    type: 'uploads',
-    id: id
-  }, function(err, response) {
-    if (err) return next(err);
-    next();
-  });
-}
+exports.removeSearchIndex = function(req, res, next) {
+  search.remove(req.store.id);
+  next();
+};
 
 exports.show = function(req, res, next) {
   var html = '<html><head><title>Search</title></head><body>'
@@ -224,9 +200,7 @@ exports.show = function(req, res, next) {
     res.setHeader('Content-Type', 'text/html');
     res.setHeader('Content-Length', Buffer.byteLength(html));
     res.end(html);
-}
-
-
+};
 
 exports.searchElastic = function(req, res, next) {
   var queryName = req.body.name || '';
@@ -271,6 +245,63 @@ exports.searchElastic = function(req, res, next) {
 
 };
 
+exports.reindex = function(req, res) {
+  var util = require('util');
+  var batchSize = 500;
+  var buffer = [];
+  var donecount = 0;
+
+  search.deleteIndex(function(err, result) {
+    if (err) return res.send(500);
+    create();
+  });
+
+  function create() {
+    db.createItemReadStream(function(err, stream) {
+      if (err) {
+        debug(err);
+        return res.send(500, 'Internal Server Error');
+      }
+
+      stream.on('end', function() {
+        if (buffer.length) {
+          flush(buffer, function() {
+            debug('done re-indexing all items');
+            res.send(util.format('Re-indexed %d items', donecount));
+          });
+        }
+      });
+
+      stream.on('data', function(data) {
+        buffer.push(data);
+        if (buffer.length >= batchSize) {
+          flush(buffer);
+        }
+      });
+
+      stream.on('error', function(err) {
+        debug(err);
+        res.send(500);
+      });
+
+      function flush(data, done) {
+        debug('re-indexing %d items', data.length);
+        stream.pause();
+        search.reindex(data, function(err) {
+          if (err) return res.send(500);
+          stream.resume();
+          donecount += buffer.length;
+          buffer.length = 0;
+          if (done) done();
+        });
+      }
+
+    });
+
+  }
+
+};
+
 exports.root = function(req, res, next) {
   if (req.xhr)   {
     res.json(req.store.item);
@@ -279,6 +310,6 @@ exports.root = function(req, res, next) {
   }
 };
 
-exports.ok = function(req, res, next) {
+exports.ok = function(req, res) {
   res.send(200);
 };

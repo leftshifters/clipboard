@@ -3,14 +3,12 @@ var path = require('path');
 var mime = require('mime');
 var fs = require('fs');
 var gm = require('gm');
+
 var db = require('../lib/db');
 var disksize = require('../lib/disksize');
 var manifest = require('../lib/manifest');
 var baseurl = require('../lib/baseurl');
-var elasticsearch = require('elasticsearch');
-var client = new elasticsearch.Client( {
-  host : 'localhost:9200',
-});
+var search = require('../lib/search');
 
 var uploadDir = 'public/uploads';
 var thumbsDir = 'public/thumbs';
@@ -122,33 +120,10 @@ exports.diskspace = function(req, res, next) {
   });
 };
 
-
-exports.uploadElastic = function(req, res, next) {
-    console.log(req.url);
-    var item = req.store.item;
-    var originalName = item.originalName;
-    var name = item.name;
-    var type = item.type;
-    var id = req.store._id;
-    id = id.toString();
-
-    console.log(id);
-
-    client.create({
-      index: 'clipboard',
-      type: 'uploads',
-      id: id,
-      body: {
-        originalName: originalName,
-        name: name,
-        type: type
-      }
-      }, function(err, response) {
-          if(err) throw err;
-          client.close();
-          next();
-    });
-}
+exports.addSearchIndex = function(req, res, next) {
+  search.add(req.store.item);
+  next();
+};
 
 
 function type(item, done) {

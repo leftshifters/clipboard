@@ -1,2 +1,5 @@
 public
+public/uploads
 views
+node_modules
+.git
