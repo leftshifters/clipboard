@@ -1,5 +1,6 @@
 public
 public/uploads
+public/uploads/*.*
 views
 node_modules
 .git

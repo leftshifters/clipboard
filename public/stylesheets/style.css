@@ -104,8 +104,6 @@ a.head-logo:hover {
 
 .item-row {
   margin-top: 16px;
-  -webkit-transition: all 0.3s;
-  transition: all 0.3s;
 }
 
 .item-row .item-overlay {
@@ -209,12 +207,6 @@ a.head-logo:hover {
   border-bottom: 1px dashed white;
 }
 
-.search-form {
-  position: fixed;
-  top: 20px;
-  right: 85px;
-}
-
 .pages {
   display: inline-block;
   float: right;
@@ -255,4 +247,8 @@ a.head-logo:hover {
 
 .center {
   text-align: center;
+}
+
+.header {
+  margin-top: 20px;
 }

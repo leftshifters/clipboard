@@ -3,16 +3,23 @@ extends layout
 block content
 
   .container
-    h1
-      a.head-logo(href='/') Clipboard
-      span.small  #{version}
-
-      +pagination()
 
     .row
-      form.search-form.form-inline.hide
-        .form-group
-          input.form-control(type="text", placeholder="type to search")
+      .col-md-4
+        h1
+          a.head-logo(href='/') Clipboard
+          span.small  #{version}
+      .col-md-4
+        h1
+          form.search-form.form-inline
+            .form-group
+              .input-group
+                input.form-control.js-search-input(name="q", type="search", placeholder="search", value="#{query}")
+                span.input-group-btn
+                  button.btn.btn-default(type="button")
+                    span.glyphicon.glyphicon-search.search-icon
+      .col-md-4
+        +pagination()
 
     .row
       .col-lg-3.col-xs-12.col-md-4.col-sm-6.item-row
@@ -33,8 +40,7 @@ block content
             input(type='file', class='input-file', name='content')
       +items(items)
 
-    h1
-      +pagination()
+    +pagination()
     +freespace()
 
 mixin items(items)
@@ -73,11 +79,12 @@ mixin eachitem(item)
         //-     span.glyphicon.glyphicon-cog.js-cog
 
 mixin pagination()
-  .pages
-    a.page.prev-page(href='/page/#{page}', title='Page #{page}', class='#{leftArrow}')
-      span.glyphicon.glyphicon-chevron-left
-    a.page.next-page(href='/page/#{page + 2}', title='Page #{page + 2}', class='#{rightArrow}')
-      span.glyphicon.glyphicon-chevron-right
+  h1
+    .pages
+      a.page.prev-page(href='/#{prevPageLink}', title='Page #{page}', class='#{leftArrow}')
+        span.glyphicon.glyphicon-chevron-left
+      a.page.next-page(href='/#{nextPageLink}', title='Page #{page + 2}', class='#{rightArrow}')
+        span.glyphicon.glyphicon-chevron-right
 
 mixin freespace()
   span.lead #{disksize.free}

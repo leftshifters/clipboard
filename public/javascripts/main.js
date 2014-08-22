@@ -7,22 +7,33 @@
   var namefield = document.querySelector('#name');
   var items = document.querySelectorAll('.js-item');
   var tips = document.querySelectorAll('.js-copy-link');
+  var searchTextfield = document.querySelector('.js-search-input');
+  var searchIcon = document.querySelector('.js-search-input+.input-group-btn .search-icon');
+  var originalUrl = document.location.href;
   // var move = require('move');
 
-
   var shouldSubmit = false;
+  var iconState = 'search';
 
-  form.addEventListener('submit', function onFormSubmit(e) {
-    if (!shouldSubmit) e.preventDefault();
-  });
+  if (form) {
+    form.addEventListener('submit', function onFormSubmit(e) {
+      if (!shouldSubmit) e.preventDefault();
+    });
+  }
 
-  btnSelect.addEventListener('click', function onUploadButtonClick(e) {
-    fileInput.click();
-  });
+  if (btnSelect) {
+    btnSelect.addEventListener('click', function onUploadButtonClick(e) {
+      fileInput.click();
+    });
+  }
 
-  btnSubmit.addEventListener('click', function onSubmit(e) {
-    shouldSubmit = true;
-  });
+  if (btnSubmit) {
+    btnSubmit.addEventListener('click', function onSubmit(e) {
+      shouldSubmit = true;
+    });
+  }
+
+  $(searchTextfield).on('keyup', onSearchChange);
 
   $(fileInput).on('change', function onChange(e) {
     var filename = $(this).val().split('/').pop().split('\\').pop();
@@ -35,6 +46,9 @@
   });
 
   bind(items, delegate);
+
+  // Keyboard Shortcuts
+  $(window).on('keyup', listenKey);
 
   $('.js-item').on('click', '.js-remove', onCrossClick);
   $('.js-item').on('click', '.js-edit-button', onEditClick);
@@ -144,6 +158,45 @@
     });
   }
 
+  function focusSearchBox() {
+    $(searchTextfield).focus();
+  }
+
+  function showSearchIcon() {
+    if (iconState === 'cross') {
+      $(searchIcon)
+      .removeClass('glyphicon-remove')
+      .addClass('glyphicon-search');
+      iconState = 'search';
+    }
+  }
+
+  function showCrossIcon() {
+    if (iconState === 'search') {
+      $(searchIcon)
+      .removeClass('glyphicon-search')
+      .addClass('glyphicon-remove');
+      iconState = 'cross';
+    }
+  }
+
+  function onSearchChange(e) {
+    var val = $(e.target).val();
+    var href = originalUrl;
+
+    // Restore to previous state
+    if (!val) {
+      history.replaceState(null, null, originalUrl);
+      showSearchIcon();
+    }
+
+    // Update to current state
+    if (val) {
+      history.replaceState(null, null, href + '?q=' + encodeURIComponent(val));
+      showCrossIcon();
+    }
+  }
+
   function notify(msgHuman, msgMachine) {
     console.log(msgHuman, ' - ', msgMachine);
   }
@@ -214,6 +267,16 @@
         classes.push(className);
 
       el.className = classes.join(' ');
+    }
+  }
+
+  function listenKey(e) {
+    if (e.target !== document.body) {
+      return;
+    }
+
+    if (e.keyCode === 191) {
+      focusSearchBox();
     }
   }
 

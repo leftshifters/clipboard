@@ -12,16 +12,20 @@ var debug = require('debug')('clipboard:index');
 var _s = require('underscore.string');
 var getDb = require('../lib/connect');
 var db = require('../lib/db');
+var search = require('../lib/search');
 var ObjectId = require('mongodb').ObjectID;
 var cliputils = require('../lib/cliptils');
 var search = require('../lib/search');
-var elasticsearch = require('elasticsearch');
-// var client = new elasticsearch.Client({
-//   host : 'localhost:9200',
-// });
 
 exports.index = function(req, res) {
   var page = req.store.page || 0;
+  var q = req.query.q || '';
+
+  if (q) {
+    search.search(page, q, function(err, items) {
+
+    });
+  }
 
   db.fetchItems(page, function(err, items, more) {
     if (err) return res.send(500);
@@ -43,12 +47,17 @@ exports.index = function(req, res) {
       cliputils.settimeago(items[i]);
     }
 
+    console.log(nextPageLink(page, q));
+
     res.render('index', {
       title: 'Clipboard',
       items: items,
       baseurl: baseurl,
       page: page,
       more: more,
+      query: q,
+      nextPageLink: nextPageLink(page, q),
+      prevPageLink: prevPageLink(page, q),
       leftArrow: !!page > 0 ? '' : 'invisible',
       rightArrow: more ? '' : 'invisible'
     });
@@ -313,3 +322,23 @@ exports.root = function(req, res, next) {
 exports.ok = function(req, res) {
   res.send(200);
 };
+
+function nextPageLink(page, query) {
+  var urlobj = { pathname: 'page/' + (page + 2) };
+
+  if (query) {
+    urlobj.search = 'q=' + query;
+  }
+
+  return url.format(urlobj);
+}
+
+function prevPageLink(page, query) {
+  var urlobj = { pathname: 'page/' + page };
+
+  if (query) {
+    urlobj.search = 'q=' + query;
+  }
+
+  return url.format(urlobj);
+}
