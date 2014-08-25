@@ -1,14 +1,34 @@
 # Clipboard
-A simple app to upload and share files
+A simple app to upload and share files.
+
+## Features
+
+* Supports Over The Air installation of iOS builds aka IPA files
+** Automatically reads all meta information from IPAs on upload
+* Full Text Search on name, original filename and file type
+* Easily share IPA & APK files using auto generated QR Codes
 
 ## Install
 
 Clone the repository
 
 ````
-git clone git@github.com/vxtindia/clipboard
+git clone git@github.com/leftshifters/clipboard
 npm install
 ````
+
+## Configuration
+
+You can mostly configure database endpoints and other settings via Environment variables. Set the following env vars before starting the server process. You may connect to a remote MongoDB or ElasticSearch cluster.
+
+```
+MONGO_HOST                // defaults to 'localhost'
+MONGO_PORT                // defaults to 27017
+MONGO_DB_NAME             // defaults to 'clipboard'
+ELASTICSEARCH_HOST        // defaults to 'localhost',
+ELASTICSEARCH_PORT        // defaults to 9200
+ELASTICSEARCH_LOG_LEVEL   // defaults to error
+```
 
 ## Run
 To run
