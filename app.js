@@ -44,7 +44,6 @@ app.locals({ version: version });
 
 app.get('/', routes.index);
 app.get('/changelog', routes.changelog);
-app.get('/search', routes.show);
 app.get('/reindex', routes.reindex);
 app.get('/page/:page', routes.page, routes.index);
 app.get('/clip/:hash/:name?', clip.fetch, clip.send);
@@ -52,7 +51,6 @@ app.get('/clipd/:hash/:name?', clip.fetch, clip.qr, routes.detail);
 
 app.post('/upload', upload.upload, upload.thumb, upload.diskspace, upload.addSearchIndex, routes.root);
 app.get('/8b66041e096772f9c0c3c4adb2f625ab.txt', routes.detectify);
-app.post('/search', routes.searchElastic);
 
 app.put('/v1/items/:id', routes.validateId, routes.validateName, routes.editItem, routes.updateSearchIndex, routes.ok);
 app.delete('/v1/items/:id', routes.validateId, routes.deleteItem, upload.diskspace, routes.removeSearchIndex, routes.ok);

@@ -22,12 +22,20 @@ exports.index = function(req, res) {
   var q = req.query.q || '';
 
   if (q) {
-    search.search(page, q, function(err, items) {
+    search.search(page, q, function(err, itemIds, more) {
+      if (err) return res.send(500);
 
+      db.fetchByIds(itemIds, function(err, items) {
+        if (err) return res.send(500);
+
+        onItems(null, items, more);
+      });
     });
+  } else {
+    db.fetchItems(page, onItems);
   }
 
-  db.fetchItems(page, function(err, items, more) {
+  function onItems(err, items, more) {
     if (err) return res.send(500);
     var baseurl = req.protocol + '://' + req.headers.host;
 
@@ -47,8 +55,6 @@ exports.index = function(req, res) {
       cliputils.settimeago(items[i]);
     }
 
-    console.log(nextPageLink(page, q));
-
     res.render('index', {
       title: 'Clipboard',
       items: items,
@@ -56,12 +62,15 @@ exports.index = function(req, res) {
       page: page,
       more: more,
       query: q,
+      searchIcon: q ? 'glyphicon-remove' : 'glyphicon-search',
+      searchBtn: q ? true : false,
       nextPageLink: nextPageLink(page, q),
       prevPageLink: prevPageLink(page, q),
       leftArrow: !!page > 0 ? '' : 'invisible',
       rightArrow: more ? '' : 'invisible'
     });
-  });
+
+  }
 
 };
 
@@ -195,63 +204,6 @@ exports.updateSearchIndex = function(req, res, next) {
 exports.removeSearchIndex = function(req, res, next) {
   search.remove(req.store.id);
   next();
-};
-
-exports.show = function(req, res, next) {
-  var html = '<html><head><title>Search</title></head><body>'
-  + '<h1>Search Results</h1>'
-  + '<form method="post" action="/search">'
-  + '<p>Name: <input type="text" name="name" /></p>'
-  + '<p>Original Name: <input type="text" name="origName" /></p>'
-  + '<p>Type: <input type="text" name="type" /></p>'
-  + '<p><input type="submit" value="Search Item" /></p>'
-  + '</form></body></html>';
-    res.setHeader('Content-Type', 'text/html');
-    res.setHeader('Content-Length', Buffer.byteLength(html));
-    res.end(html);
-};
-
-exports.searchElastic = function(req, res, next) {
-  var queryName = req.body.name || '';
-  var queryType = req.body.type || '';
-  var queryorigName = req.body.origName || '';
-
-  client.search({
-    index: 'clipboard',
-    type: 'uploads',
-    body: {
-      query: {
-        bool: {
-          should: [
-            { match: { name: queryName } },
-            { match: { type: queryType } },
-            { match: { originalName: queryType} }
-          ]
-        }
-
-      }
-
-    }
-  }, function(err, response) {
-    if(err) return next(err);
-
-
-    var hits = response.hits.hits;
-    var count = hits.length;
-    console.log('number of hits ', count);
-
-    for(var i = 0; i < count; i++) {
-      var score = hits[i]._score;
-      var originalName = hits[i]._source.originalName || 'not mentioned';
-      var name = hits[i]._source.name || 'not mentioned';
-      var type = hits[i]._source.type || 'not mentioned';
-      console.log('Score is', hits[i]._score, 'and result is ', hits[i]._source);
-    }
-
-    res.redirect('/search');
-
-  });
-
 };
 
 exports.reindex = function(req, res) {

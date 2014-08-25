@@ -9,8 +9,9 @@
   var tips = document.querySelectorAll('.js-copy-link');
   var searchTextfield = document.querySelector('.js-search-input');
   var searchIcon = document.querySelector('.js-search-input+.input-group-btn .search-icon');
-  var originalUrl = document.location.href;
-  // var move = require('move');
+  var searchButton = document.querySelector('.js-search-input+.input-group-btn .btn');
+
+  var originalUrl = document.location.origin;
 
   var shouldSubmit = false;
   var iconState = 'search';
@@ -34,6 +35,7 @@
   }
 
   $(searchTextfield).on('keyup', onSearchChange);
+  $(searchButton).on('click', onSearchSubmit);
 
   $(fileInput).on('change', function onChange(e) {
     var filename = $(this).val().split('/').pop().split('\\').pop();
@@ -41,6 +43,7 @@
       $(btnSelect).text('Change file');
       $(namefield).val(filename).select();
     }
+
     btnSubmit.removeAttribute('disabled');
     namefield.focus();
   });
@@ -54,16 +57,6 @@
   $('.js-item').on('click', '.js-edit-button', onEditClick);
   $('.js-item').on('change', '.js-edit-name', onNameChange);
   $('.js-item').on('submit', '.edit-name-form', onNameSubmit);
-
-  // $(document).on('keyup', onKeytype);
-  // var searchform = document.querySelector('.search-form');
-
-  // function onKeytype(e) {
-  //   console.log('typed');
-  //   showNode(searchform);
-  //   var input = this.querySelector('.search-form input');
-  //   input.focus();
-  // }
 
   function onCrossClick(e) {
     var item = e.delegateTarget;
@@ -163,12 +156,11 @@
   }
 
   function showSearchIcon() {
-    if (iconState === 'cross') {
-      $(searchIcon)
+    $(searchIcon)
       .removeClass('glyphicon-remove')
       .addClass('glyphicon-search');
-      iconState = 'search';
-    }
+
+    iconState = 'search';
   }
 
   function showCrossIcon() {
@@ -180,6 +172,14 @@
     }
   }
 
+  function enableSearchButton() {
+    $(searchButton).removeClass('disabled');
+  }
+
+  function disableSearchButton() {
+    $(searchButton).addClass('disabled');
+  }
+
   function onSearchChange(e) {
     var val = $(e.target).val();
     var href = originalUrl;
@@ -188,12 +188,28 @@
     if (!val) {
       history.replaceState(null, null, originalUrl);
       showSearchIcon();
+      disableSearchButton();
     }
 
     // Update to current state
     if (val) {
       history.replaceState(null, null, href + '?q=' + encodeURIComponent(val));
-      showCrossIcon();
+      enableSearchButton();
+    }
+  }
+
+  function onSearchSubmit(e) {
+    var $icon = $(this).find('span');
+
+    // Detect if the event is the result of
+    // return key
+    if (e.clientX === 0 && e.clientY === 0) {
+      return;
+    }
+
+    if ($icon.hasClass('glyphicon-remove')) {
+      e.preventDefault();
+      document.location.href = originalUrl;
     }
   }
 
@@ -244,13 +260,6 @@
     setTimeout(function() {
       overlay.style.opacity = '1.0';
     }, 1)
-
-    // move(parent)
-    //   .scale(0)
-    //   .duration(400)
-    //   .end(function() {
-    //     parent.parentNode.remove();
-    //   });
   }
 
   function toggleClass(el, className) {

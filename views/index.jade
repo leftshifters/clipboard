@@ -11,13 +11,17 @@ block content
           span.small  #{version}
       .col-md-4
         h1
-          form.search-form.form-inline
+          form.search-form.form-inline(action="/")
             .form-group
               .input-group
                 input.form-control.js-search-input(name="q", type="search", placeholder="search", value="#{query}")
                 span.input-group-btn
-                  button.btn.btn-default(type="button")
-                    span.glyphicon.glyphicon-search.search-icon
+                  if searchBtn
+                    button.btn.btn-default(type="submit")
+                      span.glyphicon.search-icon(class='#{searchIcon}')
+                  else
+                    button.btn.btn-default.disabled(type="submit")
+                      span.glyphicon.search-icon(class='#{searchIcon}')
       .col-md-4
         +pagination()
 
