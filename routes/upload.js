@@ -3,10 +3,12 @@ var path = require('path');
 var mime = require('mime');
 var fs = require('fs');
 var gm = require('gm');
+
 var db = require('../lib/db');
 var disksize = require('../lib/disksize');
 var manifest = require('../lib/manifest');
 var baseurl = require('../lib/baseurl');
+var search = require('../lib/search');
 
 var uploadDir = 'public/uploads';
 var thumbsDir = 'public/thumbs';
@@ -81,6 +83,7 @@ exports.upload = function(req, res, next) {
         db.insertItem(item, function(err, results) {
           if (err) return res.send(500);
           req.store.item = item;
+          req.store._id = results[0]._id
           next();
         });
       });
@@ -116,6 +119,12 @@ exports.diskspace = function(req, res, next) {
     next();
   });
 };
+
+exports.addSearchIndex = function(req, res, next) {
+  search.add(req.store.item);
+  next();
+};
+
 
 function type(item, done) {
   var ext = path.extname(item.basename);

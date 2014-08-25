@@ -8,16 +8,34 @@ var fs = require('fs');
 var url = require('url');
 var moment = require('moment');
 var marked = require('marked');
+var debug = require('debug')('clipboard:index');
 var _s = require('underscore.string');
 var getDb = require('../lib/connect');
 var db = require('../lib/db');
+var search = require('../lib/search');
 var ObjectId = require('mongodb').ObjectID;
 var cliputils = require('../lib/cliptils');
+var search = require('../lib/search');
 
 exports.index = function(req, res) {
   var page = req.store.page || 0;
+  var q = req.query.q || '';
 
-  db.fetchItems(page, function(err, items, more) {
+  if (q) {
+    search.search(page, q, function(err, itemIds, more) {
+      if (err) return res.send(500);
+
+      db.fetchByIds(itemIds, function(err, items) {
+        if (err) return res.send(500);
+
+        onItems(null, items, more);
+      });
+    });
+  } else {
+    db.fetchItems(page, onItems);
+  }
+
+  function onItems(err, items, more) {
     if (err) return res.send(500);
     var baseurl = req.protocol + '://' + req.headers.host;
 
@@ -43,16 +61,21 @@ exports.index = function(req, res) {
       baseurl: baseurl,
       page: page,
       more: more,
+      query: q,
+      searchIcon: q ? 'glyphicon-remove' : 'glyphicon-search',
+      searchBtn: q ? true : false,
+      nextPageLink: nextPageLink(page, q),
+      prevPageLink: prevPageLink(page, q),
       leftArrow: !!page > 0 ? '' : 'invisible',
       rightArrow: more ? '' : 'invisible'
     });
-  });
+
+  }
 
 };
 
 exports.detail = function(req, res, next) {
   var item = req.store.item;
-  console.log(item);
   var baseurl = req.protocol + '://' + req.headers.host;
   var nameslug = _s.slugify(item.name);
 
@@ -78,7 +101,7 @@ exports.detail = function(req, res, next) {
 exports.changelog = function(req, res) {
   fs.readFile('CHANGELOG.md', { encoding: 'utf8' }, function(err, data) {
     if (err) {
-      console.error(err);
+      debug(err);
       res.send(500);
     }
 
@@ -113,7 +136,7 @@ exports.editItem = function(req, res, next) {
 
   function done(err) {
     if (err) return res.send(500);
-    res.send(200);
+    next();
   }
 };
 
@@ -173,14 +196,101 @@ exports.validateName = function(req, res, next) {
   next();
 };
 
+exports.updateSearchIndex = function(req, res, next) {
+  search.update({ id: req.store.id, name: req.store.name });
+  next();
+};
+
+exports.removeSearchIndex = function(req, res, next) {
+  search.remove(req.store.id);
+  next();
+};
+
+exports.reindex = function(req, res) {
+  var util = require('util');
+  var batchSize = 500;
+  var buffer = [];
+  var donecount = 0;
+
+  search.deleteIndex(function(err, result) {
+    if (err) return res.send(500);
+    create();
+  });
+
+  function create() {
+    db.createItemReadStream(function(err, stream) {
+      if (err) {
+        debug(err);
+        return res.send(500, 'Internal Server Error');
+      }
+
+      stream.on('end', function() {
+        if (buffer.length) {
+          flush(buffer, function() {
+            debug('done re-indexing all items');
+            res.send(util.format('Re-indexed %d items', donecount));
+          });
+        }
+      });
+
+      stream.on('data', function(data) {
+        buffer.push(data);
+        if (buffer.length >= batchSize) {
+          flush(buffer);
+        }
+      });
+
+      stream.on('error', function(err) {
+        debug(err);
+        res.send(500);
+      });
+
+      function flush(data, done) {
+        debug('re-indexing %d items', data.length);
+        stream.pause();
+        search.reindex(data, function(err) {
+          if (err) return res.send(500);
+          stream.resume();
+          donecount += buffer.length;
+          buffer.length = 0;
+          if (done) done();
+        });
+      }
+
+    });
+
+  }
+
+};
+
 exports.root = function(req, res, next) {
-  if (req.xhr) {
+  if (req.xhr)   {
     res.json(req.store.item);
   } else {
     res.redirect('/');
   }
 };
 
-exports.ok = function(req, res, next) {
+exports.ok = function(req, res) {
   res.send(200);
 };
+
+function nextPageLink(page, query) {
+  var urlobj = { pathname: 'page/' + (page + 2) };
+
+  if (query) {
+    urlobj.search = 'q=' + query;
+  }
+
+  return url.format(urlobj);
+}
+
+function prevPageLink(page, query) {
+  var urlobj = { pathname: 'page/' + page };
+
+  if (query) {
+    urlobj.search = 'q=' + query;
+  }
+
+  return url.format(urlobj);
+}

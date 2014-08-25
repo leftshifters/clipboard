@@ -7,22 +7,35 @@
   var namefield = document.querySelector('#name');
   var items = document.querySelectorAll('.js-item');
   var tips = document.querySelectorAll('.js-copy-link');
-  // var move = require('move');
+  var searchTextfield = document.querySelector('.js-search-input');
+  var searchIcon = document.querySelector('.js-search-input+.input-group-btn .search-icon');
+  var searchButton = document.querySelector('.js-search-input+.input-group-btn .btn');
 
+  var originalUrl = document.location.origin;
 
   var shouldSubmit = false;
+  var iconState = 'search';
 
-  form.addEventListener('submit', function onFormSubmit(e) {
-    if (!shouldSubmit) e.preventDefault();
-  });
+  if (form) {
+    form.addEventListener('submit', function onFormSubmit(e) {
+      if (!shouldSubmit) e.preventDefault();
+    });
+  }
 
-  btnSelect.addEventListener('click', function onUploadButtonClick(e) {
-    fileInput.click();
-  });
+  if (btnSelect) {
+    btnSelect.addEventListener('click', function onUploadButtonClick(e) {
+      fileInput.click();
+    });
+  }
 
-  btnSubmit.addEventListener('click', function onSubmit(e) {
-    shouldSubmit = true;
-  });
+  if (btnSubmit) {
+    btnSubmit.addEventListener('click', function onSubmit(e) {
+      shouldSubmit = true;
+    });
+  }
+
+  $(searchTextfield).on('keyup', onSearchChange);
+  $(searchButton).on('click', onSearchSubmit);
 
   $(fileInput).on('change', function onChange(e) {
     var filename = $(this).val().split('/').pop().split('\\').pop();
@@ -30,26 +43,20 @@
       $(btnSelect).text('Change file');
       $(namefield).val(filename).select();
     }
+
     btnSubmit.removeAttribute('disabled');
     namefield.focus();
   });
 
   bind(items, delegate);
 
+  // Keyboard Shortcuts
+  $(window).on('keyup', listenKey);
+
   $('.js-item').on('click', '.js-remove', onCrossClick);
   $('.js-item').on('click', '.js-edit-button', onEditClick);
   $('.js-item').on('change', '.js-edit-name', onNameChange);
   $('.js-item').on('submit', '.edit-name-form', onNameSubmit);
-
-  // $(document).on('keyup', onKeytype);
-  // var searchform = document.querySelector('.search-form');
-
-  // function onKeytype(e) {
-  //   console.log('typed');
-  //   showNode(searchform);
-  //   var input = this.querySelector('.search-form input');
-  //   input.focus();
-  // }
 
   function onCrossClick(e) {
     var item = e.delegateTarget;
@@ -144,6 +151,68 @@
     });
   }
 
+  function focusSearchBox() {
+    $(searchTextfield).focus();
+  }
+
+  function showSearchIcon() {
+    $(searchIcon)
+      .removeClass('glyphicon-remove')
+      .addClass('glyphicon-search');
+
+    iconState = 'search';
+  }
+
+  function showCrossIcon() {
+    if (iconState === 'search') {
+      $(searchIcon)
+      .removeClass('glyphicon-search')
+      .addClass('glyphicon-remove');
+      iconState = 'cross';
+    }
+  }
+
+  function enableSearchButton() {
+    $(searchButton).removeClass('disabled');
+  }
+
+  function disableSearchButton() {
+    $(searchButton).addClass('disabled');
+  }
+
+  function onSearchChange(e) {
+    var val = $(e.target).val();
+    var href = originalUrl;
+
+    // Restore to previous state
+    if (!val) {
+      history.replaceState(null, null, originalUrl);
+      showSearchIcon();
+      disableSearchButton();
+    }
+
+    // Update to current state
+    if (val) {
+      history.replaceState(null, null, href + '?q=' + encodeURIComponent(val));
+      enableSearchButton();
+    }
+  }
+
+  function onSearchSubmit(e) {
+    var $icon = $(this).find('span');
+
+    // Detect if the event is the result of
+    // return key
+    if (e.clientX === 0 && e.clientY === 0) {
+      return;
+    }
+
+    if ($icon.hasClass('glyphicon-remove')) {
+      e.preventDefault();
+      document.location.href = originalUrl;
+    }
+  }
+
   function notify(msgHuman, msgMachine) {
     console.log(msgHuman, ' - ', msgMachine);
   }
@@ -191,13 +260,6 @@
     setTimeout(function() {
       overlay.style.opacity = '1.0';
     }, 1)
-
-    // move(parent)
-    //   .scale(0)
-    //   .duration(400)
-    //   .end(function() {
-    //     parent.parentNode.remove();
-    //   });
   }
 
   function toggleClass(el, className) {
@@ -214,6 +276,16 @@
         classes.push(className);
 
       el.className = classes.join(' ');
+    }
+  }
+
+  function listenKey(e) {
+    if (e.target !== document.body) {
+      return;
+    }
+
+    if (e.keyCode === 191) {
+      focusSearchBox();
     }
   }
 
