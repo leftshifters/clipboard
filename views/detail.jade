@@ -1,5 +1,16 @@
 extends layout
 
+block head
+  // Open Graph
+  meta(property='og:title', content='#{item.name}')
+  meta(property='og:type', content='object')
+  meta(property='og:url', content='#{item.ogUrl}')
+  if qrImage
+    meta(property='og:image', content='#{qrImage}')
+  if 'image' === item.type
+    meta(property='og:image', content='#{item.url}')
+    meta(property='og:image:type', content='#{item.mime}')
+
 block content
 
   .container

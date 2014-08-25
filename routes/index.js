@@ -81,6 +81,7 @@ exports.detail = function(req, res, next) {
 
   item.url = url.resolve(baseurl, item.relativePathShort);
   item.downloadUrl = url.resolve(baseurl, ['clip', item.basenameWithoutExt, nameslug].join('/'));
+  item.ogUrl = url.resolve(baseurl, ['clipd', item.basenameWithoutExt, nameslug].join('/'));
   item.added = moment(item.createdms).format('MMM Do YY');
   item.buttonText = 'Download';
 
