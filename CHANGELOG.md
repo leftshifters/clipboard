@@ -1,5 +1,12 @@
 # Changelog
 
+### 0.0.5 (Aug 26, 2014)
+* Added search
+* Refactor existing functions
+* Re-indexing of ElasticSearch indexes using GET `/reindex`
+* Add OpenGraph tags
+* Fix issues
+
 ### 0.0.5 (Jun 19, 2014)
 * Added QR code as image for releases
 * Exposed `/upload` API for external clients
