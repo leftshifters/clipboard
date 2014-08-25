@@ -4,7 +4,7 @@ A simple app to upload and share files.
 ## Features
 
 * Supports Over The Air installation of iOS builds aka IPA files
-** Automatically reads all meta information from IPAs on upload
+  * Automatically reads all meta information from IPAs on upload
 * Full Text Search on name, original filename and file type
 * Easily share IPA & APK files using auto generated QR Codes
 * Upload files via REST API
