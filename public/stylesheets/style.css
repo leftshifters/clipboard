@@ -50,8 +50,16 @@ a.head-logo:hover {
 }
 
 .item-inner {
-  margin: 10px 10px 0 10px;
+  margin: 10px;
   height: inherit;
+}
+
+.item-detail {
+  text-align: center;
+}
+
+.item-detail img {
+  max-width: 100%;
 }
 
 .link {
@@ -96,8 +104,6 @@ a.head-logo:hover {
 
 .item-row {
   margin-top: 16px;
-  -webkit-transition: all 0.66s;
-  transition: all 0.66s;
 }
 
 .item-row .item-overlay {
@@ -123,7 +129,7 @@ a.head-logo:hover {
 
 .title-block .title {
   white-space: nowrap;
-  width: 50%;
+  width: 75%;
   text-overflow: ellipsis;
   overflow: hidden;
   display: inline-block;
@@ -201,12 +207,6 @@ a.head-logo:hover {
   border-bottom: 1px dashed white;
 }
 
-.search-form {
-  position: fixed;
-  top: 20px;
-  right: 85px;
-}
-
 .pages {
   display: inline-block;
   float: right;
@@ -225,4 +225,30 @@ a.head-logo:hover {
 
 .pages .glyphicon-chevron-right:hover, .pages .glyphicon-chevron-left:hover {
   opacity: 1;
+}
+
+.download {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.stats-details {
+  margin-top: 10px;
+}
+
+.form-group.extra-margin {
+  margin-bottom: 52px;
+}
+
+.qrcode {
+  margin: 0 auto;
+  display: block;
+}
+
+.center {
+  text-align: center;
+}
+
+.header {
+  margin-top: 20px;
 }

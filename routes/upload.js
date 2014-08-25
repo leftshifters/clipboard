@@ -3,21 +3,18 @@ var path = require('path');
 var mime = require('mime');
 var fs = require('fs');
 var gm = require('gm');
-var _ = require('underscore');
+
 var db = require('../lib/db');
+var disksize = require('../lib/disksize');
+var manifest = require('../lib/manifest');
+var baseurl = require('../lib/baseurl');
+var search = require('../lib/search');
 
 var uploadDir = 'public/uploads';
 var thumbsDir = 'public/thumbs';
-var baseurl;
+
 var uploadPath = path.join(process.cwd(), uploadDir);
 var thumbsPath = path.join(process.cwd(), thumbsDir);
-
-var manifestTemplate;
-
-fs.readFile(path.join(process.cwd(), 'data/manifest.tpl'), { encoding: 'utf8' }, function(err, filecontent) {
-  if (err) throw err;
-  manifestTemplate = filecontent;
-});
 
 if (!fs.existsSync(uploadPath)) {
   fs.mkdirSync(uploadPath);
@@ -39,7 +36,7 @@ var imageMimes = [
 
 exports.upload = function(req, res, next) {
 
-  sethost(req);
+  baseurl.set(req.protocol, req.get('host'));
 
   var form = new multiparty.Form({
     autoFiles: true,
@@ -80,12 +77,15 @@ exports.upload = function(req, res, next) {
         item.type = 'image';
       }
 
-      type(item);
-
-      db.insertItem(item, function(err, results) {
+      type(item, function(err, item) {
         if (err) return res.send(500);
-        req.store.item = item;
-        next();
+
+        db.insertItem(item, function(err, results) {
+          if (err) return res.send(500);
+          req.store.item = item;
+          req.store._id = results[0]._id
+          next();
+        });
       });
 
     }
@@ -112,37 +112,29 @@ exports.thumb = function(req, res, next) {
 
 };
 
-exports.done = function(req, res, next) {
-  res.redirect('/');
+exports.diskspace = function(req, res, next) {
+  disksize(function onsize(total, free) {
+    req.app.locals.disksize.total = total;
+    req.app.locals.disksize.free = free;
+    next();
+  });
 };
 
-function type(item) {
+exports.addSearchIndex = function(req, res, next) {
+  search.add(req.store.item);
+  next();
+};
+
+
+function type(item, done) {
   var ext = path.extname(item.basename);
 
   if ('.ipa' === ext) {
     item.type = 'ipa';
-    manifest(item);
+    return manifest(uploadPath, item, done);
   } else if ('.apk' === ext) {
     item.type = 'apk';
   }
-}
 
-function manifest(item) {
-  var basename = path.basename(item.basename, '.ipa');
-  var plistfile = basename + '.plist';
-  var url = baseurl + '/' + item.relativePathShort;
-
-  var manifest = _.template(manifestTemplate, {
-    name: item.name || 'untitled',
-    bundleId: item.bundleId || '',
-    url: url
-  });
-
-  fs.writeFile(path.join(uploadPath, plistfile), manifest, function(err) {
-    if (err) console.error(err);
-  });
-}
-
-function sethost(req) {
-  baseurl = req.protocol + '://' + req.headers.host;
+  done(null, item);
 }

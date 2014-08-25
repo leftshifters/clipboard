@@ -4,3 +4,4 @@ public/thumbs
 .npm-debug
 *.sublime-*
 .DS_Store
+.nodemonignore

@@ -19,7 +19,7 @@
           <key>bundle-identifier</key>
           <string><%- bundleId %></string>
           <key>bundle-version</key>
-          <string>1.1.0.0</string>
+          <string><%- version %></string>
           <key>kind</key>
           <string>software</string>
           <key>title</key>

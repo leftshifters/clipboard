@@ -3,30 +3,36 @@ extends layout
 block content
 
   .container
-    h1
-      a.head-logo(href='/') Clipboard
-      span.small  #{version}
 
-      .pages
-        if page > 0
-          a.page.prev-page(href='/page/#{page}', title='Page #{page}')
-            span.glyphicon.glyphicon-chevron-left
-        if more
-          a.page.next-page(href='/page/#{page + 2}', title='Page #{page + 2}')
-            span.glyphicon.glyphicon-chevron-right
     .row
-      form.search-form.form-inline.hide
-        .form-group
-          input.form-control(type="text", placeholder="type to search")
+      .col-md-4
+        h1
+          a.head-logo(href='/') Clipboard
+          span.small  #{version}
+      .col-md-4
+        h1
+          form.search-form.form-inline(action="/")
+            .form-group
+              .input-group
+                input.form-control.js-search-input(name="q", type="search", placeholder="search", value="#{query}")
+                span.input-group-btn
+                  if searchBtn
+                    button.btn.btn-default(type="submit")
+                      span.glyphicon.search-icon(class='#{searchIcon}')
+                  else
+                    button.btn.btn-default.disabled(type="submit")
+                      span.glyphicon.search-icon(class='#{searchIcon}')
+      .col-md-4
+        +pagination()
 
     .row
       .col-lg-3.col-xs-12.col-md-4.col-sm-6.item-row
         .item.add-dialog
           form.upload-form(role='form', method='post', action='/upload', enctype='multipart/form-data')
-            .form-group
+            .form-group.extra-margin
               button.btn.btn-default.btn-block.btn-select(type='button') Select a file
 
-            .form-group
+            .form-group.extra-margin
               label(for='name')
                 span Name
                 span.color-9a
@@ -34,17 +40,12 @@ block content
                     em  (optional)
               input.form-control(type='text', name='name', id='name', placeholder='clipboard')
 
-            .form-group
-              label(for='bundleId')
-                span Bundle Identifier
-                span.color-9a
-                  small
-                    em  (optional)
-              input.form-control(type='text', name='bundleId', id='bundleId', placeholder='io.leftshift.clipboard')
-
-            button.btn.btn-primary.btn-submit.center-block(type='submit', disabled='disabled') Upload
+            button.btn.btn-primary.btn-submit.center-block.btn-lg(type='submit', disabled='disabled') Upload
             input(type='file', class='input-file', name='content')
       +items(items)
+
+    +pagination()
+    +freespace()
 
 mixin items(items)
   - each item in items
@@ -57,7 +58,7 @@ mixin eachitem(item)
     span.cog.js-remove.hide
       span.cog-inner.remove
         span.glyphicon.glyphicon-remove-circle.remove-circle
-    a.link(href='#{item.url}', target='_blank')
+    a.link(href='#{item.detailUrl}')
       .item-inner
         if item.type === 'image'
           .fixed-image(style="background-image: url('#{item.imageurl}')")
@@ -80,3 +81,14 @@ mixin eachitem(item)
         //- span.cog
         //-   span.cog-inner
         //-     span.glyphicon.glyphicon-cog.js-cog
+
+mixin pagination()
+  h1
+    .pages
+      a.page.prev-page(href='/#{prevPageLink}', title='Page #{page}', class='#{leftArrow}')
+        span.glyphicon.glyphicon-chevron-left
+      a.page.next-page(href='/#{nextPageLink}', title='Page #{page + 2}', class='#{rightArrow}')
+        span.glyphicon.glyphicon-chevron-right
+
+mixin freespace()
+  span.lead #{disksize.free}
