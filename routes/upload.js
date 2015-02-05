@@ -44,6 +44,10 @@ exports.upload = function(req, res, next) {
   });
 
   form.parse(req, function(err, fields, files) {
+    if (err) {
+      console.error(err);
+      return next(new Error('Internal Server Error'));
+    }
 
     var file = files.content && files.content[0];
     var basename, mimetype, date, basenameWithoutExt, extension;
@@ -72,6 +76,7 @@ exports.upload = function(req, res, next) {
         created: date.toISOString(),
         createdms: date.getTime()
       };
+      //console.log(item);
 
       if (!!~imageMimes.indexOf(mimetype)) {
         item.type = 'image';
@@ -128,7 +133,7 @@ exports.addSearchIndex = function(req, res, next) {
 
 function type(item, done) {
   var ext = path.extname(item.basename);
-
+   console.log(ext);
   if ('.ipa' === ext) {
     item.type = 'ipa';
     return manifest(uploadPath, item, done);

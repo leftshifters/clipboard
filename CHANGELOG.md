@@ -1,6 +1,13 @@
 # Changelog
 
-### 0.0.5 (Aug 26, 2014)
+### 0.0.8 (Feb 5,2015)
+* Minor fixes
+
+### 0.0.7 (Feb 5,2015)
+* ios8 upload issue resolved
+* 504 gateway timeout error while uploading large zip files handled
+
+### 0.0.6 (Aug 26, 2014)
 * Added search
 * Refactor existing functions
 * Re-indexing of ElasticSearch indexes using GET `/reindex`

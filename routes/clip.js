@@ -30,7 +30,7 @@ exports.qr = function(req, res, next) {
   if (!(item.type === 'ipa' || item.type === 'apk')) return next();
 
   baseurl.set(req.protocol, req.get('host'));
-
+//next();
   qr.on('end', function onEncodingComplete(png) {
     res.locals.qrImage = 'data:image/png;base64,' + png.toString('base64');
     next();
