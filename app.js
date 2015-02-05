@@ -16,6 +16,11 @@ var debug = require('debug')('clipboard:app');
 var version = require('./package').version;
 
 var app = express();
+//var dropTarget = document.querySelector("#dropTarget")
+//console.log(dropTarget);
+//require("drag-and-drop-files")(dropTarget, function(files) {
+  //console.log("Got some files:", files)
+//})
 //require('longjohn');
 
 // all environments
