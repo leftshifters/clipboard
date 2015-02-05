@@ -72,6 +72,7 @@ exports.upload = function(req, res, next) {
         created: date.toISOString(),
         createdms: date.getTime()
       };
+      //console.log(item);
 
       if (!!~imageMimes.indexOf(mimetype)) {
         item.type = 'image';
@@ -128,7 +129,7 @@ exports.addSearchIndex = function(req, res, next) {
 
 function type(item, done) {
   var ext = path.extname(item.basename);
-
+   console.log(ext);
   if ('.ipa' === ext) {
     item.type = 'ipa';
     return manifest(uploadPath, item, done);

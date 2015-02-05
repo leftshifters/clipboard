@@ -16,6 +16,7 @@
     "gm": "~1.14.2",
     "hashids": "~0.3.3",
     "jade": "~1.1.5",
+    "longjohn": "^0.2.4",
     "marked": "^0.3.2",
     "mime": "~1.2.11",
     "moment": "~2.5.1",
@@ -26,5 +27,6 @@
     "underscore": "~1.6.0",
     "underscore.string": "~2.3.3",
     "unzip": "^0.1.9"
+    
   }
 }
