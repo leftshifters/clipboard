@@ -26,5 +26,6 @@
     "underscore": "~1.6.0",
     "underscore.string": "~2.3.3",
     "unzip": "^0.1.9"
+    
   }
 }
