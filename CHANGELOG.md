@@ -1,5 +1,8 @@
 # Changelog
 
+### 0.0.8 (Feb 5,2015)
+* Minor fixes
+
 ### 0.0.7 (Feb 5,2015)
 * ios8 upload issue resolved
 * 504 gateway timeout error while uploading large zip files handled
