@@ -44,6 +44,10 @@ exports.upload = function(req, res, next) {
   });
 
   form.parse(req, function(err, fields, files) {
+    if (err) {
+      console.error(err);
+      return next(new Error('Internal Server Error'));
+    }
 
     var file = files.content && files.content[0];
     var basename, mimetype, date, basenameWithoutExt, extension;

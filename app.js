@@ -1,4 +1,17 @@
-require('longjohn');
+/**
+ * New Relic
+ */
+if ('production' === process.env.NODE_ENV) {
+  try {
+    require('newrelic');
+  } catch(e) {
+    console.error('WARNING!');
+    console.error('newrelic npm package is not installed.');
+    console.error('run the following command to install it');
+    console.error('npm install newrelic');
+  }
+}
+
 /**
  * Module dependencies.
  */
