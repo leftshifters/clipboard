@@ -118,7 +118,19 @@ exports.thumb = function(req, res, next) {
 };
 
 exports.diskspace = function(req, res, next) {
-  disksize(function onsize(total, free) {
+  var total = 0;
+  var free = 0;
+
+  req.app.locals.disksize.total = total;
+  req.app.locals.disksize.free = free;
+
+
+  disksize(function onsize(err, total, free) {
+    if (err) {
+      debug(err);
+      return next();
+    }
+
     req.app.locals.disksize.total = total;
     req.app.locals.disksize.free = free;
     next();
