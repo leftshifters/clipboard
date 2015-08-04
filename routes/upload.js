@@ -3,6 +3,7 @@ var path = require('path');
 var mime = require('mime');
 var fs = require('fs');
 var gm = require('gm');
+var debug = require('debug')('clipboard:upload');
 
 var db = require('../lib/db');
 var disksize = require('../lib/disksize');
@@ -145,7 +146,7 @@ exports.addSearchIndex = function(req, res, next) {
 
 function type(item, done) {
   var ext = path.extname(item.basename);
-   console.log(ext);
+
   if ('.ipa' === ext) {
     item.type = 'ipa';
     return manifest(uploadPath, item, done);

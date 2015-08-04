@@ -12,6 +12,6 @@ WORKDIR /src
 
 RUN ["npm", "install"]
 
-RUN ["npm", "install", "-g", "gulp"]
+# RUN ["npm", "install", "-g", "gulp"]
 
-ENTRYPOINT ["gulp", "start"]
+ENTRYPOINT ["node", "app.js"]

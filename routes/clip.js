@@ -14,6 +14,8 @@ exports.fetch = function(req, res, next) {
     if (err) return res.send(500);
     if (!item) return res.send(404);
 
+    console.log(item);
+
     // dunno, why mongodb is returning a wrapped object
     req.store.item = item.value;
     next();

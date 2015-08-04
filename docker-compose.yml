@@ -4,12 +4,18 @@ web:
     - "3000:3000"
   links:
     - mongodb
+    - elasticsearch
   environment:
     NODE_ENV: development
+    MONGO_HOST: mongodb
+    ELASTICSEARCH_HOST: elasticsearch
 
 mongodb:
-  image: mongo
-  ports:
-    - "27017:27017"
+  image: mongo:2.6
   volumes:
-    - /Users/detj/Desktop/data:/data/db
+    - /data/mongodb
+
+elasticsearch:
+  image: elasticsearch
+  volumes:
+    - /data/elasticsearch

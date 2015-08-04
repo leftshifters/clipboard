@@ -83,9 +83,5 @@ disksize(function onsize(total, free) {
 });
 
 var server = http.createServer(app).listen(app.get('port'), function(){
-	//setTimeout(function(){},200);
   debug('Express server listening on port ' + app.get('port'));
-//setTimeout(3000 * 1000);
 });
-server.timeout = 10400000;
-//http.setTimeout(3000*1000);

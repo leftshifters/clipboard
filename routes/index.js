@@ -154,6 +154,10 @@ exports.deleteItem = function(req, res, next) {
       .findOne({ _id: ObjectId(id) }, function(err, item) {
         if (err) return next(err);
 
+        if (!item) return next();
+
+        item = item.value;
+
         toremove.push(path.join(process.cwd(), item.relativePathLong));
 
         if ('ipa' === item.type) {
