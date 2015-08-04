@@ -25,7 +25,11 @@
     "reqstore": "0.0.1",
     "underscore": "~1.6.0",
     "underscore.string": "~2.3.3",
-    "unzip": "^0.1.11"
+    "unzip": "^0.1.11",
+    "ejs": "^2.3.3",
+    "node-jsx": "^0.13.3",
+    "react": "^0.13.3",
+    "react-async": "^2.1.0"
   },
   "devDependencies": {
     "gulp": "^3.9.0",
