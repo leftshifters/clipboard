@@ -1,0 +1,15 @@
+web:
+  build: .
+  ports:
+    - "3000:3000"
+  links:
+    - mongodb
+  environment:
+    NODE_ENV: development
+
+mongodb:
+  image: mongo
+  ports:
+    - "27017:27017"
+  volumes:
+    - /Users/detj/Desktop/data:/data/db
