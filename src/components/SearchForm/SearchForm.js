@@ -1,39 +1,33 @@
 import React from 'react'; // eslint-disable-line no-unused-vars
-import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-unused-vars
 import TextBox from '../TextBox';
-import debug as 'clipboard:searchForm' from 'debug';
 import Form from '../Form';
 import FormGroup from '../FormGroup';
+// import debug from 'debug'('clipboard:SearchForm');
 
-const searchPlaceHolder = 'Search';
+const searchPlaceholder = 'Search';
 
-class SearchForm extends React.Components {
+class SearchForm extends React.Component {
   constructor() {
     super();
-
-    this.state = {
-      q: ''
-    };
   }
 
-  onSearchChange(e) {
-    debug('search state change %o', e);
-  }
+  // onSearchTextChange(e) {
+  //   // console.log('Search text change %o', e);
+  // }
 
   render() {
     return (
-      <Form inline className='search-form'>
+      <Form inline action='/' className='search-form'>
         <FormGroup>
-          <div class='input-group'>
+          <div className='input-group'>
             <TextBox
-              type='search'
-              className='form-control js-search-input'
               name='q'
-              onChange={this.onSearchChange.bind(e)}
-              placeholder={searchPlaceHolder} />
-            <span class='input-group-btn'>
-              <button type="submit" class="btn btn-default disabled">
-                <span class="glyphicon search-icon glyphicon-search"></span>
+              type='search'
+              className='js-search-input form-control'
+              placeholder={searchPlaceholder} />
+            <span className='input-group-btn'>
+              <button type='submit' className='btn btn-default disabled'>
+                <span className='glyphicon search-icon glyphicon-search'></span>
               </button>
             </span>
           </div>

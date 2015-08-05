@@ -1,26 +1,31 @@
 import React, { PropTypes } from 'react'; // eslint-disable-line no-unused-vars
+import styles from './App.less'; // eslint-disable-line no-unused-vars
 import withContext from '../../decorators/withContext'; // eslint-disable-line no-unused-vars
+import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-unused-vars
 import Header from '../Header';
-import SearchForm from '../SearchForm';
 import NotFoundPage from '../NotFoundPage';
+import Container from '../Container';
+import Dashboard from '../Dashboard';
 
 @withContext
+@withStyles(styles)
 class App extends React.Component {
+
   render() {
     var header, component;
 
     switch (this.props.path) {
       case '/':
         header = <Header />;
-        component = <SearchForm />;
+        component = <Dashboard />;
         break;
     }
 
     return component ? (
-      <div className="react-container">
+      <Container>
         {header}
         {component}
-      </div>
+      </Container>
     ) : <NotFoundPage />;
   }
 }

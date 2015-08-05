@@ -44,7 +44,8 @@
     "source-map-support": "^0.3.2",
     "superagent": "^1.2.0",
     "lodash": "^3.10.1",
-    "bootstrap": "^3.3.5"
+    "bootstrap": "^3.3.5",
+    "body-parser": "^1.13.3"
   },
   "devDependencies": {
     "gulp": "^3.9.0",

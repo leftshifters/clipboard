@@ -5,4 +5,7 @@ public/thumbs
 *.sublime-*
 .DS_Store
 .nodemonignore
+.babelrc
+.eslintrc
+build/*
 npm-debug.log

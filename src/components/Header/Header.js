@@ -6,10 +6,9 @@ import Row from '../Row';
 
 @withStyles(styles)
 class Header {
-
-  get searchForm() {
+  get SearchForm() {
     return (
-      <div class='col-md-4'>
+      <div className="col-md-4">
         <h1>
           <SearchForm />
         </h1>
@@ -20,16 +19,17 @@ class Header {
   render() {
     return (
       <Row>
-        <div class='col-md-4'>
+        <div className="col-md-4">
           <h1>
-            <a href='/' class='head-logo'>Clipboard</a>
-            <span class="small"> 0.0.8</span>
+            <a href="/" className="head-logo">Clipboard</a>
+            <span className="small"> 0.0.8</span>
           </h1>
         </div>
 
-        {this.searchForm}
+        {this.SearchForm}
       </Row>
     );
   }
 }
 
+export default Header;

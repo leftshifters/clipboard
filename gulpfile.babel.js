@@ -33,19 +33,20 @@ gulp.task('clean', () => del(['.tmp', 'build/*', '!build/.git'], {
 //     .pipe(gulp.dest('src/fonts'));
 // });
 
-// // Helper task to get bootstap less from node_modules into src
-// // NOTE: Not part of build process
-// gulp.task('vendor-less', () => {
-//   return gulp
-//     .src([bootstrapLocation + 'less/**/*'])
-//     .pipe(gulp.dest('src/styles/bootstrap'));
-// });
+// Helper task to get bootstap less from node_modules into src
+// NOTE: Not part of build process
+gulp.task('vendor-less', () => {
+  return gulp
+    .src([bootstrapLocation + 'less/**/*'])
+    .pipe(gulp.dest('src/styles/bootstrap'));
+});
 
 // Static files
 gulp.task('assets', () => {
   src.assets = [
     'package.json',
-    'src/content*/**/*.*',
+    'src/assets/**',
+    'src/fonts*/**/*.*',
     'src/templates*/**/*.*'
   ];
   return gulp.src(src.assets)

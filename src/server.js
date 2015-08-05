@@ -9,15 +9,15 @@ import React from 'react';
 import './core/Dispatcher';
 import App from './components/App';
 import bodyParser from 'body-parser';
-import apiRoutes from './api/routes';
+// import apiRoutes from './api/routes';
 
 const server = express();
 
-server.set('port', (process.env.PORT || 5001));
+server.set('port', (process.env.PORT || 3001));
 server.use(express.static(path.join(__dirname)));
 
 server.use(bodyParser.json());
-server.use('/api', apiRoutes);
+// server.use('/api', apiRoutes);
 
 // The top-level React component + HTML template for it
 const templateFile = path.join(__dirname, 'templates/index.html');
