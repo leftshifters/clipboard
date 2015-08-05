@@ -3,6 +3,7 @@ var path = require('path');
 var mime = require('mime');
 var fs = require('fs');
 var gm = require('gm');
+var debug = require('debug')('clipboard:upload');
 
 var db = require('../lib/db');
 var disksize = require('../lib/disksize');
@@ -88,7 +89,7 @@ exports.upload = function(req, res, next) {
         db.insertItem(item, function(err, results) {
           if (err) return res.send(500);
           req.store.item = item;
-          req.store._id = results[0]._id
+          req.store._id = results.ops[0]._id;
           next();
         });
       });
@@ -118,21 +119,15 @@ exports.thumb = function(req, res, next) {
 };
 
 exports.diskspace = function(req, res, next) {
-  var total = 0;
-  var free = 0;
-
-  req.app.locals.disksize.total = total;
-  req.app.locals.disksize.free = free;
-
 
   disksize(function onsize(err, total, free) {
     if (err) {
       debug(err);
-      return next();
     }
 
-    req.app.locals.disksize.total = total;
-    req.app.locals.disksize.free = free;
+    req.app.locals.disksize.total = total || 0;
+    req.app.locals.disksize.free = free || 0;
+
     next();
   });
 };
