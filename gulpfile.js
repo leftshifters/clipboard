@@ -9,6 +9,7 @@ gulp.task('start', function() {
     env: {
       'NODE_ENV': 'development',
       'DEBUG': 'clipboard*'
-    }
+    },
+    ignore: ['node_modules', 'public']
   });
 });
