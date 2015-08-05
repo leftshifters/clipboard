@@ -12,9 +12,9 @@ exports.fetch = function(req, res, next) {
 
   db.fetchItemByHash(hash, function(err, item) {
     if (err) return res.send(500);
-    if (!item) return res.send(404);
+    if (!item.value) return res.send(404);
 
-    // dunno, why mongodb is returning a wrapped object
+    // mongodb driver > v2.x returns a wrapped object
     req.store.item = item.value;
     next();
   });
@@ -31,7 +31,7 @@ exports.qr = function(req, res, next) {
   if (!(item.type === 'ipa' || item.type === 'apk')) return next();
 
   baseurl.set(req.protocol, req.get('host'));
-//next();
+
   qr.on('end', function onEncodingComplete(png) {
     res.locals.qrImage = 'data:image/png;base64,' + png.toString('base64');
     next();
