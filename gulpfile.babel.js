@@ -25,13 +25,13 @@ gulp.task('clean', () => del(['.tmp', 'build/*', '!build/.git'], {
   dot: true
 }));
 
-// // Helper task to get bootstrap fonts from node_modules into src
-// // NOTE: Not part of build process
-// gulp.task('vendor-fonts', () => {
-//   return gulp
-//     .src([bootstrapLocation + 'dist/fonts/**/*'])
-//     .pipe(gulp.dest('src/fonts'));
-// });
+// Helper task to get bootstrap fonts from node_modules into src
+// NOTE: Not part of build process
+gulp.task('vendor-fonts', () => {
+  return gulp
+    .src([bootstrapLocation + 'dist/fonts/**/*'])
+    .pipe(gulp.dest('src/fonts'));
+});
 
 // Helper task to get bootstap less from node_modules into src
 // NOTE: Not part of build process

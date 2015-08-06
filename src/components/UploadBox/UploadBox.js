@@ -4,34 +4,42 @@ import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-
 import TextBox from '../TextBox';
 import Form from '../Form';
 import FormGroup from '../FormGroup';
+import Button from '../Button';
 
 const uploadPlaceholder = 'clipboard';
 
 @withStyles(Styles)
 class UploadBox extends React.Component {
 
-  constructor() {
-    super();
+  constructor(props, context) {
+    super(props, context);
     this.state = {
-      name: ''
+      inputName: '',
+      button: 'disabled'
     };
+  }
+
+  onChange(e) {
+    e.preventDefault();
+    this.setState({
+      inputName: this.value
+    });
   }
 
   onClick(e) {
     e.preventDefault();
-    let fileUplaoder = document.getElementById('input-file');
-    fileUplaoder.click();
+    React.findDOMNode(this.refs.inputFile).click();
   }
 
   onFileChange(e) {
     e.preventDefault();
     let file = e.target.files[0];
-    let input = document.getElementById('name');
-    let uploadButton = document.getElementById('button-uplaod');
-    input.value = file.name;
-    input.focus();
-    uploadButton.disabled = false;
-    this.setState({name: file.name});
+    this.setState({
+      inputName: file.name,
+      button: ''
+    });
+
+    React.findDOMNode(this.refs.fileInput).focus();
   }
 
   render() {
@@ -44,10 +52,11 @@ class UploadBox extends React.Component {
           encType="multipart/form-data"
           className="upload-form">
           <FormGroup className="form-group extra-margin">
-            <button
-              type="button"
-              className="btn btn-default btn-block btn-select"
-              onClick={this.onClick.bind(this)}>Select a file</button>
+          <Button
+            type="button"
+            className="btn-default btn-block btn-select"
+            buttonFor="Select a file"
+            onClick={this.onClick.bind(this)} />
           </FormGroup>
           <FormGroup className="form-group extra-margin">
             <label htmlFor="name">
@@ -57,22 +66,22 @@ class UploadBox extends React.Component {
               </span>
             </label>
             <TextBox
-              type="text"
               name="name"
-              id="name"
-              value={this.state.inputNameState}
+              ref="fileInput"
+              onChange={this.onChange.bind(this)}
+              value={this.state.inputName}
               placeholder={uploadPlaceholder}
               className="form-control" />
           </FormGroup>
-          <button
-            type="submit"
-            disabled="disabled"
-            id="button-uplaod"
-            className="btn btn-primary btn-submit center-block btn-lg">Upload</button>
+          <Button
+            type="button"
+            disabled={this.state.button}
+            className="btn-primary btn-submit center-block btn-lg"
+            buttonFor="Upload" />
           <TextBox
             type="file"
-            id="input-file"
             name="content"
+            ref="inputFile"
             className="input-file"
             onChange={this.onFileChange.bind(this)} />
         </Form>
