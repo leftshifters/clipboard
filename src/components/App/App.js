@@ -16,7 +16,7 @@ class App extends React.Component {
 
     switch (this.props.path) {
       case '/':
-        header = <Header />;
+        header = <Header version={this.props.version} />;
         component = <Dashboard />;
         break;
     }

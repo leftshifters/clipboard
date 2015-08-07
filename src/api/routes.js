@@ -1,13 +1,18 @@
 import { Router } from 'express';
+import Clips from './controllers/Clips';
+// import upload from './controllers/Uplaod';
+
 
 var router = new Router();
 
-// function sendResponse(res, results) {
-//   res.status(results.status);
-//   res.json(results.data);
-// }
+// Get all clips
+router.get('/clips', Clips.index);
 
-// TODO Add error codes when invalid data is supplied
-router.post('/upload', []);
+// router.post('/upload', [
+//   upload.upload,
+//   upload.thumb,
+//   upload.diskspace,
+//   upload.addSearchIndex
+// ]);
 
 export default router;
