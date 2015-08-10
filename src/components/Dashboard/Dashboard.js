@@ -3,6 +3,7 @@ import Styles from './Dashboard.less'; // eslint-disable-line no-unused-vars
 import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-unused-vars
 import Row from '../Row';
 import UploadBox from '../UploadBox';
+import Clips from '../Clips';
 import ClipsStore from '../../stores/ClipStore';
 import DashBoardActions from '../../actions/DashBoardActions';
 
@@ -51,6 +52,7 @@ class Dashboard extends React.Component {
     return (
       <Row>
         {this.FileUploadForm}
+        <Clips clips={this.state.clips} />
       </Row>
     );
   }

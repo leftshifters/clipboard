@@ -9,7 +9,7 @@ export default {
         Dispatcher.dispatch({
           actionType: SET_CLIPS,
           payload: {
-            clips: res.data
+            clips: res.items
           }
         });
       })

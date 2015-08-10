@@ -9,7 +9,7 @@ var url = require('url');
 var moment = require('moment');
 var marked = require('marked');
 var debug = require('debug')('clipboard:index');
-var _s = require('underscore.string');
+var _s = require('underscore.string'); // eslint-disable-line no-underscore-dangle
 var getDb = require('../lib/connect');
 var db = require('../lib/db');
 var search = require('../lib/search');
@@ -17,26 +17,35 @@ var ObjectId = require('mongodb').ObjectID;
 var cliputils = require('../lib/cliptils');
 var search = require('../lib/search');
 
+function nextPageLink(page, query) {
+  var urlobj = { pathname: 'page/' + (page + 2) };
+
+  if (query) {
+    urlobj.search = 'q=' + query;
+  }
+
+  return url.format(urlobj);
+}
+
+function prevPageLink(page, query) {
+  var urlobj = { pathname: 'page/' + page };
+
+  if (query) {
+    urlobj.search = 'q=' + query;
+  }
+
+  return url.format(urlobj);
+}
+
 exports.index = function(req, res) {
   var page = req.store.page || 0;
   var q = req.query.q || '';
 
-  if (q) {
-    search.search(page, q, function(err, itemIds, more) {
-      if (err) return res.send(500);
-
-      db.fetchByIds(itemIds, function(err, items) {
-        if (err) return res.send(500);
-
-        onItems(null, items, more);
-      });
-    });
-  } else {
-    db.fetchItems(page, onItems);
-  }
-
   function onItems(err, items, more) {
-    if (err) return res.send(500);
+    if (err) {
+      return res.send(500);
+    }
+
     var baseurl = req.protocol + '://' + req.headers.host;
 
     for (var i = 0, len = items.length; i < len; ++i) {
@@ -55,26 +64,44 @@ exports.index = function(req, res) {
       cliputils.settimeago(items[i]);
     }
 
-    res.render('index', {
-      title: 'Clipboard',
-      items: items,
-      baseurl: baseurl,
-      page: page,
-      more: more,
-      query: q,
-      searchIcon: q ? 'glyphicon-remove' : 'glyphicon-search',
-      searchBtn: q ? true : false,
-      nextPageLink: nextPageLink(page, q),
-      prevPageLink: prevPageLink(page, q),
-      leftArrow: !!page > 0 ? '' : 'invisible',
-      rightArrow: more ? '' : 'invisible'
+    return res.json({
+      data: {
+        title: 'Clipboard',
+        items: items,
+        baseurl: baseurl,
+        page: page,
+        more: more,
+        query: q,
+        searchIcon: q ? 'glyphicon-remove' : 'glyphicon-search',
+        searchBtn: q ? true : false,
+        nextPageLink: nextPageLink(page, q),
+        prevPageLink: prevPageLink(page, q),
+        leftArrow: !!page > 0 ? '' : 'invisible',
+        rightArrow: more ? '' : 'invisible'
+      }
     });
-
   }
 
+  if (q) {
+    search.search(page, q, function(err, itemIds, more) {
+      if (err) {
+        return res.send(500);
+      }
+
+      db.fetchByIds(itemIds, function(err, items) { // eslint-disable-line no-shadow
+        if (err) {
+          return res.send(500);
+        }
+
+        onItems(null, items, more);
+      });
+    });
+  } else {
+    db.fetchItems(page, onItems);
+  }
 };
 
-exports.detail = function(req, res, next) {
+exports.detail = function(req, res, next) { // eslint-disable-line no-unused-vars
   var item = req.store.item;
   var baseurl = req.protocol + '://' + req.headers.host;
   var nameslug = _s.slugify(item.name);
@@ -86,12 +113,12 @@ exports.detail = function(req, res, next) {
   item.buttonText = 'Download';
 
   // Set ipa download url
-  if ('ipa' === item.type) {
+  if (item.type === 'ipa') {
     item.installUrl = cliputils.ipaurl(item, baseurl);
     item.buttonText = 'Download IPA';
   }
 
-  if ('apk' === item.type) {
+  if (item.type === 'apk') {
     item.installUrl = item.downloadUrl;
     item.buttonText = 'Download APK';
   }
@@ -129,16 +156,22 @@ exports.editItem = function(req, res, next) {
   var id = req.store.id;
   var name = req.store.name;
 
-  getDb(function(err, db) {
-    if (err) return res.send(500);
-    db.collection('uploads')
-      .update({ _id: ObjectId(id) }, { "$set": { name: name }}, done)
-  });
-
   function done(err) {
-    if (err) return res.send(500);
+    if (err) {
+      return res.send(500);
+    }
+
     next();
   }
+
+  getDb(function(err, db) { // eslint-disable-line no-shadow
+    if (err) {
+      return res.send(500);
+    }
+
+    db.collection('uploads')
+      .update({ _id: ObjectId(id) }, { '$set': { name: name }}, done); // eslint-disable-line new-cap
+  });
 };
 
 exports.deleteItem = function(req, res, next) {
@@ -147,16 +180,21 @@ exports.deleteItem = function(req, res, next) {
   var uploadpath = req.app.get('uploadpath');
   var items;
 
-  getDb(function(err, db) {
-    if (err) return res.send(500);
+  getDb(function(err, db) { // eslint-disable-line no-shadow
+    if (err) {
+      return res.send(500);
+    }
+
     items = db.collection('uploads');
     items
-      .findOne({ _id: ObjectId(id) }, function(err, item) {
-        if (err) return next(err);
+      .findOne({ _id: ObjectId(id) }, function(err, item) { // eslint-disable-line no-shadow, new-cap
+        if (err) {
+          return next(err);
+        }
 
         toremove.push(path.join(process.cwd(), item.relativePathLong));
 
-        if ('ipa' === item.type) {
+        if (item.type === 'ipa') {
           toremove.push(
             path.join(
               process.cwd(),
@@ -165,11 +203,16 @@ exports.deleteItem = function(req, res, next) {
               + '.plist'));
         }
 
-        items.remove({ _id: ObjectId(id) }, function(err) {
-          if (err) return next(err);
+        items.remove({ _id: ObjectId(id) }, function(err) { // eslint-disable-line no-shadow, new-cap
+          if (err) {
+            return next(err);
+          }
 
-          cliputils.removeFiles(toremove, function(err) {
-            if (err) return res.send(500);
+          cliputils.removeFiles(toremove, function(err) { // eslint-disable-line no-shadow
+            if (err) {
+              return res.send(500);
+            }
+
             next();
           });
 
@@ -182,7 +225,9 @@ exports.deleteItem = function(req, res, next) {
 exports.validateId = function(req, res, next) {
   var id = req.params.id;
   id = id && id.trim();
-  if (!id) return res.send(400, 'Need item id');
+  if (!id) {
+    return res.send(400, 'Need item id');
+  }
 
   req.store.id = id;
   next();
@@ -191,7 +236,9 @@ exports.validateId = function(req, res, next) {
 exports.validateName = function(req, res, next) {
   var name = req.body.name;
   name = name && name.trim();
-  if (!name) return res.send(400, 'Need name');
+  if (!name) {
+    return res.send(400, 'Need name');
+  }
 
   req.store.name = name;
   next();
@@ -212,11 +259,6 @@ exports.reindex = function(req, res) {
   var batchSize = 500;
   var buffer = [];
   var donecount = 0;
-
-  search.deleteIndex(function(err, result) {
-    if (err) return res.send(500);
-    create();
-  });
 
   function create() {
     db.createItemReadStream(function(err, stream) {
@@ -241,7 +283,7 @@ exports.reindex = function(req, res) {
         }
       });
 
-      stream.on('error', function(err) {
+      stream.on('error', function(err) { // eslint-disable-line no-shadow
         debug(err);
         res.send(500);
       });
@@ -249,12 +291,16 @@ exports.reindex = function(req, res) {
       function flush(data, done) {
         debug('re-indexing %d items', data.length);
         stream.pause();
-        search.reindex(data, function(err) {
-          if (err) return res.send(500);
+        search.reindex(data, function(err) { // eslint-disable-line no-shadow
+          if (err) {
+            return res.send(500);
+          }
           stream.resume();
           donecount += buffer.length;
           buffer.length = 0;
-          if (done) done();
+          if (done) {
+            done();
+          }
         });
       }
 
@@ -262,10 +308,17 @@ exports.reindex = function(req, res) {
 
   }
 
+  search.deleteIndex(function(err) {
+    if (err) {
+      return res.send(500);
+    }
+    create();
+  });
+
 };
 
-exports.root = function(req, res, next) {
-  if (req.xhr)   {
+exports.root = function(req, res, next) { // eslint-disable-line no-unused-vars
+  if (req.xhr) {
     res.json(req.store.item);
   } else {
     res.redirect('/');
@@ -275,23 +328,3 @@ exports.root = function(req, res, next) {
 exports.ok = function(req, res) {
   res.send(200);
 };
-
-function nextPageLink(page, query) {
-  var urlobj = { pathname: 'page/' + (page + 2) };
-
-  if (query) {
-    urlobj.search = 'q=' + query;
-  }
-
-  return url.format(urlobj);
-}
-
-function prevPageLink(page, query) {
-  var urlobj = { pathname: 'page/' + page };
-
-  if (query) {
-    urlobj.search = 'q=' + query;
-  }
-
-  return url.format(urlobj);
-}

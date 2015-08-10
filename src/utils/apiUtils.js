@@ -10,7 +10,13 @@ export default {
           if (err) {
             return reject(err);
           }
-          return resolve(res);
+
+          if(res.status !== 200) {
+            return reject(new Error('Internal server error'));
+          }
+
+          let data = res.body.data;
+          return resolve(data);
         });
     });
   }
