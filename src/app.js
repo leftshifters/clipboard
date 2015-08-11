@@ -30,14 +30,14 @@ function run() {
   };
 
   let element = React.createElement(App, props);
-  React.render(element, document.getElementById('app'), () => {
+  React.render(element, document.getElementById('clipapp'), () => {
     let css = document.getElementById('css');
     css.parentNode.removeChild(css);
   });
 
   AppStore.addChangeListener(() => {
     element = React.cloneElement(element, { path: AppStore.path });
-    React.render(element, document.getElementById('app'));
+    React.render(element, document.getElementById('clipapp'));
   });
 }
 

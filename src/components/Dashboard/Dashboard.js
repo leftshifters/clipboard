@@ -4,21 +4,23 @@ import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-
 import Row from '../Row';
 import UploadBox from '../UploadBox';
 import Clips from '../Clips';
+import Loader from '../Loader';
 import ClipsStore from '../../stores/ClipStore';
 import DashBoardActions from '../../actions/DashBoardActions';
 
 @withStyles(Styles)
 class Dashboard extends React.Component {
 
-  constructor() {
-    super();
+  constructor(props, context) {
+    super(props, context);
     this.state = this.getStateFromStore();
     this.onStoreChange = this.onStoreChange.bind(this);
   }
 
   getStateFromStore() {
     return {
-      clips: ClipsStore.clips
+      clips: ClipsStore.clips,
+      loading: ClipsStore.clips && ClipsStore.clips.length > 0 ? false : true
     };
   }
 
@@ -53,6 +55,7 @@ class Dashboard extends React.Component {
     return (
       <Row>
         {this.FileUploadForm}
+        <Loader loading={this.state.loading} />
         <Clips clips={this.state.clips} />
       </Row>
     );

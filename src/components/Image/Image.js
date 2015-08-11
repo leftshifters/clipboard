@@ -6,7 +6,8 @@ class Image {
   };
 
   render () {
-    let imgUrl = 'https://s3.amazonaws.com/boxtastic/logos/Screen+Shot+2015-07-23+at+7.00.49+pm.png';
+    let clip = this.props.clip;
+    let imgUrl = '../' + clip.relativePathLong;
     let divStyle = {
       backgroundImage: 'url(' + imgUrl + ')'
     };

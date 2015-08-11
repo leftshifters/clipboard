@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react'; // eslint-disable-line no-unused-vars
 import Image from '../Image';
+import Button from '../Button';
 import Extention from '../Extention';
 
 
@@ -12,7 +13,8 @@ class Clip extends React.Component {
     super(props, context);
     this.state = {
       removeButton: 'cog js-remove hide',
-      editButton: 'js-edit-button btn btn-default btn-xs hide'
+      editButton: 'hide',
+      editClick: false
     };
   }
 
@@ -20,7 +22,7 @@ class Clip extends React.Component {
     e.preventDefault();
     this.setState({
       removeButton: 'cog js-remove',
-      editButton: 'js-edit-button btn btn-default btn-xs'
+      editButton: 'block'
     });
   }
 
@@ -28,11 +30,19 @@ class Clip extends React.Component {
     e.preventDefault();
     this.setState({
       removeButton: 'cog js-remove hide',
-      editButton: 'js-edit-button btn btn-default btn-xs hide'
+      editButton: this.state.editClick ? '' : 'hide'
+    });
+  }
+
+  onEditButtonClick(e) {
+    e.preventDefault();
+    this.setState({
+      editClick: true
     });
   }
 
   render () {
+    let editButtonClass = 'js-edit-button btn btn-default btn-xs ' + this.state.editButton;
     let clip = this.props.clip;
     let id = clip._id; // eslint-disable-line no-underscore-dangle
     let thumb = '';
@@ -48,7 +58,8 @@ class Clip extends React.Component {
         className="col-lg-3 col-xs-12 col-md-4 col-sm-6 item-row"
         key={id}
         onMouseEnter={this.onMouseEnter.bind(this)}
-        onMouseLeave={this.onMouseLeave.bind(this)}>
+        onMouseLeave={this.onMouseLeave.bind(this)}
+        ref="parentdiv">
         <div data-id={id} className="item js-item">
           <div className="item-overlay hide"></div>
           <span className={this.state.removeButton}>
@@ -64,14 +75,13 @@ class Clip extends React.Component {
           <div className="title-block">
             <span className="title">
               <a title={clip.originalName} href={clip.url} className="item-link js-item-link">{clip.name}</a>
-              <form action="v1/items/55c47856447a18f30af80d07" method="POST" role="form" className="edit-name-form hide">
-                <input type="text" className="js-edit-name edit-name" />
-              </form>
             </span>
             <div className="btn-group pull-right">
-              <button type="button" data-toggle="tooltip" data-placement="top" title="Edit name" className={this.state.editButton}>
-                <span className="glyphicon glyphicon-pencil"></span>
-              </button>
+              <Button
+                type="button"
+                className={editButtonClass}
+                onClick={this.onEditButtonClick.bind(this)}
+                buttonFor=<span className="glyphicon glyphicon-pencil"></span> />
             </div>
             <div>
               <span className="small timeago-text">3 days ago</span>

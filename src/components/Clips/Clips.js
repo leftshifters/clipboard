@@ -22,9 +22,9 @@ class Clips extends React.Component {
 
     let clips = [];
 
-    this.props.clips.map((clip) => {
+    this.props.clips.map((clip, key) => {
       clips.push(
-        <Clip clip={clip} />
+        <Clip key={key} clip={clip} />
       );
     });
 
