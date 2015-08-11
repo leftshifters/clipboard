@@ -41,6 +41,7 @@
     "react": "^0.13.3",
     "react-async": "^2.1.0",
     "react-loading": "0.0.7",
+    "react-localstorage": "^0.2.4",
     "reqstore": "0.0.1",
     "request": "^2.60.0",
     "source-map-support": "^0.3.2",

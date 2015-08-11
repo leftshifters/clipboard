@@ -1,8 +1,8 @@
 import React, {PropTypes} from 'react'; // eslint-disable-line no-unused-vars
 import Image from '../Image';
 import Button from '../Button';
+import TextBox from '../TextBox';
 import Extention from '../Extention';
-
 
 class Clip extends React.Component {
   static propTypes = {
@@ -14,7 +14,10 @@ class Clip extends React.Component {
     this.state = {
       removeButton: 'cog js-remove hide',
       editButton: 'hide',
-      editClick: false
+      titleInput: 'hide',
+      atitle: '',
+      editClick: false,
+      editClikCount: 0
     };
   }
 
@@ -22,7 +25,7 @@ class Clip extends React.Component {
     e.preventDefault();
     this.setState({
       removeButton: 'cog js-remove',
-      editButton: 'block'
+      editButton: this.state.editClick ? 'active' : ''
     });
   }
 
@@ -30,19 +33,40 @@ class Clip extends React.Component {
     e.preventDefault();
     this.setState({
       removeButton: 'cog js-remove hide',
-      editButton: this.state.editClick ? '' : 'hide'
+      editButton: this.state.editClick ? 'active' : 'hide'
     });
   }
 
   onEditButtonClick(e) {
     e.preventDefault();
-    this.setState({
-      editClick: true
-    });
+    if(this.state.editClikCount === 0) {
+      this.setState({
+        editClikCount: 1,
+        editClick: true,
+        editButton: 'active',
+        titleInput: 'block',
+        atitle: 'hide'
+      });
+      React.findDOMNode(this.refs.titleInput).focus();
+    } else {
+      this.setState({
+        editClikCount: 0,
+        editClick: false,
+        titleInput: 'hide',
+        atitle: 'block'
+      });
+    }
+  }
+
+  onTitleChange(e) {
+    e.preventDefault();
+    console.log('titleChamge');
   }
 
   render () {
     let editButtonClass = 'js-edit-button btn btn-default btn-xs ' + this.state.editButton;
+    let titleInput = 'edit-name ' + this.state.titleInput;
+    let aTitle = 'item-link ' + this.state.atitle;
     let clip = this.props.clip;
     let id = clip._id; // eslint-disable-line no-underscore-dangle
     let thumb = '';
@@ -74,7 +98,13 @@ class Clip extends React.Component {
           </a>
           <div className="title-block">
             <span className="title">
-              <a title={clip.originalName} href={clip.url} className="item-link js-item-link">{clip.name}</a>
+              <a title={clip.originalName} href={clip.url} className={aTitle}>{clip.name}</a>
+              <TextBox
+                className={titleInput}
+                type="text"
+                placeholder={clip.name}
+                ref="titleInput"
+                onChange={this.onTitleChange.bind(this)} />
             </span>
             <div className="btn-group pull-right">
               <Button
