@@ -65,7 +65,7 @@ class Clip extends React.Component {
             <span className="title">
               <a title={clip.originalName} href={clip.url} className="item-link js-item-link">{clip.name}</a>
               <form action="v1/items/55c47856447a18f30af80d07" method="POST" role="form" className="edit-name-form hide">
-                <input type="text" value="Xcode_6.4.dmg" className="js-edit-name edit-name" />
+                <input type="text" className="js-edit-name edit-name" />
               </form>
             </span>
             <div className="btn-group pull-right">

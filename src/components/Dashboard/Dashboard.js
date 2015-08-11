@@ -13,6 +13,7 @@ class Dashboard extends React.Component {
   constructor() {
     super();
     this.state = this.getStateFromStore();
+    this.onStoreChange = this.onStoreChange.bind(this);
   }
 
   getStateFromStore() {
