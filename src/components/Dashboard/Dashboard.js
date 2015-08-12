@@ -7,6 +7,8 @@ import Clips from '../Clips';
 import Loader from '../Loader';
 import ClipsStore from '../../stores/ClipStore';
 import DashBoardActions from '../../actions/DashBoardActions';
+import debug from 'debug';
+let dbg = debug('clipboard:dashboard');
 
 @withStyles(Styles)
 class Dashboard extends React.Component {
@@ -34,6 +36,7 @@ class Dashboard extends React.Component {
   }
 
   onStoreChange() {
+    dbg('State change and render view');
     this.setState(this.getStateFromStore());
   }
 

@@ -3,6 +3,9 @@ import Image from '../Image';
 import Button from '../Button';
 import TextBox from '../TextBox';
 import Extention from '../Extention';
+import {defer} from 'underscore';
+import debug from 'debug';
+let dbg = debug('clipboard:clip');
 
 class Clip extends React.Component {
   static propTypes = {
@@ -22,6 +25,7 @@ class Clip extends React.Component {
   }
 
   onMouseEnter(e) {
+    dbg('On mouse enter');
     e.preventDefault();
     this.setState({
       removeButton: 'cog js-remove',
@@ -30,6 +34,7 @@ class Clip extends React.Component {
   }
 
   onMouseLeave(e) {
+    dbg('On Mouse leave');
     e.preventDefault();
     this.setState({
       removeButton: 'cog js-remove hide',
@@ -39,6 +44,8 @@ class Clip extends React.Component {
 
   onEditButtonClick(e) {
     e.preventDefault();
+
+    dbg('Button click');
     if(this.state.editClikCount === 0) {
       this.setState({
         editClikCount: 1,
@@ -47,7 +54,10 @@ class Clip extends React.Component {
         titleInput: 'block',
         atitle: 'hide'
       });
-      React.findDOMNode(this.refs.titleInput).focus();
+
+      dbg(React.findDOMNode(this.refs.titleInput));
+      let title = React.findDOMNode(this.refs.titleInput);
+      defer(title.focus.bind(title));
     } else {
       this.setState({
         editClikCount: 0,
@@ -104,6 +114,7 @@ class Clip extends React.Component {
                 type="text"
                 placeholder={clip.name}
                 ref="titleInput"
+                id="test"
                 onChange={this.onTitleChange.bind(this)} />
             </span>
             <div className="btn-group pull-right">
