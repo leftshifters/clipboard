@@ -47,7 +47,8 @@ gulp.task('assets', () => {
     'package.json',
     'src/assets/**',
     'src/fonts*/**/*.*',
-    'src/templates*/**/*.*'
+    'src/templates*/**/*.*',
+    'src/vendor*/*.*'
   ];
   return gulp.src(src.assets)
     .pipe($.changed('build'))
