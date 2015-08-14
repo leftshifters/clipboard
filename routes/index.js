@@ -1,4 +1,3 @@
-
 /*
  * GET home page.
  */
@@ -18,7 +17,9 @@ var cliputils = require('../lib/cliptils');
 var search = require('../lib/search');
 
 function nextPageLink(page, query) {
-  var urlobj = { pathname: 'page/' + (page + 2) };
+  var urlobj = {
+    pathname: 'page/' + (page + 2)
+  };
 
   if (query) {
     urlobj.search = 'q=' + query;
@@ -28,7 +29,9 @@ function nextPageLink(page, query) {
 }
 
 function prevPageLink(page, query) {
-  var urlobj = { pathname: 'page/' + page };
+  var urlobj = {
+    pathname: 'page/' + page
+  };
 
   if (query) {
     urlobj.search = 'q=' + query;
@@ -123,17 +126,25 @@ exports.detail = function(req, res, next) { // eslint-disable-line no-unused-var
     item.buttonText = 'Download APK';
   }
 
-  res.render('detail', { title: item.name, item: item });
+  res.render('detail', {
+    title: item.name,
+    item: item
+  });
 };
 
 exports.changelog = function(req, res) {
-  fs.readFile('CHANGELOG.md', { encoding: 'utf8' }, function(err, data) {
+  fs.readFile('CHANGELOG.md', {
+    encoding: 'utf8'
+  }, function(err, data) {
     if (err) {
       debug(err);
       res.send(500);
     }
 
-    res.render('changelog', { title: 'Changelog', html: marked(data) });
+    res.render('changelog', {
+      title: 'Changelog',
+      html: marked(data)
+    });
   });
 };
 
@@ -170,7 +181,13 @@ exports.editItem = function(req, res, next) {
     }
 
     db.collection('uploads')
-      .update({ _id: ObjectId(id) }, { '$set': { name: name }}, done); // eslint-disable-line new-cap
+      .update({
+        _id: ObjectId(id)
+      }, {
+        '$set': {
+          name: name
+        }
+      }, done); // eslint-disable-line new-cap
   });
 };
 
@@ -187,7 +204,9 @@ exports.deleteItem = function(req, res, next) {
 
     items = db.collection('uploads');
     items
-      .findOne({ _id: ObjectId(id) }, function(err, item) { // eslint-disable-line no-shadow, new-cap
+      .findOne({
+        _id: ObjectId(id)
+      }, function(err, item) { // eslint-disable-line no-shadow, new-cap
         if (err) {
           return next(err);
         }
@@ -199,11 +218,12 @@ exports.deleteItem = function(req, res, next) {
             path.join(
               process.cwd(),
               uploadpath,
-              item.basenameWithoutExt
-              + '.plist'));
+              item.basenameWithoutExt + '.plist'));
         }
 
-        items.remove({ _id: ObjectId(id) }, function(err) { // eslint-disable-line no-shadow, new-cap
+        items.remove({
+          _id: ObjectId(id)
+        }, function(err) { // eslint-disable-line no-shadow, new-cap
           if (err) {
             return next(err);
           }
@@ -245,7 +265,10 @@ exports.validateName = function(req, res, next) {
 };
 
 exports.updateSearchIndex = function(req, res, next) {
-  search.update({ id: req.store.id, name: req.store.name });
+  search.update({
+    id: req.store.id,
+    name: req.store.name
+  });
   next();
 };
 
@@ -326,5 +349,7 @@ exports.root = function(req, res, next) { // eslint-disable-line no-unused-vars
 };
 
 exports.ok = function(req, res) {
-  res.send(200);
+  return res.json({
+    data: req.store.data || {}
+  });
 };

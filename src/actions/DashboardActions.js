@@ -6,6 +6,7 @@ export default {
   getClips() {
     apiUtils.getClips()
       .then((res) => {
+        console.log('GOT RESPONSE FROM HERE');
         Dispatcher.dispatch({
           actionType: SET_CLIPS,
           payload: {

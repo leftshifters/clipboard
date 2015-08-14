@@ -59,6 +59,13 @@ disksize(function onsize(total, free) {
 // get clips
 //
 server.get('/api/clips', routes.index);
+server.post('/api/clip/:id', [
+  routes.validateId,
+  routes.validateName,
+  routes.editItem,
+  routes.updateSearchIndex,
+  routes.ok
+]);
 
 server.get('/', async (req, res, next) => {
   try {

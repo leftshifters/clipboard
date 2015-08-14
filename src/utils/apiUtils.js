@@ -1,8 +1,12 @@
-import http from 'superagent';
-// import Dexie from 'Dexie';
+// import Dexie from 'dexie';
+import basicUtils from './basicUtils';
+import debug from 'debug';
+
 let db = null;
+let dbg = debug('clipboard:apiutil');
 
 if(!db || window.indexedDB) {
+  dbg('Initializing indexDB');
   db = new window.Dexie('clipboard');
 
   db.version(1).stores({
@@ -15,31 +19,23 @@ if(!db || window.indexedDB) {
 export default {
   // Do Ajax;
   _fetch(reject, resolve) {
-    http
-    .get('api/clips')
-    .accept('application/json')
-    .end((err, res) => {
-      if (err) {
-        return reject(err);
-      }
-
-      if(res.status !== 200) {
-        return reject(new Error('Internal server error'));
-      }
-
-      let data = res.body.data;
-
+    basicUtils
+    .get()
+    .then((res) => {
       if(!db) {
-        return resolve({'clips': data.items});
+        return resolve({'clips': res.data.items});
       }
 
       let clips = db.transaction('rw', db.clips, () => {
-        data.items.forEach((clip) => {
+        res.data.items.forEach((clip) => {
           db.clips.add(clip);
         });
       });
 
       return resolve({'clips': clips});
+    })
+    .error((err) => {
+      return reject(err);
     });
   },
 
@@ -49,14 +45,15 @@ export default {
         return this._fetch(resolve, reject); // eslint-disable-line no-underscore-dangle
       }
 
+      dbg('Fetching records from IndexDB');
       db.on('ready', () => {
         return db.clips.count((count) => {
           if (count > 0) {
-            console.log('fetching from store');
+            dbg('Records count is %s', count);
             db.clips
               .toArray()
               .then((clips) => {
-                console.log(clips);
+                dbg('Got clips %o ', clips);
                 return resolve({'clips': clips});
               });
           } else {
@@ -67,23 +64,29 @@ export default {
     });
   },
 
-  changeTitle(id) {
+  changeTitle(id, title, pkey) {
     return new Promise((resolve, reject) => {
-      http
-        .post('api/clip/' + id)
-        .accept('application/json')
-        .end((err, res) => {
-          if(err) {
-            return reject(err);
-          }
+      basicUtils
+      .post('api/clip/' + id, title)
+      .then((res) => {
+        if(!db) {
+          return resolve(res);
+        }
 
-          if(res.status !== 200) {
-            return reject(new Error('Internal server error'));
+        db.clips
+        .update(pkey, title)
+        .then((updated) => {
+          if(updated > 0) {
+            dbg('Updated clip title successfully: %o', title);
+          } else {
+            dbg('Error while updating title in IndexDB: %o', title);
           }
-
-          let data = res.body.data;
-          return resolve(data);
+          return resolve(res);
         });
+      })
+      .catch((err) => {
+        return reject(err);
+      });
     });
   }
 };

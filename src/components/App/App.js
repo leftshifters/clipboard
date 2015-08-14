@@ -6,12 +6,15 @@ import Header from '../Header';
 import NotFoundPage from '../NotFoundPage';
 import Container from '../Container';
 import Dashboard from '../Dashboard';
+import debug from 'debug';
+let dbg = debug('clipboard:app');
 
 @withContext
 @withStyles(styles)
 class App extends React.Component {
 
   render() {
+    dbg('Rendering main app');
     var header, component;
 
     switch (this.props.path) {

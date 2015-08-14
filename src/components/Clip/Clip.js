@@ -3,6 +3,7 @@ import Image from '../Image';
 import Button from '../Button';
 import TextBox from '../TextBox';
 import Extention from '../Extention';
+import ClipActions from '../../actions/ClipActions';
 import {defer} from 'underscore';
 import debug from 'debug';
 let dbg = debug('clipboard:clip');
@@ -22,30 +23,32 @@ class Clip extends React.Component {
       editClick: false,
       editClikCount: 0
     };
+    // this.onStoreChange = this.onStoreChange.bind(this);
+    dbg('Clip initial state is %o', this.state);
   }
 
   onMouseEnter(e) {
-    dbg('On mouse enter');
     e.preventDefault();
     this.setState({
       removeButton: 'cog js-remove',
       editButton: this.state.editClick ? 'active' : ''
     });
+    dbg('On Mouse enter: state change to %o', this.state);
   }
 
   onMouseLeave(e) {
-    dbg('On Mouse leave');
     e.preventDefault();
     this.setState({
       removeButton: 'cog js-remove hide',
       editButton: this.state.editClick ? 'active' : 'hide'
     });
+    dbg('On Mouse leave: state change to %o', this.state);
   }
 
   onEditButtonClick(e) {
     e.preventDefault();
 
-    dbg('Button click');
+    dbg('Edit button clicked');
     if(this.state.editClikCount === 0) {
       this.setState({
         editClikCount: 1,
@@ -54,8 +57,6 @@ class Clip extends React.Component {
         titleInput: 'block',
         atitle: 'hide'
       });
-
-      dbg(React.findDOMNode(this.refs.titleInput));
       let title = React.findDOMNode(this.refs.titleInput);
       defer(title.focus.bind(title));
     } else {
@@ -66,14 +67,20 @@ class Clip extends React.Component {
         atitle: 'block'
       });
     }
+    dbg('On Edit button click: state is %o', this.state);
   }
 
   onTitleChange(e) {
     e.preventDefault();
-    console.log('titleChamge');
+    dbg('Title change: Change the state');
+    let id = e.target.id;
+    let pKey = e.target.getAttribute('data-key');
+    let title = e.target.value;
+    ClipActions.changeTitle(id, {name: title}, pKey);
   }
 
   render () {
+    dbg('Rendering clip view');
     let editButtonClass = 'js-edit-button btn btn-default btn-xs ' + this.state.editButton;
     let titleInput = 'edit-name ' + this.state.titleInput;
     let aTitle = 'item-link ' + this.state.atitle;
@@ -114,7 +121,8 @@ class Clip extends React.Component {
                 type="text"
                 placeholder={clip.name}
                 ref="titleInput"
-                id="test"
+                id={id}
+                data-key={clip.id}
                 onChange={this.onTitleChange.bind(this)} />
             </span>
             <div className="btn-group pull-right">
