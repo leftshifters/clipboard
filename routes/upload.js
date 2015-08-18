@@ -2,7 +2,7 @@ var multiparty = require('multiparty');
 var path = require('path');
 var mime = require('mime');
 var fs = require('fs');
-var gm = require('gm');
+// var gm = require('gm');
 
 var db = require('../lib/db');
 var disksize = require('../lib/disksize');
@@ -63,7 +63,7 @@ exports.upload = function(req, res, next) {
         hash: '',
         basename: basename,
         basenameWithoutExt: basenameWithoutExt,
-        extension:extension,
+        extension: extension,
         originalName: file.originalFilename,
         relativePathShort: 'uploads/' + basename,
         relativePathLong: uploadDir + '/' + basename,
@@ -78,17 +78,22 @@ exports.upload = function(req, res, next) {
       };
       //console.log(item);
 
-      if (!!~imageMimes.indexOf(mimetype)) {
+      if (!!~imageMimes.indexOf(mimetype)) { // eslint-disable-line no-extra-boolean-cast
         item.type = 'image';
       }
 
-      type(item, function(err, item) {
-        if (err) return res.send(500);
+      type(item, function(err, item) { // eslint-disable-line no-shadow
+        if (err) {
+          return res.send(500);
+        }
 
-        db.insertItem(item, function(err, results) {
-          if (err) return res.send(500);
+        db.insertItem(item, function(err, results) { // eslint-disable-line no-shadow
+          if (err) {
+            return res.send(500);
+          }
+
           req.store.item = item;
-          req.store._id = results[0]._id
+          req.store._id = results[0]._id; // eslint-disable-line no-underscore-dangle
           next();
         });
       });
@@ -101,19 +106,20 @@ exports.upload = function(req, res, next) {
 
 exports.thumb = function(req, res, next) {
   return next();
-  var item = req.store.item;
-  if (!item) return next();
-  if (item.type !== 'image') return next();
 
-  var inp = path.join(process.cwd(), item.relativePathLong);
-  var out = path.join(thumbsPath, item.basename);
+  // var item = req.store.item;
+  // if (!item) return next();
+  // if (item.type !== 'image') return next();
 
-  gm(inp)
-    .resize(300, 300)
-    .write(out, function done(err) {
-      if (err) return console.error(err);
-      next();
-    });
+  // var inp = path.join(process.cwd(), item.relativePathLong);
+  // var out = path.join(thumbsPath, item.basename);
+
+  // gm(inp)
+  //   .resize(300, 300)
+  //   .write(out, function done(err) {
+  //     if (err) return console.error(err);
+  //     next();
+  //   });
 
 };
 
@@ -125,9 +131,8 @@ exports.diskspace = function(req, res, next) {
   req.app.locals.disksize.free = free;
 
 
-  disksize(function onsize(err, total, free) {
+  disksize(function onsize(err, total, free) { // eslint-disable-line no-shadow
     if (err) {
-      debug(err);
       return next();
     }
 
@@ -145,11 +150,11 @@ exports.addSearchIndex = function(req, res, next) {
 
 function type(item, done) {
   var ext = path.extname(item.basename);
-   console.log(ext);
-  if ('.ipa' === ext) {
+  console.log(ext);
+  if (ext === '.ipa') {
     item.type = 'ipa';
     return manifest(uploadPath, item, done);
-  } else if ('.apk' === ext) {
+  } else if (ext === '.apk') {
     item.type = 'apk';
   }
 

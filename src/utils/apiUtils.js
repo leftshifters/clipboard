@@ -20,7 +20,7 @@ export default {
   // Do Ajax;
   _fetch(reject, resolve) {
     basicUtils
-    .get()
+    .get('api/clips')
     .then((res) => {
       if(!db) {
         return resolve({'clips': res.data.items});
@@ -65,6 +65,7 @@ export default {
   },
 
   changeTitle(id, title, pkey) {
+    dbg('Got Id : %s and title %o and pKey %s', id, title, pkey);
     return new Promise((resolve, reject) => {
       basicUtils
       .post('api/clip/' + id, title)
@@ -74,18 +75,52 @@ export default {
         }
 
         db.clips
-        .update(pkey, title)
+        .update(parseInt(pkey, 10), title)
         .then((updated) => {
+          dbg('Updated value is %o', updated);
           if(updated > 0) {
             dbg('Updated clip title successfully: %o', title);
           } else {
             dbg('Error while updating title in IndexDB: %o', title);
           }
-          return resolve(res);
+
+          db.clips
+          .toArray()
+          .then((clips) => {
+            dbg('Got clips %o ', clips);
+            return resolve({'clips': clips});
+          });
         });
       })
       .catch((err) => {
         return reject(err);
+      });
+    });
+  },
+
+  deleteClip(id, pKey) {
+    return new Promise((resolve, reject) => {
+      basicUtils
+      .delete('api/clip/' + id)
+      .then((res) => {
+        if(!db) {
+          return resolve(res);
+        }
+
+        db.clips
+        .delete(parseInt(pKey))
+        .then(() => {
+          dbg('Deleted clip with index %s', pKey);
+          db.clips
+          .toArray()
+          .then((clips) => {
+            dbg('Got clips %o ', clips);
+            return resolve({'clips': clips});
+          });
+        })
+        .catch((err) => {
+          return reject(err);
+        });
       });
     });
   }

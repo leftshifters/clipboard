@@ -1,0 +1,6 @@
+{
+  "name": "ClipApp",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./ClipApp.js"
+}

@@ -3,7 +3,6 @@ import Image from '../Image';
 import Button from '../Button';
 import TextBox from '../TextBox';
 import Extention from '../Extention';
-import ClipActions from '../../actions/ClipActions';
 import {defer} from 'underscore';
 import debug from 'debug';
 let dbg = debug('clipboard:clip');
@@ -21,16 +20,21 @@ class Clip extends React.Component {
       titleInput: 'hide',
       atitle: '',
       editClick: false,
-      editClikCount: 0
+      editClikCount: 0,
+      editText: this.props.clip.name
     };
-    // this.onStoreChange = this.onStoreChange.bind(this);
     dbg('Clip initial state is %o', this.state);
+  }
+
+  handleSubmit() {
+    let text = this.state.editText.trim();
+    this.props.onEditSave(text);
   }
 
   onMouseEnter(e) {
     e.preventDefault();
     this.setState({
-      removeButton: 'cog js-remove',
+      removeButton: 'cog ',
       editButton: this.state.editClick ? 'active' : ''
     });
     dbg('On Mouse enter: state change to %o', this.state);
@@ -39,7 +43,7 @@ class Clip extends React.Component {
   onMouseLeave(e) {
     e.preventDefault();
     this.setState({
-      removeButton: 'cog js-remove hide',
+      removeButton: 'cog hide',
       editButton: this.state.editClick ? 'active' : 'hide'
     });
     dbg('On Mouse leave: state change to %o', this.state);
@@ -71,12 +75,8 @@ class Clip extends React.Component {
   }
 
   onTitleChange(e) {
-    e.preventDefault();
-    dbg('Title change: Change the state');
-    let id = e.target.id;
-    let pKey = e.target.getAttribute('data-key');
-    let title = e.target.value;
-    ClipActions.changeTitle(id, {name: title}, pKey);
+    dbg('Clip title change to: %s', e.target.value);
+    this.setState({editText: e.target.value});
   }
 
   render () {
@@ -105,7 +105,11 @@ class Clip extends React.Component {
           <div className="item-overlay hide"></div>
           <span className={this.state.removeButton}>
             <span className="cog-inner remove">
-              <span className="glyphicon glyphicon-remove-circle remove-circle"></span>
+              <span className="glyphicon glyphicon-remove-circle remove-circle"
+                id={id}
+                data-key={clip.id}
+                onClick={this.props.onDestory}>
+              </span>
             </span>
           </span>
           <a href={clip.detailUrl} className="link">
@@ -123,6 +127,7 @@ class Clip extends React.Component {
                 ref="titleInput"
                 id={id}
                 data-key={clip.id}
+                onBlur={this.handleSubmit.bind(this)}
                 onChange={this.onTitleChange.bind(this)} />
             </span>
             <div className="btn-group pull-right">

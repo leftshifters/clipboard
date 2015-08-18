@@ -10,6 +10,7 @@ import bodyParser from 'body-parser';
 import reqstore from 'reqstore';
 import bootcheck from '../lib/bootcheck';
 import disksize from '../lib/disksize';
+import upload from '../routes/upload';
 import logger from 'morgan';
 import routes from '../routes';
 
@@ -54,6 +55,7 @@ disksize(function onsize(total, free) {
     total: total,
     free: free
   };
+  server.locals({ disksize: { total: total, free: free } });
 });
 
 // get clips
@@ -64,6 +66,13 @@ server.post('/api/clip/:id', [
   routes.validateName,
   routes.editItem,
   routes.updateSearchIndex,
+  routes.ok
+]);
+server.delete('/api/clip/:id', [
+  routes.validateId,
+  routes.deleteItem,
+  upload.diskspace,
+  routes.removeSearchIndex,
   routes.ok
 ]);
 

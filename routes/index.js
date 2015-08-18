@@ -167,6 +167,9 @@ exports.editItem = function(req, res, next) {
   var id = req.store.id;
   var name = req.store.name;
 
+  console.log(id);
+  console.log(name);
+
   function done(err) {
     if (err) {
       return res.send(500);
@@ -182,7 +185,7 @@ exports.editItem = function(req, res, next) {
 
     db.collection('uploads')
       .update({
-        _id: ObjectId(id)
+        _id: new ObjectId(id)
       }, {
         '$set': {
           name: name
@@ -205,7 +208,7 @@ exports.deleteItem = function(req, res, next) {
     items = db.collection('uploads');
     items
       .findOne({
-        _id: ObjectId(id)
+        _id: new ObjectId(id)
       }, function(err, item) { // eslint-disable-line no-shadow, new-cap
         if (err) {
           return next(err);
@@ -222,7 +225,7 @@ exports.deleteItem = function(req, res, next) {
         }
 
         items.remove({
-          _id: ObjectId(id)
+          _id: new ObjectId(id)
         }, function(err) { // eslint-disable-line no-shadow, new-cap
           if (err) {
             return next(err);
@@ -230,7 +233,8 @@ exports.deleteItem = function(req, res, next) {
 
           cliputils.removeFiles(toremove, function(err) { // eslint-disable-line no-shadow
             if (err) {
-              return res.send(500);
+              next();
+              // return res.send(500);
             }
 
             next();
@@ -349,6 +353,7 @@ exports.root = function(req, res, next) { // eslint-disable-line no-unused-vars
 };
 
 exports.ok = function(req, res) {
+  console.log('Comming here');
   return res.json({
     data: req.store.data || {}
   });

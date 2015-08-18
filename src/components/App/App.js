@@ -5,7 +5,7 @@ import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-
 import Header from '../Header';
 import NotFoundPage from '../NotFoundPage';
 import Container from '../Container';
-import Dashboard from '../Dashboard';
+import ClipApp from '../ClipApp';
 import debug from 'debug';
 let dbg = debug('clipboard:app');
 
@@ -20,7 +20,7 @@ class App extends React.Component {
     switch (this.props.path) {
       case '/':
         header = <Header version={this.props.version} />;
-        component = <Dashboard />;
+        component = <ClipApp />;
         break;
     }
 

@@ -1,5 +1,5 @@
 import BaseStore from './BaseStore';
-import {SET_CLIPS} from '../constants/ClipConstants';
+import {SET_CLIPS, CHANGE_TITLE, DELETE_CLIP} from '../constants/ClipConstants';
 
 class ClipsStore extends BaseStore {
   constructor() {
@@ -11,6 +11,14 @@ class ClipsStore extends BaseStore {
     switch (action.actionType) {
       case SET_CLIPS:
         this.clips = action.payload.clips;
+        this.emitChange();
+        break;
+      case CHANGE_TITLE:
+        this.clip = action.payload.clips;
+        this.emitChange();
+        break;
+      case DELETE_CLIP:
+        this.clip = action.payload.clips;
         this.emitChange();
         break;
       default:

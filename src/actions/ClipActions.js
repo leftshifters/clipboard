@@ -1,10 +1,27 @@
 import apiUtils from '../utils/apiUtils';
 import Dispatcher from '../core/Dispatcher';
-import {CHANGE_TITLE} from '../constants/ClipConstants';
+import {SET_CLIPS, CHANGE_TITLE, DELETE_CLIP} from '../constants/ClipConstants';
 import debug from 'debug';
 let dbg = debug('clipboard:clipaction');
 
 export default {
+  getClips() {
+    apiUtils.getClips()
+      .then((res) => {
+        Dispatcher.dispatch({
+          actionType: SET_CLIPS,
+          payload: {
+            clips: res.clips
+          }
+        });
+      })
+      .catch((err) => {
+        if (err.status === 401) {
+          dbg('Error is %o', err);
+        }
+      });
+  },
+
   changeTitle(id, title, pKey) {
     dbg('Change title action invoked');
     apiUtils.changeTitle(id, title, pKey)
@@ -12,12 +29,26 @@ export default {
         Dispatcher.dispatch({
           actionType: CHANGE_TITLE,
           payload: {
-            clip: res.clip
+            clip: res.clips
           }
         });
       })
       .catch((err) => {
         dbg('Error is %o', err);
       });
+  },
+
+  deleteClip(id, pKey) {
+    dbg('Delete clip action invoked');
+    apiUtils.deleteClip(id, pKey)
+    .then((res) => {
+      Dispatcher.dispatch({
+        actionType: DELETE_CLIP,
+        payload: res.clips
+      });
+    })
+    .catch((err) => {
+      dbg('Error is %o', err);
+    });
   }
 };

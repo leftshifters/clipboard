@@ -1,17 +1,17 @@
 import React, {PropTypes} from 'react'; // eslint-disable-line no-unused-vars
-import Styles from './Dashboard.less'; // eslint-disable-line no-unused-vars
+import Styles from './ClipApp.less'; // eslint-disable-line no-unused-vars
 import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-unused-vars
 import Row from '../Row';
 import UploadBox from '../UploadBox';
-import Clips from '../Clips';
+import Clip from '../Clip';
 import Loader from '../Loader';
 import ClipsStore from '../../stores/ClipStore';
-import DashBoardActions from '../../actions/DashBoardActions';
+import ClipActions from '../../actions/ClipActions';
 import debug from 'debug';
 let dbg = debug('clipboard:dashboard');
 
 @withStyles(Styles)
-class Dashboard extends React.Component {
+class ClipApp extends React.Component {
 
   constructor(props, context) {
     super(props, context);
@@ -28,7 +28,7 @@ class Dashboard extends React.Component {
 
   componentDidMount() {
     ClipsStore.addChangeListener(this.onStoreChange);
-    DashBoardActions.getClips();
+    ClipActions.getClips();
   }
 
   componentWillUnmount() {
@@ -37,7 +37,17 @@ class Dashboard extends React.Component {
 
   onStoreChange() {
     dbg('State change and render view');
+    dbg('Store change %o', arguments);
     this.setState(this.getStateFromStore());
+  }
+
+  onEditSave(clip, text) {
+    dbg('Title change: Change the state');
+    ClipActions.changeTitle(clip._id, {name: text}, clip.id); // eslint-disable-line no-underscore-dangle
+  }
+
+  destroy(clip) {
+    ClipActions.deleteClip(clip._id, clip.id); // eslint-disable-line no-underscore-dangle
   }
 
   get FileUploadForm() {
@@ -54,15 +64,34 @@ class Dashboard extends React.Component {
     );
   }
 
+  get Clips() {
+    let clips = [];
+    if(this.state.clips && this.state.clips.length > 0) {
+      this.state.clips.map((clip, key) => {
+        clips.push(
+          <Clip
+            key={key}
+            clip={clip}
+            onEditSave={this.onEditSave.bind(this, clip)}
+            onDestory={this.destroy.bind(this, clip)} />
+        );
+      });
+    }
+
+    return clips;
+  }
+
   render() {
     return (
       <Row>
         {this.FileUploadForm}
         <Loader loading={this.state.loading} />
-        <Clips clips={this.state.clips} />
+        <div className="clips">
+          {this.Clips}
+        </div>
       </Row>
     );
   }
 }
 
-export default Dashboard;
+export default ClipApp;
