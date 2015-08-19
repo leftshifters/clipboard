@@ -14,6 +14,8 @@ class Clip extends React.Component {
 
   constructor(props, context) {
     super(props, context);
+    dbg(context);
+
     this.state = {
       removeButton: 'cog js-remove hide',
       editButton: 'hide',
