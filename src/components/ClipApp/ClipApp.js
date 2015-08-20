@@ -17,12 +17,10 @@ class ClipApp extends React.Component {
     super(props, context);
     this.state = this.getStateFromStore();
     this.onStoreChange = this.onStoreChange.bind(this);
-    this.contextTypes = { // eslint-disable-
-      executeAction: React.PropTypes.func.isRequired
-    };
   }
 
   getStateFromStore() {
+    dbg('Clips from store are %o', ClipsStore.clips);
     return {
       clips: ClipsStore.clips,
       loading: ClipsStore.clips && ClipsStore.clips.length > 0 ? false : true
@@ -49,13 +47,8 @@ class ClipApp extends React.Component {
     ClipActions.changeTitle(clip._id, {name: text}, clip.id); // eslint-disable-line no-underscore-dangle
   }
 
-  destroy(clip, e) {
-    // console.log(e);
-    // console.log(clip);
-    // console.log(React.findDOMNode(e.target).parentNode);
-    console.log(this.contextTypes);
-    // ClipActions.deleteClip(clip._id, clip.id); // eslint-disable-line no-underscore-dangle
-    // React.unmountComponentAtNode(this._rootNodeID);// eslint-disable-line no-underscore-dangle
+  destroy(clip) {
+    ClipActions.deleteClip(clip._id, clip.id); // eslint-disable-line no-underscore-dangle
   }
 
   get FileUploadForm() {

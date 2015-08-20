@@ -20,7 +20,7 @@ export default {
               return reject(new Error('Internal server error'));
             }
 
-            dbg('Got data!!');
+            dbg('Got data!! %o', res.body);
             return resolve({
               'data': res.body.data
             });

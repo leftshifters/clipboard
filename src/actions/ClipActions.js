@@ -8,6 +8,7 @@ export default {
   getClips() {
     apiUtils.getClips()
       .then((res) => {
+        dbg('Got clips in actions %o', res);
         Dispatcher.dispatch({
           actionType: SET_CLIPS,
           payload: {
@@ -39,9 +40,9 @@ export default {
   },
 
   deleteClip(id, pKey) {
-    dbg('Delete clip action invoked');
     apiUtils.deleteClip(id, pKey)
     .then((res) => {
+      dbg('Got response after deleting clips %o', res);
       Dispatcher.dispatch({
         actionType: DELETE_CLIP,
         payload: res.clips

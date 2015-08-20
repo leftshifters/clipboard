@@ -14,11 +14,11 @@ class ClipsStore extends BaseStore {
         this.emitChange();
         break;
       case CHANGE_TITLE:
-        this.clip = action.payload.clips;
+        this.clips = action.payload.clips;
         this.emitChange();
         break;
       case DELETE_CLIP:
-        this.clip = action.payload.clips;
+        this.clips = action.payload.clips;
         this.emitChange();
         break;
       default:

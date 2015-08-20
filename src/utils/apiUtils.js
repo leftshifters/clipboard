@@ -18,49 +18,72 @@ if(!db || window.indexedDB) {
 
 export default {
   // Do Ajax;
-  _fetch(reject, resolve) {
-    basicUtils
-    .get('api/clips')
-    .then((res) => {
-      if(!db) {
-        return resolve({'clips': res.data.items});
-      }
-
-      let clips = db.transaction('rw', db.clips, () => {
-        res.data.items.forEach((clip) => {
-          db.clips.add(clip);
-        });
+  //
+  _fetch(cb) {
+    db.on('ready', () => {
+      return db.clips.count((count) => {
+        if (count > 0) {
+          dbg('Records count is %s', count);
+          cb(null);
+        } else {
+          basicUtils
+            .get('api/clips')
+            .then((res) => {
+              dbg('Base utils promised resolve %o', res);
+              cb(null, res.data.items);
+            })
+            .error((err) => {
+              cb(err);
+            });
+        }
       });
-
-      return resolve({'clips': clips});
-    })
-    .error((err) => {
-      return reject(err);
     });
   },
 
   getClips() {
     return new Promise((resolve, reject) => {
       if(!db) {
-        return this._fetch(resolve, reject); // eslint-disable-line no-underscore-dangle
-      }
+        basicUtils
+          .get('api/clips')
+          .then((res) => {
+            return resolve({'clips': res.data.items});
+          })
+          .error((err) => {
+            return reject(err);
+          });
+      } else {
+        dbg('Fetching records from IndexDB');
+        this._fetch((err, fetched) => { // eslint-disable-line no-underscore-dangle
+          if(err) {
+            return reject(err);
+          }
 
-      dbg('Fetching records from IndexDB');
-      db.on('ready', () => {
-        return db.clips.count((count) => {
-          if (count > 0) {
-            dbg('Records count is %s', count);
+          if(!fetched) {
             db.clips
               .toArray()
               .then((clips) => {
-                dbg('Got clips %o ', clips);
-                return resolve({'clips': clips});
+                return resolve({clips: clips});
               });
           } else {
-            return this._fetch(resolve, reject); // eslint-disable-line no-underscore-dangle
+            db.open();
+            db.on('ready', () => {
+              db.transaction('rw', db.clips, () => {
+                fetched.forEach(function (item) {
+                  dbg('Adding object: %o', item);
+                  db.clips.add(item);
+                });
+              })
+              .then(() => {
+                db.clips
+                  .toArray()
+                  .then((clips) => {
+                    return resolve({clips: clips});
+                  });
+              });
+            });
           }
         });
-      });
+      }
     });
   },
 
@@ -107,20 +130,23 @@ export default {
           return resolve(res);
         }
 
-        db.clips
-        .delete(parseInt(pKey))
-        .then(() => {
-          dbg('Deleted clip with index %s', pKey);
+        db.open();
+        db.on('ready', () => {
           db.clips
-          .toArray()
-          .then((clips) => {
-            dbg('Got clips %o ', clips);
-            return resolve({'clips': clips});
+            .delete(parseInt(pKey))
+            .then(() => {
+              dbg('Deleted clip with index %s', pKey);
+              db.clips
+                .toArray()
+                .then((clips) => {
+                  dbg('Got clips %o ', clips);
+                  return resolve({'clips': clips});
+                });
+              })
+              .catch((err) => {
+                return reject(err);
+              });
           });
-        })
-        .catch((err) => {
-          return reject(err);
-        });
       });
     });
   }
