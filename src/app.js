@@ -3,8 +3,9 @@ import React from 'react';
 import FastClick from 'fastclick';
 import App from './components/App';
 import AppStore from './stores/AppStore';
+import pack, {version} from '../package.json'; // eslint-disable-line no-unused-vars
 
-let path = decodeURI(window.location.pathname);
+let urlPath = decodeURI(window.location.pathname);
 let onSetMeta = (name, content) => {
   // Remove and create a new <meta /> tag in order to make it work
   // with bookmarks in Safari
@@ -22,7 +23,8 @@ let onSetMeta = (name, content) => {
 
 function run() {
   let props = {
-    path: path,
+    path: urlPath,
+    version: version,
     context: {
       onSetTitle: value => document.title = value,
       onSetMeta

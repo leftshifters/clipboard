@@ -14,6 +14,7 @@ import upload from '../routes/upload';
 import logger from 'morgan';
 import routes from '../routes';
 
+const pack = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'));
 const server = express();
 
 process.title = 'Clipboard';
@@ -79,14 +80,16 @@ server.delete('/api/clip/:id', [
 server.get('/', async (req, res, next) => {
   try {
     let notFound = false;
-    let css = [];
-    let data = {description: ''};
-    data.css = css.join('');
-    data.size = size;
+    let data = {
+      size: size,
+      version: pack.version
+    };
     let html = template(data);
+
     if (notFound) {
       res.status(404);
     }
+
     res.send(html);
   } catch (err) {
     next(err);

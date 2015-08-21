@@ -20,7 +20,6 @@ exports.fetch = function(req, res, next) {
   });
 };
 
-
 /*
  * Generate QR code
  */
