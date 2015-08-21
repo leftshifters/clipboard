@@ -83,6 +83,7 @@ class ClipApp extends React.Component {
   }
 
   render() {
+    dbg('CAUTION!!!!! Rerendering react view');
     return (
       <Row>
         {this.FileUploadForm}

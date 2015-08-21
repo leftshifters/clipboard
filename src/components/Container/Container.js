@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 class Container {
   render() {
-    return (<div className={classNames(this.props.className, 'container')}>{this.props.children}</div>);
+    return (<div {...this.props} className={classNames(this.props.className, 'container')}>{this.props.children}</div>);
   }
 }
 
