@@ -4,14 +4,14 @@ import withContext from '../../decorators/withContext'; // eslint-disable-line n
 import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-unused-vars
 import Header from '../Header';
 import NotFoundPage from '../NotFoundPage';
+import FileActions from '../../actions/FileActions';
 import Container from '../Container';
 import ClipApp from '../ClipApp';
 import debug from 'debug';
 import Dropzone from '../Dropzone';
-import {defer} from 'underscore';
 
 let dbg = debug('clipboard:app');
-let counter = 0;
+var counter = 0;
 
 @withContext
 @withStyles(styles)
@@ -19,39 +19,41 @@ class App extends React.Component {
 
   constructor(props, context) {
     super(props, context);
+    this.state = {
+      dragClass: 'drop-container inactive'
+    };
   }
 
-  dragOver(e) {
+  handleDragEnter(e) {
     e.preventDefault();
-    if(counter++ === 0) {
-      dbg('On drag over call %s', counter);
-      React.findDOMNode(this.refs.dropzone).className = 'drop-container active';
+    e.stopPropagation();
+    if(counter === 0) {
+      counter++;
+      dbg('Drag counter is %s', counter);
+      this.setState({
+        dragClass: 'drop-container active'
+      });
     }
   }
 
-  // dragOut(e) {
-  //   e.preventDefault();
-  //   e.stopPropagation();
-  //   dbg('Ondrag out call');
-  //   dragActive = false;
-  //   React.findDOMNode(this.refs.dropzone).className = 'drop-container inactive';
-  // }
-  //
-  // dragStart(e) {
-  //   e.preventDefault();
-  //   e.stopPropagation();
-  //   dbg('Drag Start');
-  //   if(dragActive) {
-  //     return false;
-  //   }
-  // }
-  //
-  dragEnd(e) {
+  handleDragLeave(e) {
     e.preventDefault();
-    alert(--counter);
-    if(--counter === 0) {
-      dbg('Drag end %s', counter);
+    e.stopPropagation();
+    if(counter === 1) {
+      counter--;
+      dbg('Leave Counter is %s', counter);
+      this.setState({
+        dragClass: 'drop-container inactive'
+      });
     }
+  }
+
+  onDrop(file) {
+    dbg('Received files %o', file);
+    this.setState({
+      dragClass: 'drop-container inactive'
+    });
+    FileActions.dropFile(file);
   }
 
   render() {
@@ -67,13 +69,14 @@ class App extends React.Component {
 
     return component ? (
       <Container
-        onDragEnter={this.dragOver.bind(this)}
-        onDragLeave={this.dragEnd.bind(this)}>
+        onDragEnter={this.handleDragEnter.bind(this)}
+        onMouseLeave={this.handleDragLeave.bind(this)}>
         {header}
         <Dropzone
           ref="dropzone"
-          className="drop-container inactive"
+          className={this.state.dragClass}
           supportClick={true}
+          onDrop={this.onDrop.bind(this)}
           multiple={false} />
         {component}
       </Container>

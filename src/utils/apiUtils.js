@@ -133,20 +133,20 @@ export default {
         db.open();
         db.on('ready', () => {
           db.clips
-            .delete(parseInt(pKey))
-            .then(() => {
-              dbg('Deleted clip with index %s', pKey);
-              db.clips
-                .toArray()
-                .then((clips) => {
-                  dbg('Got clips %o ', clips);
-                  return resolve({'clips': clips});
-                });
-              })
-              .catch((err) => {
-                return reject(err);
-              });
+          .delete(parseInt(pKey))
+          .then(() => {
+            dbg('Deleted clip with index %s', pKey);
+            db.clips
+            .toArray()
+            .then((clips) => {
+              dbg('Got clips %o ', clips);
+              return resolve({'clips': clips});
+            });
+          })
+          .catch((err) => {
+            return reject(err);
           });
+        });
       });
     });
   }
