@@ -61,7 +61,7 @@ disksize(function onsize(total, free) {
 
 // get clips
 //
-server.get('/api/clips', routes.index);
+server.get('/api/clips/:page', routes.page, routes.index);
 server.post('/api/clip/:id', [
   routes.validateId,
   routes.validateName,
@@ -77,7 +77,7 @@ server.delete('/api/clip/:id', [
   routes.ok
 ]);
 
-server.get('/', async (req, res, next) => {
+server.get('*', async (req, res, next) => {
   try {
     let notFound = false;
     let data = {

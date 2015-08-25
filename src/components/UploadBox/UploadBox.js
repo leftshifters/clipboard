@@ -6,8 +6,8 @@ import TextBox from '../TextBox';
 import FormGroup from '../FormGroup';
 import Button from '../Button';
 import debug from 'debug';
-let dbg = debug('clipboard:uplaodbox');
 
+const log = debug('clipboard:uplaodbox');
 const uploadPlaceholder = 'clipboard';
 
 @withStyles(Styles)
@@ -20,7 +20,7 @@ class UploadBox extends React.Component {
   }
 
   getStateFromStore() {
-    dbg('Files from store are %o', FileStore.files);
+    log('Files from store are %o', FileStore.files);
     return {
       files: FileStore.files,
       inputName: FileStore.files && FileStore.files[0] ? FileStore.files[0].name : '',
@@ -44,7 +44,7 @@ class UploadBox extends React.Component {
   }
 
   onStoreChange() {
-    dbg('State change and render view');
+    log('State change and render view');
     this.setState(this.getStateFromStore());
   }
 
@@ -67,11 +67,11 @@ class UploadBox extends React.Component {
 
   uplaodFile(e) {
     e.preventDefault();
-    // let files = this.state.files;
-    // dbg('Got files in uplaod %o', files);
-    // if(files && files[0]) {
-
-    // }
+    /*let files = this.state.files;
+    log('Got files in uplaod %o', files);
+    if(files && files[0]){
+      log('Uploaded file is %o', files[0]);
+    }*/
   }
 
   render() {

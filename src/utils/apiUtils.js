@@ -1,16 +1,17 @@
 // import Dexie from 'dexie';
-import basicUtils from './basicUtils';
 import debug from 'debug';
+import basicUtils from './basicUtils';
 
-let db = null;
-let dbg = debug('clipboard:apiutil');
+const log = debug('clipboard:apiutil');
+let db;
 
 if(!db || window.indexedDB) {
-  dbg('Initializing indexDB');
+  log('Initializing indexDB');
   db = new window.Dexie('clipboard');
 
   db.version(1).stores({
-    clips: '++id,hash,basename,basenameWithoutExt,extension,originalName,relativePathShort,relativePathLong,relativeThumbPathShort,relativeThumbPathLong,mime,name,type,bundleId,created,createdms,url,detailUrl,timeago'
+    clips: '++id,page,hash,basename,basenameWithoutExt,extension,originalName,relativePathShort,relativePathLong,relativeThumbPathShort,relativeThumbPathLong,mime,name,type,bundleId,created,createdms,url,detailUrl,timeago',
+    pages: '++id,leftArrow,more,nextPageLink,page,prevPageLink,query,rightArrow,searchBtn,searchIcon'
   });
 
   db.open();
@@ -19,41 +20,69 @@ if(!db || window.indexedDB) {
 export default {
   // Do Ajax;
   //
-  _fetch(cb) {
+  _fetch(url, p, cb) {
+    db.open();
+    db.on('error', function(e) { console.error(e.stack || e); });
     db.on('ready', () => {
-      return db.clips.count((count) => {
-        if (count > 0) {
-          dbg('Records count is %s', count);
-          cb(null);
-        } else {
-          basicUtils
-            .get('api/clips')
-            .then((res) => {
-              dbg('Base utils promised resolve %o', res);
-              cb(null, res.data.items);
-            })
-            .error((err) => {
-              cb(err);
-            });
-        }
-      });
+      log('Got page %s', p);
+      return db
+        .clips
+        .where('page')
+        .equals(p)
+        .count((count) => {
+          log('Count %s', count);
+          log('Records count is %s', count);
+          if(count > 0) {
+            cb(null);
+          } else {
+            basicUtils
+              .get(url)
+              .then((res) => {
+                log('Base utils promised resolve %o', res);
+                cb(null, res.data);
+              })
+              .error((err) => {
+                cb(err);
+              });
+          }
+        });
     });
   },
 
-  getClips() {
+  getClips(p) {
+    if(!p) {
+      p = 1;
+    }
+
+    let url = `/api/clips/${p}`;
+
     return new Promise((resolve, reject) => {
       if(!db) {
         basicUtils
-          .get('api/clips')
+          .get(url)
           .then((res) => {
-            return resolve({'clips': res.data.items});
+            let page = {
+              'leftArrow': res.data.leftArrow,
+              'more': res.data.more,
+              'nextPageLink': res.data.nextPageLink,
+              'page': res.data.page,
+              'prevPageLink': res.data.prevPageLink,
+              'query': res.data.query,
+              'rightArrow': res.data.rightArrow,
+              'searchBtn': res.data.searchBtn,
+              'searchIcon': res.data.searchIcon
+            };
+            return resolve({
+              'clips': res.data.items,
+              'pages': page
+            });
           })
           .error((err) => {
             return reject(err);
           });
       } else {
-        dbg('Fetching records from IndexDB');
-        this._fetch((err, fetched) => { // eslint-disable-line no-underscore-dangle
+        log('Fetching records from IndexDB');
+        this._fetch(url, p, (err, fetched) => { // eslint-disable-line no-underscore-dangle
           if(err) {
             return reject(err);
           }
@@ -62,14 +91,41 @@ export default {
             db.clips
               .toArray()
               .then((clips) => {
-                return resolve({clips: clips});
+                log('Fetched array from store %o', clips);
+                db.pages
+                  .toArray()
+                  .then((pages) => {
+                    return resolve({
+                      'pages': pages,
+                      'clips': clips
+                    });
+                  });
               });
           } else {
             db.open();
             db.on('ready', () => {
-              db.transaction('rw', db.clips, () => {
-                fetched.forEach(function (item) {
-                  dbg('Adding object: %o', item);
+              db.transaction('rw', db.clips, db.pages, () => {
+                log('fetched data is %o', fetched);
+                db.clips.clear();
+                db.pages.clear();
+
+                let page = {
+                  'leftArrow': fetched.leftArrow,
+                  'more': fetched.more,
+                  'nextPageLink': fetched.nextPageLink,
+                  'page': fetched.page,
+                  'prevPageLink': fetched.prevPageLink,
+                  'query': fetched.query,
+                  'rightArrow': fetched.rightArrow,
+                  'searchBtn': fetched.searchBtn,
+                  'searchIcon': fetched.searchIcon
+                };
+
+                log('Paginate is %o', page);
+                db.pages.add(page);
+                fetched.items.forEach(function (item) {
+                  log('Adding object: %o', item);
+                  item.page = fetched.page + 1;
                   db.clips.add(item);
                 });
               })
@@ -77,7 +133,15 @@ export default {
                 db.clips
                   .toArray()
                   .then((clips) => {
-                    return resolve({clips: clips});
+                    log('Fetched array from store %o', clips);
+                    db.pages
+                      .toArray()
+                      .then((pages) => {
+                        return resolve({
+                          'pages': pages,
+                          'clips': clips
+                        });
+                      });
                   });
               });
             });
@@ -87,8 +151,43 @@ export default {
     });
   },
 
+  searchClips(q, p) {
+    if(!p) {
+      p = 1;
+    }
+
+    let url = `/api/clips/${p}?q=${q}`;
+
+    return new Promise((resolve, reject) => {
+      basicUtils
+        .get(url)
+        .then((res) => {
+          let page = {
+            'leftArrow': res.data.leftArrow,
+            'more': res.data.more,
+            'nextPageLink': res.data.nextPageLink,
+            'page': res.data.page,
+            'prevPageLink': res.data.prevPageLink,
+            'query': res.data.query,
+            'rightArrow': res.data.rightArrow,
+            'searchBtn': res.data.searchBtn,
+            'searchIcon': res.data.searchIcon
+          };
+
+          return resolve({
+            'clips': res.data.items,
+            'pages': page
+          });
+
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  },
+
   changeTitle(id, title, pkey) {
-    dbg('Got Id : %s and title %o and pKey %s', id, title, pkey);
+    log('Got Id : %s and title %o and pKey %s', id, title, pkey);
     return new Promise((resolve, reject) => {
       basicUtils
       .post('api/clip/' + id, title)
@@ -100,17 +199,17 @@ export default {
         db.clips
         .update(parseInt(pkey, 10), title)
         .then((updated) => {
-          dbg('Updated value is %o', updated);
+          log('Updated value is %o', updated);
           if(updated > 0) {
-            dbg('Updated clip title successfully: %o', title);
+            log('Updated clip title successfully: %o', title);
           } else {
-            dbg('Error while updating title in IndexDB: %o', title);
+            log('Error while updating title in IndexDB: %o', title);
           }
 
           db.clips
           .toArray()
           .then((clips) => {
-            dbg('Got clips %o ', clips);
+            log('Got clips %o ', clips);
             return resolve({'clips': clips});
           });
         });
@@ -135,11 +234,11 @@ export default {
           db.clips
           .delete(parseInt(pKey))
           .then(() => {
-            dbg('Deleted clip with index %s', pKey);
+            log('Deleted clip with index %s', pKey);
             db.clips
             .toArray()
             .then((clips) => {
-              dbg('Got clips %o ', clips);
+              log('Got clips %o ', clips);
               return resolve({'clips': clips});
             });
           })

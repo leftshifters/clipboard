@@ -10,7 +10,7 @@ import ClipApp from '../ClipApp';
 import debug from 'debug';
 import Dropzone from '../Dropzone';
 
-let dbg = debug('clipboard:app');
+const log = debug('clipboard:app');
 var counter = 0;
 
 @withContext
@@ -29,7 +29,7 @@ class App extends React.Component {
     e.stopPropagation();
     if(counter === 0) {
       counter++;
-      dbg('Drag counter is %s', counter);
+      log('Drag counter is %s', counter);
       this.setState({
         dragClass: 'drop-container active'
       });
@@ -41,7 +41,7 @@ class App extends React.Component {
     e.stopPropagation();
     if(counter === 1) {
       counter--;
-      dbg('Leave Counter is %s', counter);
+      log('Leave Counter is %s', counter);
       this.setState({
         dragClass: 'drop-container inactive'
       });
@@ -49,7 +49,7 @@ class App extends React.Component {
   }
 
   onDrop(file) {
-    dbg('Received files %o', file);
+    log('Received files %o', file);
     this.setState({
       dragClass: 'drop-container inactive'
     });
@@ -57,13 +57,23 @@ class App extends React.Component {
   }
 
   render() {
-    dbg('Rendering main app');
-    var header, component;
+    log('Rendering main app');
+    let header, component;
+
+    if(this.props.path.indexOf('/page') >= 0) {
+      this.props.path = '/page';
+    }
 
     switch (this.props.path) {
       case '/':
         header = <Header version={this.props.version} />;
         component = <ClipApp />;
+        break;
+      case '/page':
+        header = <Header version={this.props.version} />;
+        component = <ClipApp />;
+        break;
+      default:
         break;
     }
 

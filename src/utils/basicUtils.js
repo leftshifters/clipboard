@@ -1,26 +1,26 @@
-import http from 'superagent';
 import debug from 'debug';
-let dbg = debug('clipboard:baseutil');
+import http from 'superagent';
+
+const log = debug('clipboard:baseutil');
 
 export default {
   get(api) {
-      dbg('Get AJAX Invoked with API %s', api);
       return new Promise((resolve, reject) => {
         http
           .get(api)
           .accept('application/json')
           .end((err, res) => {
             if (err) {
-              dbg('API %s return with error %o', api, err);
+              log('GET-ERROR >> %s >> %o', api, err);
               return reject(err);
             }
 
             if (res.status !== 200) {
-              dbg('Return error as status is not 200');
+              log('GET-REJECTED >> %s >> %o', api, res);
               return reject(new Error('Internal server error'));
             }
 
-            dbg('Got data!! %o', res.body);
+            log('GET >> %s >> %o >> %s', api, res.body.data, res.status);
             return resolve({
               'data': res.body.data
             });
@@ -29,7 +29,6 @@ export default {
     },
 
     post(api, postParams) {
-      dbg('POST AJAX Invoked with API %s and post params %o', api, postParams);
       return new Promise((resolve, reject) => {
         http
           .post(api)
@@ -37,13 +36,16 @@ export default {
           .send(postParams)
           .end((err, res) => {
             if (err) {
+              log('POST-ERROR >> %s >> %o', api, err);
               return reject(err);
             }
 
             if (res.status !== 200) {
+              log('POST-REJECTED >> %s >> %o', api, res);
               return reject(new Error('Internal server error'));
             }
 
+            log('POST >> %s >> %o >> %s', api, res.body.data, res.status);
             return resolve({
               'data': res.body.data
             });
@@ -52,16 +54,17 @@ export default {
     },
 
     delete(api) {
-      dbg('DELETE AJAX Invoked with API %s', api);
       return new Promise((resolve, reject) => {
         http
           .del(api)
           .end((err, res) => {
             if (err) {
+              log('DELETE-ERROR >> %s >> %o', api, err);
               return reject(err);
             }
 
             if (res.status !== 200) {
+              log('DELETE-REJECTED >> %s >> %o', api, res);
               return reject(new Error('Internal server error'));
             }
 

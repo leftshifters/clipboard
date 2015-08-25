@@ -153,6 +153,7 @@ exports.detectify = function(req, res) {
 };
 
 exports.page = function(req, res, next) {
+  console.log(req.params);
   var page = parseInt(req.params.page, 10);
 
   if (page > 0) {

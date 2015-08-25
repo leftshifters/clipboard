@@ -23,13 +23,14 @@ class ClipApp extends React.Component {
     dbg('Clips from store are %o', ClipsStore.clips);
     return {
       clips: ClipsStore.clips,
-      loading: ClipsStore.clips && ClipsStore.clips.length > 0 ? false : true
+      loading: ClipsStore.clips ? false : true,
+      message: ClipsStore.clips && ClipsStore.clips.length === 0 ? true : false
     };
   }
 
   componentDidMount() {
     ClipsStore.addChangeListener(this.onStoreChange);
-    ClipActions.getClips();
+    ClipActions.getClips(1);
   }
 
   componentWillUnmount() {
