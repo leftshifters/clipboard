@@ -6,6 +6,7 @@ import Image from '../Image';
 import Button from '../Button';
 import TextBox from '../TextBox';
 import Extention from '../Extention';
+import Progressbar from '../Progressbar';
 
 const log = debug('clipboard:clip');
 
@@ -23,7 +24,9 @@ class Clip extends React.Component {
       atitle: '',
       editClick: false,
       editClikCount: 0,
-      editText: this.props.clip.name
+      editText: this.props.clip.name,
+      uplaoding: this.props.clip.uploading ? true : false,
+      percentage: 0
     };
     log('Clip initial state is %o', this.state);
   }
@@ -86,6 +89,17 @@ class Clip extends React.Component {
     this.setState({editText: e.target.value});
   }
 
+  componentDidMount() {
+    let percent = 0;
+
+    setInterval(() => {
+      percent += 10;
+      this.setState({
+        percentage: percent
+      });
+    }, 1000);
+  }
+
   render () {
     log('Rendering clip view');
     let editButtonClass = 'js-edit-button btn btn-default btn-xs ' + this.state.editButton;
@@ -95,7 +109,12 @@ class Clip extends React.Component {
     let id = clip._id; // eslint-disable-line no-underscore-dangle
     let thumb = '';
 
-    if(clip.type === 'image') {
+    if(clip.uploading) {
+       thumb = <Progressbar
+        strokeWidth="5"
+        r="40"
+        percentage={this.state.percentage} />
+    } else if(clip.type === 'image') {
       thumb = <Image clip={clip} />;
     } else {
       thumb = <Extention clip={clip} />;
@@ -145,7 +164,7 @@ class Clip extends React.Component {
                 buttonFor=<span className="glyphicon glyphicon-pencil"></span> />
             </div>
             <div>
-              <span className="small timeago-text">3 days ago</span>
+              <span className="small timeago-text">{clip.timeago}</span>
             </div>
           </div>
         </div>

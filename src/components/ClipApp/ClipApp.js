@@ -66,13 +66,15 @@ class ClipApp extends React.Component {
     let clips = [];
     if(this.state.clips && this.state.clips.length > 0) {
       this.state.clips.map((clip, key) => {
-        clips.push(
-          <Clip
-            key={key}
-            clip={clip}
-            onEditSave={this.onEditSave.bind(this, clip)}
-            onDestory={this.destroy.bind(this, clip)} />
-        );
+        if(key <= 18) {
+          clips.push(
+            <Clip
+              key={clip.id}
+              clip={clip}
+              onEditSave={this.onEditSave.bind(this, clip)}
+              onDestory={this.destroy.bind(this, clip)} />
+          );
+        }
       });
     }
 
@@ -85,7 +87,7 @@ class ClipApp extends React.Component {
       <Row>
         {this.FileUploadForm}
         <Loader loading={this.state.loading} />
-        <div className="clips">
+        <div className="clips" ref="clips">
           {this.Clips}
         </div>
       </Row>

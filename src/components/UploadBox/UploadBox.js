@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react'; // eslint-disable-line no-unused-vars
 import Styles from './UploadBox.less'; // eslint-disable-line no-unused-vars
 import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-unused-vars
 import FileStore from '../../stores/FileStore';
+import ClipActions from '../../actions/ClipActions';
 import TextBox from '../TextBox';
 import FormGroup from '../FormGroup';
 import Button from '../Button';
@@ -72,9 +73,22 @@ class UploadBox extends React.Component {
   uplaodFile(e) {
     e.preventDefault();
     let files = this.state.files;
+    let clip = {};
+
     log('Got files in uplaod %o', files);
-    if(files && files[0]){
-      log('Uploaded file is %o', files[0]);
+    if(files && files[0]) {
+      clip = {
+        _id: 'test1234',
+        uploading: true,
+        id: 'test123',
+        name: files[0].name,
+        originalName: files[0].name,
+        timeago: 'Just Now',
+        url: '#'
+      };
+
+      log('Uploaded file is %o', clip);
+      ClipActions.addClip(clip);
     }
   }
 

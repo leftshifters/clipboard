@@ -1,5 +1,5 @@
 import debug from 'debug';
-import { SET_CLIPS, CHANGE_TITLE, DELETE_CLIP } from '../constants/ClipConstants'; // eslint-disable-line no-unused-vars
+import {SET_CLIPS, CHANGE_TITLE, DELETE_CLIP, UPLOADING_CLIP} from '../constants/ClipConstants'; // eslint-disable-line no-unused-vars
 import {SET_PAGINATION} from '../constants/AppConstants';
 import Dispatcher from '../core/Dispatcher';
 import apiUtils from '../utils/apiUtils';
@@ -73,11 +73,23 @@ export default {
       log('Got response after deleting clips %o', res);
       Dispatcher.dispatch({
         actionType: DELETE_CLIP,
-        payload: res.clips
+        payload: {
+          clips: res.clips
+        }
       });
     })
     .catch((err) => {
       log('Error is %o', err);
+    });
+  },
+
+  addClip(clip) {
+    log('Got clip on actions %o', clip);
+    Dispatcher.dispatch({
+      actionType: UPLOADING_CLIP,
+      payload: {
+        clip: clip
+      }
     });
   }
 };
