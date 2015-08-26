@@ -11,6 +11,7 @@ import reqstore from 'reqstore';
 import bootcheck from '../lib/bootcheck';
 import disksize from '../lib/disksize';
 import upload from '../routes/upload';
+import clip from '../routes/clip';
 import logger from 'morgan';
 import routes from '../routes';
 

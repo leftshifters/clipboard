@@ -29,22 +29,25 @@ class UploadBox extends React.Component {
   }
 
   componentDidMount() {
+    log('Upload box mount');
     FileStore.addChangeListener(this.onStoreChange);
   }
 
   componentWillUnmount() {
+    log('Uplaod box unmount');
     FileStore.removeChangeListener(this.onStoreChange);
   }
 
   onChange(e) {
     e.preventDefault();
+    log('Change name of uplaod file');
     this.setState({
       inputName: this.value
     });
   }
 
   onStoreChange() {
-    log('State change and render view');
+    log('File store change');
     this.setState(this.getStateFromStore());
   }
 
@@ -56,6 +59,7 @@ class UploadBox extends React.Component {
   onFileChange(e) {
     e.preventDefault();
     let file = e.target.files[0];
+    log('File change %o', file);
     this.setState({
       files: [file],
       inputName: file.name,
@@ -67,14 +71,15 @@ class UploadBox extends React.Component {
 
   uplaodFile(e) {
     e.preventDefault();
-    /*let files = this.state.files;
+    let files = this.state.files;
     log('Got files in uplaod %o', files);
     if(files && files[0]){
       log('Uploaded file is %o', files[0]);
-    }*/
+    }
   }
 
   render() {
+    log('Rendering upload box');
     return (
       <div className="item add-dialog">
         <FormGroup className="form-group extra-margin">

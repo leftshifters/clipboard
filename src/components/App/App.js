@@ -9,6 +9,7 @@ import Container from '../Container';
 import ClipApp from '../ClipApp';
 import debug from 'debug';
 import Dropzone from '../Dropzone';
+import _ from 'lodash';
 
 const log = debug('clipboard:app');
 var counter = 0;
@@ -57,21 +58,25 @@ class App extends React.Component {
   }
 
   render() {
-    log('Rendering main app');
+    log('App start: rendering first view');
     let header, component;
+    let page = 1;
 
     if(this.props.path.indexOf('/page') >= 0) {
       this.props.path = '/page';
+      page = _.isNaN(_.parseInt(this.props.path.split('/').pop())) ?
+        1 :
+        _.parseInt(this.props.path.split('/').pop());
     }
 
     switch (this.props.path) {
       case '/':
         header = <Header version={this.props.version} />;
-        component = <ClipApp />;
+        component = <ClipApp page={page} />;
         break;
       case '/page':
         header = <Header version={this.props.version} />;
-        component = <ClipApp />;
+        component = <ClipApp page={page} />;
         break;
       default:
         break;
@@ -85,7 +90,7 @@ class App extends React.Component {
         <Dropzone
           ref="dropzone"
           className={this.state.dragClass}
-          supportClick={true}
+          supportClick={false}
           onDrop={this.onDrop.bind(this)}
           multiple={false} />
         {component}

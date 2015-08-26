@@ -1,5 +1,5 @@
 import debug from 'debug';
-import { SET_CLIPS, CHANGE_TITLE, DELETE_CLIP } from '../constants/ClipConstants';
+import { SET_CLIPS, CHANGE_TITLE, DELETE_CLIP } from '../constants/ClipConstants'; // eslint-disable-line no-unused-vars
 import {SET_PAGINATION} from '../constants/AppConstants';
 import Dispatcher from '../core/Dispatcher';
 import apiUtils from '../utils/apiUtils';
@@ -59,13 +59,8 @@ export default {
   changeTitle(id, title, pKey) {
     log('Change title action invoked');
     apiUtils.changeTitle(id, title, pKey)
-      .then((res) => {
-        Dispatcher.dispatch({
-          actionType: CHANGE_TITLE,
-          payload: {
-            clip: res.clips
-          }
-        });
+      .then(() => {
+        log('Title change');
       })
       .catch((err) => {
         log('Error is %o', err);

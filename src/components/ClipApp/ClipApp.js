@@ -8,7 +8,7 @@ import Loader from '../Loader';
 import ClipsStore from '../../stores/ClipStore';
 import ClipActions from '../../actions/ClipActions';
 import debug from 'debug';
-let dbg = debug('clipboard:dashboard');
+let log = debug('clipboard:dashboard');
 
 @withStyles(Styles)
 class ClipApp extends React.Component {
@@ -20,7 +20,7 @@ class ClipApp extends React.Component {
   }
 
   getStateFromStore() {
-    dbg('Clips from store are %o', ClipsStore.clips);
+    log('Fetched clips from store %o', ClipsStore.clips);
     return {
       clips: ClipsStore.clips,
       loading: ClipsStore.clips ? false : true,
@@ -29,26 +29,28 @@ class ClipApp extends React.Component {
   }
 
   componentDidMount() {
+    log('Clips component mount');
     ClipsStore.addChangeListener(this.onStoreChange);
-    ClipActions.getClips(1);
+    ClipActions.getClips(this.props.page);
   }
 
   componentWillUnmount() {
+    log('Clips component unmount');
     ClipsStore.removeChangeListener(this.onStoreChange);
   }
 
   onStoreChange() {
-    dbg('State change and render view');
-    dbg('Store change %o', arguments);
+    log('Clip Store change');
     this.setState(this.getStateFromStore());
   }
 
   onEditSave(clip, text) {
-    dbg('Title change: Change the state');
+    log('Clip title change: Change the state');
     ClipActions.changeTitle(clip._id, {name: text}, clip.id); // eslint-disable-line no-underscore-dangle
   }
 
   destroy(clip) {
+    log('Deleted clip: Store change');
     ClipActions.deleteClip(clip._id, clip.id); // eslint-disable-line no-underscore-dangle
   }
 
@@ -57,12 +59,6 @@ class ClipApp extends React.Component {
       <div className="col-lg-3 col-xs-12 col-md-4 col-sm-6 item-row">
        <UploadBox />
       </div>
-    );
-  }
-
-  get MemoryInfo() {
-    return (
-      <span className="lead">410.69gb</span>
     );
   }
 
@@ -84,7 +80,7 @@ class ClipApp extends React.Component {
   }
 
   render() {
-    dbg('CAUTION!!!!! Rerendering react view');
+    log('Rendering clip view');
     return (
       <Row>
         {this.FileUploadForm}

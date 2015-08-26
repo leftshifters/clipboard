@@ -1,13 +1,9 @@
 import React from 'react'; // eslint-disable-line no-unused-vars
 import TextBox from '../TextBox';
-import Form from '../Form';
 import FormGroup from '../FormGroup';
 import ClipActions from '../../actions/ClipActions';
-import debug from 'debug';
 
-const log = debug('clipboard:search');
-let origin = document.location.origin;
-
+const origin = document.location.origin;
 const searchPlaceholder = 'Search';
 
 class SearchForm extends React.Component {
@@ -50,7 +46,7 @@ class SearchForm extends React.Component {
 
   submitsearch(e) {
     e.preventDefault();
-    ClipActions.searchClips(this.state.searchText, 0);
+    ClipActions.searchClips(this.state.searchText, 1);
   }
 
   render() {

@@ -1,11 +1,13 @@
 import React, {PropTypes} from 'react'; // eslint-disable-line no-unused-vars
+import {defer} from 'underscore';
+import _ from 'lodash';
+import debug from 'debug';
 import Image from '../Image';
 import Button from '../Button';
 import TextBox from '../TextBox';
 import Extention from '../Extention';
-import {defer} from 'underscore';
-import debug from 'debug';
-let dbg = debug('clipboard:clip');
+
+const log = debug('clipboard:clip');
 
 class Clip extends React.Component {
   static propTypes = {
@@ -23,12 +25,17 @@ class Clip extends React.Component {
       editClikCount: 0,
       editText: this.props.clip.name
     };
-    dbg('Clip initial state is %o', this.state);
+    log('Clip initial state is %o', this.state);
   }
 
   handleSubmit() {
     let text = this.state.editText.trim();
-    this.props.onEditSave(text);
+    if(
+      !_.isEmpty(this.state.editText) &&
+      this.props.clip.name !== text
+    ) {
+      this.props.onEditSave(text);
+    }
   }
 
   onMouseEnter(e) {
@@ -37,7 +44,7 @@ class Clip extends React.Component {
       removeButton: 'cog ',
       editButton: this.state.editClick ? 'active' : ''
     });
-    dbg('On Mouse enter: state change to %o', this.state);
+    log('On Mouse enter: state change to %o', this.state);
   }
 
   onMouseLeave(e) {
@@ -46,13 +53,13 @@ class Clip extends React.Component {
       removeButton: 'cog hide',
       editButton: this.state.editClick ? 'active' : 'hide'
     });
-    dbg('On Mouse leave: state change to %o', this.state);
+    log('On Mouse leave: state change to %o', this.state);
   }
 
   onEditButtonClick(e) {
     e.preventDefault();
 
-    dbg('Edit button clicked');
+    log('Edit button clicked');
     if(this.state.editClikCount === 0) {
       this.setState({
         editClikCount: 1,
@@ -71,16 +78,16 @@ class Clip extends React.Component {
         atitle: 'block'
       });
     }
-    dbg('On Edit button click: state is %o', this.state);
+    log('On Edit button click: state is %o', this.state);
   }
 
   onTitleChange(e) {
-    dbg('Clip title change to: %s', e.target.value);
+    log('Clip title change to: %s', e.target.value);
     this.setState({editText: e.target.value});
   }
 
   render () {
-    dbg('Rendering clip view');
+    log('Rendering clip view');
     let editButtonClass = 'js-edit-button btn btn-default btn-xs ' + this.state.editButton;
     let titleInput = 'edit-name ' + this.state.titleInput;
     let aTitle = 'item-link ' + this.state.atitle;
