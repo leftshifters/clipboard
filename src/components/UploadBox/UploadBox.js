@@ -5,6 +5,7 @@ import FileStore from '../../stores/FileStore';
 import ClipActions from '../../actions/ClipActions';
 import TextBox from '../TextBox';
 import FormGroup from '../FormGroup';
+import Form from '../Form';
 import Button from '../Button';
 import debug from 'debug';
 
@@ -62,7 +63,7 @@ class UploadBox extends React.Component {
     let file = e.target.files[0];
     log('File change %o', file);
     this.setState({
-      files: [file],
+      files: e.target.files,
       inputName: file.name,
       button: ''
     });
@@ -70,13 +71,20 @@ class UploadBox extends React.Component {
     React.findDOMNode(this.refs.fileInput).focus();
   }
 
-  uplaodFile(e) {
+  submitform(e) {
+    e.stopPropagation();
     e.preventDefault();
     let files = this.state.files;
     let clip = {};
+    let data = new FormData();
 
     log('Got files in uplaod %o', files);
     if(files && files[0]) {
+      for (let i = 0, f; f = files[i]; ++i) {
+        data.append('content', f);
+        data.append('name', this.state.inputName);
+      }
+
       clip = {
         _id: 'test1234',
         uploading: true,
@@ -88,7 +96,9 @@ class UploadBox extends React.Component {
       };
 
       log('Uploaded file is %o', clip);
-      ClipActions.addClip(clip);
+      if(data) {
+        ClipActions.addClip(clip, data);
+      }
     }
   }
 
@@ -96,40 +106,48 @@ class UploadBox extends React.Component {
     log('Rendering upload box');
     return (
       <div className="item add-dialog">
-        <FormGroup className="form-group extra-margin">
-        <Button
-          type="button"
-          className="btn-default btn-block btn-select"
-          buttonFor="Select a file"
-          onClick={this.onClick.bind(this)} />
-        </FormGroup>
-        <FormGroup className="form-group extra-margin">
-          <label htmlFor="name">
-            <span>Name</span>
-            <span className="color-9a">
-              <small><em> (optional)</em></small>
-            </span>
-          </label>
+        <Form
+          role="form"
+          method="post"
+          action="#"
+          enctype="multipart/form-data"
+          className="upload-form"
+          ref="uploadform"
+          onSubmit={this.submitform.bind(this)}>
+          <FormGroup className="form-group extra-margin">
+            <Button
+              type="button"
+              className="btn-default btn-block btn-select"
+              buttonFor="Select a file"
+              onClick={this.onClick.bind(this)} />
+          </FormGroup>
+          <FormGroup className="form-group extra-margin">
+            <label htmlFor="name">
+              <span>Name</span>
+              <span className="color-9a">
+                <small><em> (optional)</em></small>
+              </span>
+            </label>
+            <TextBox
+              name="name"
+              ref="fileInput"
+              onChange={this.onChange.bind(this)}
+              value={this.state.inputName}
+              placeholder={uploadPlaceholder}
+              className="form-control" />
+          </FormGroup>
+          <Button
+            type="submit"
+            disabled={this.state.button}
+            className="btn-primary btn-submit center-block btn-lg"
+            buttonFor="Upload" />
           <TextBox
-            name="name"
-            ref="fileInput"
-            onChange={this.onChange.bind(this)}
-            value={this.state.inputName}
-            placeholder={uploadPlaceholder}
-            className="form-control" />
-        </FormGroup>
-        <Button
-          type="button"
-          disabled={this.state.button}
-          className="btn-primary btn-submit center-block btn-lg"
-          buttonFor="Upload"
-          onClick={this.uplaodFile.bind(this)} />
-        <TextBox
-          type="file"
-          name="content"
-          ref="inputFile"
-          className="input-file"
-          onChange={this.onFileChange.bind(this)} />
+            type="file"
+            name="content"
+            ref="inputFile"
+            className="input-file"
+            onChange={this.onFileChange.bind(this)} />
+        </Form>
       </div>
     );
   }

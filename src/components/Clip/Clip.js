@@ -45,7 +45,9 @@ class Clip extends React.Component {
     e.preventDefault();
     this.setState({
       removeButton: 'cog ',
-      editButton: this.state.editClick ? 'active' : ''
+      editButton: this.state.uplaoding ?
+        'hide' :
+        (this.state.editClick ? 'active' : '')
     });
     log('On Mouse enter: state change to %o', this.state);
   }
@@ -89,16 +91,18 @@ class Clip extends React.Component {
     this.setState({editText: e.target.value});
   }
 
-  componentDidMount() {
-    let percent = 0;
+  // componentDidMount() {
+  //   let percent = 0;
 
-    setInterval(() => {
-      percent += 10;
-      this.setState({
-        percentage: percent
-      });
-    }, 1000);
-  }
+  //   setInterval(() => {
+  //     percent += 10;
+  //     if(percent <= 100) {
+  //       this.setState({
+  //         percentage: percent
+  //       });
+  //     }
+  //   }, 1000);
+  // }
 
   render () {
     log('Rendering clip view');
@@ -110,10 +114,7 @@ class Clip extends React.Component {
     let thumb = '';
 
     if(clip.uploading) {
-       thumb = <Progressbar
-        strokeWidth="5"
-        r="40"
-        percentage={this.state.percentage} />
+      thumb = <Progressbar strokeWidth="5" r="40" percentage={this.state.percentage} />;
     } else if(clip.type === 'image') {
       thumb = <Image clip={clip} />;
     } else {

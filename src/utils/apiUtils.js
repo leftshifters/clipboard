@@ -248,5 +248,20 @@ export default {
         });
       });
     });
+  },
+
+  addClip(clip, data) {
+    return new Promise((resolve, reject) => {
+      basicUtils
+        .upload('/api/clip/upload', data)
+        .then((res) => {
+          log('Got uplaod response %o', res);
+          resolve(res);
+        })
+        .catch((err) => {
+          log('Got error while uplading %o', err);
+          reject(err);
+        });
+    });
   }
 };

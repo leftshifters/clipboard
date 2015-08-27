@@ -51,7 +51,11 @@ class ClipApp extends React.Component {
 
   destroy(clip) {
     log('Deleted clip: Store change');
-    ClipActions.deleteClip(clip._id, clip.id); // eslint-disable-line no-underscore-dangle
+    if(clip.uploading) {
+      ClipActions.getClips(this.props.page);
+    } else {
+      ClipActions.deleteClip(clip._id, clip.id); // eslint-disable-line no-underscore-dangle
+    }
   }
 
   get FileUploadForm() {

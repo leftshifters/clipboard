@@ -217,13 +217,13 @@ exports.deleteItem = function(req, res, next) {
 
         toremove.push(path.join(process.cwd(), item.relativePathLong));
 
-        // if (item.type === 'ipa') {
-        //   toremove.push(
-        //     path.join(
-        //       process.cwd(),
-        //       uploadpath,
-        //       item.basenameWithoutExt + '.plist'));
-        // }
+        if (item.type === 'ipa') {
+          toremove.push(
+            path.join(
+              process.cwd(),
+              uploadpath,
+              item.basenameWithoutExt + '.plist'));
+        }
 
         items.remove({
           _id: new ObjectId(id)
@@ -232,15 +232,14 @@ exports.deleteItem = function(req, res, next) {
             return next(err);
           }
 
-          next();
-          // cliputils.removeFiles(toremove, function(err) { // eslint-disable-line no-shadow
-          //   if (err) {
-          //     next();
-          //     // return res.send(500);
-          //   }
+          cliputils.removeFiles(toremove, function(err) { // eslint-disable-line no-shadow
+            if (err) {
+              next();
+              // return res.send(500);
+            }
 
-          //   next();
-          // });
+            next();
+          });
 
         });
 
@@ -347,15 +346,12 @@ exports.reindex = function(req, res) {
 };
 
 exports.root = function(req, res, next) { // eslint-disable-line no-unused-vars
-  if (req.xhr) {
-    res.json(req.store.item);
-  } else {
-    res.redirect('/');
-  }
+  return res.json({
+    data: req.store.item || {}
+  });
 };
 
 exports.ok = function(req, res) {
-  console.log('Comming here');
   return res.json({
     data: req.store.data || {}
   });

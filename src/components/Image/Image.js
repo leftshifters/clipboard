@@ -7,7 +7,7 @@ class Image {
 
   render () {
     let clip = this.props.clip;
-    let imgUrl = '../' + clip.relativePathLong;
+    let imgUrl = clip.relativePathLong;
     let divStyle = {
       backgroundImage: 'url(' + imgUrl + ')'
     };

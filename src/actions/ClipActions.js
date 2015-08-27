@@ -83,13 +83,22 @@ export default {
     });
   },
 
-  addClip(clip) {
-    log('Got clip on actions %o', clip);
+  addClip(clip, data) {
+    log('Got clip on actions %o', data);
     Dispatcher.dispatch({
       actionType: UPLOADING_CLIP,
       payload: {
         clip: clip
       }
     });
+
+    apiUtils
+      .addClip(clip, data)
+      .then((res) => {
+        log('Got uploaded response in clip actions %o', res);
+      })
+      .catch((err) => {
+        log('Got uploaded err in clip actions %o', err);
+      });
   }
 };

@@ -35,9 +35,7 @@ var imageMimes = [
 ];
 
 exports.upload = function(req, res, next) {
-
   baseurl.set(req.protocol, req.get('host'));
-
   var form = new multiparty.Form({
     autoFiles: true,
     uploadDir: path.join(process.cwd(), uploadDir)
@@ -66,7 +64,7 @@ exports.upload = function(req, res, next) {
         extension: extension,
         originalName: file.originalFilename,
         relativePathShort: 'uploads/' + basename,
-        relativePathLong: uploadDir + '/' + basename,
+        relativePathLong: uploadPath + '/' + basename,
         relativeThumbPathShort: '',
         relativeThumbPathLong: '',
         mime: mimetype,
@@ -76,7 +74,7 @@ exports.upload = function(req, res, next) {
         created: date.toISOString(),
         createdms: date.getTime()
       };
-      //console.log(item);
+      console.log(item);
 
       if (!!~imageMimes.indexOf(mimetype)) { // eslint-disable-line no-extra-boolean-cast
         item.type = 'image';
@@ -93,11 +91,10 @@ exports.upload = function(req, res, next) {
           }
 
           req.store.item = item;
-          req.store._id = results[0]._id; // eslint-disable-line no-underscore-dangle
+          req.store._id = results.insertedIds[0]; // eslint-disable-line no-underscore-dangle
           next();
         });
       });
-
     }
 
   });
