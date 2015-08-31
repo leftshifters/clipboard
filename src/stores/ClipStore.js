@@ -1,5 +1,5 @@
 import BaseStore from './BaseStore';
-import {SET_CLIPS, CHANGE_TITLE, DELETE_CLIP, UPLOADING_CLIP} from '../constants/ClipConstants';
+import {SET_CLIPS, CHANGE_TITLE, DELETE_CLIP, UPLOADING_CLIP, UPLOADED} from '../constants/ClipConstants';
 import debug from 'debug';
 
 const log = debug('clipboard:clipstore');
@@ -32,6 +32,10 @@ class ClipsStore extends BaseStore {
           log('Store clip %o', action.payload.clip);
           this.clips = [action.payload.clip];
         }
+        this.emitChange();
+        break;
+      case UPLOADED:
+        this.clips = action.payload.clips;
         this.emitChange();
         break;
       default:

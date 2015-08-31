@@ -111,7 +111,6 @@ gulp.task('build:watch', cb => {
 gulp.task('serve', ['build:watch'], cb => {
   src.server = [
     'build/server.js',
-    'build/content/**/*',
     'build/templates/**/*'
   ];
   let started = false;

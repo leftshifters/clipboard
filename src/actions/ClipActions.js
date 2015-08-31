@@ -1,5 +1,5 @@
 import debug from 'debug';
-import {SET_CLIPS, CHANGE_TITLE, DELETE_CLIP, UPLOADING_CLIP} from '../constants/ClipConstants'; // eslint-disable-line no-unused-vars
+import {SET_CLIPS, CHANGE_TITLE, DELETE_CLIP, UPLOADING_CLIP, UPLOADED} from '../constants/ClipConstants'; // eslint-disable-line no-unused-vars
 import {SET_PAGINATION} from '../constants/AppConstants';
 import Dispatcher from '../core/Dispatcher';
 import apiUtils from '../utils/apiUtils';
@@ -73,9 +73,7 @@ export default {
       log('Got response after deleting clips %o', res);
       Dispatcher.dispatch({
         actionType: DELETE_CLIP,
-        payload: {
-          clips: res.clips
-        }
+        payload: res
       });
     })
     .catch((err) => {
@@ -85,20 +83,36 @@ export default {
 
   addClip(clip, data) {
     log('Got clip on actions %o', data);
+    apiUtils
+      .tempClip(clip)
+      .then((res) => {
+        Dispatcher.dispatch({
+          actionType: UPLOADING_CLIP,
+          payload: res
+        });
+
+        apiUtils
+          .addClip(res.clip, data)
+          .then((newres) => {
+            log('Got uploaded response in clip actions %o', newres);
+            Dispatcher.dispatch({
+              actionType: UPLOADED,
+              payload: newres
+            });
+          })
+          .catch((err) => {
+            log('Got uploaded err in clip actions %o', err);
+          });
+      })
+      .catch((err) => {
+        log('Got uploaded err in clip actions %o', err);
+      });
+
     Dispatcher.dispatch({
       actionType: UPLOADING_CLIP,
       payload: {
         clip: clip
       }
     });
-
-    apiUtils
-      .addClip(clip, data)
-      .then((res) => {
-        log('Got uploaded response in clip actions %o', res);
-      })
-      .catch((err) => {
-        log('Got uploaded err in clip actions %o', err);
-      });
   }
 };

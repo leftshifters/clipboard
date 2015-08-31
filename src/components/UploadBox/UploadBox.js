@@ -74,21 +74,20 @@ class UploadBox extends React.Component {
   submitform(e) {
     e.stopPropagation();
     e.preventDefault();
+
     let files = this.state.files;
     let clip = {};
     let data = new FormData();
 
     log('Got files in uplaod %o', files);
+
     if(files && files[0]) {
-      for (let i = 0, f; f = files[i]; ++i) {
-        data.append('content', f);
-        data.append('name', this.state.inputName);
-      }
+      data.append('content', files[0]);
+      data.append('name', this.state.inputName);
 
       clip = {
         _id: 'test1234',
         uploading: true,
-        id: 'test123',
         name: files[0].name,
         originalName: files[0].name,
         timeago: 'Just Now',
@@ -110,7 +109,7 @@ class UploadBox extends React.Component {
           role="form"
           method="post"
           action="#"
-          enctype="multipart/form-data"
+          encType="multipart/form-data"
           className="upload-form"
           ref="uploadform"
           onSubmit={this.submitform.bind(this)}>

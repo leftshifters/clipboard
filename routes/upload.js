@@ -9,9 +9,10 @@ var disksize = require('../lib/disksize');
 var manifest = require('../lib/manifest');
 var baseurl = require('../lib/baseurl');
 var search = require('../lib/search');
+var cliputils = require('../lib/cliptils');
 
-var uploadDir = 'public/uploads';
-var thumbsDir = 'public/thumbs';
+var uploadDir = '/uploads';
+var thumbsDir = '/thumbs';
 
 var uploadPath = path.join(process.cwd(), uploadDir);
 var thumbsPath = path.join(process.cwd(), thumbsDir);
@@ -48,6 +49,7 @@ exports.upload = function(req, res, next) {
     }
 
     var file = files.content && files.content[0];
+    var baseuri = req.protocol + '://' + req.headers.host;
     var basename, mimetype, date, basenameWithoutExt, extension;
 
     if (file && file.fieldName === 'content') {
@@ -74,7 +76,20 @@ exports.upload = function(req, res, next) {
         created: date.toISOString(),
         createdms: date.getTime()
       };
-      console.log(item);
+
+      cliputils.seturl(item, baseuri);
+
+      if (item.type === 'ipa') {
+        item.url = cliputils.ipaurl(item, baseuri);
+      }
+
+      if (item.type === 'image') {
+        item.imageurl = '../' + item.relativePathShort;
+      }
+
+      cliputils.type(item);
+      cliputils.setname(item);
+      cliputils.settimeago(item);
 
       if (!!~imageMimes.indexOf(mimetype)) { // eslint-disable-line no-extra-boolean-cast
         item.type = 'image';

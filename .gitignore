@@ -1,5 +1,5 @@
 node_modules
-public/uploads
+uploads/*
 public/thumbs
 .npm-debug
 *.sublime-*

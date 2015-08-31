@@ -1,5 +1,6 @@
 // import Dexie from 'dexie';
 import debug from 'debug';
+import _ from 'lodash';
 import basicUtils from './basicUtils';
 
 const log = debug('clipboard:apiutil');
@@ -250,13 +251,49 @@ export default {
     });
   },
 
+  tempClip(clip) {
+    return new Promise((resolve) => {
+      db.open();
+      db.on('ready', () => {
+        db.transaction('rw', db.clips, () => {
+          db.clips.add(clip).then((id) => {
+            clip.id = id;
+            log('Temp clip is %o', clip);
+            return resolve({
+              clip: clip
+            });
+          });
+        });
+      });
+    });
+  },
+
   addClip(clip, data) {
     return new Promise((resolve, reject) => {
       basicUtils
         .upload('/api/clip/upload', data)
         .then((res) => {
           log('Got uplaod response %o', res);
-          resolve(res);
+          clip.uploading = false;
+          let revisedClip = _.merge(clip, res.data);
+          db.clips
+            .update(clip.id, revisedClip)
+            .then((updated) => {
+              log('Updated value is %o', updated);
+              if(updated > 0) {
+                log('Updated clip clip successfully: %o', revisedClip);
+              } else {
+                log('Error while updating clip in IndexDB: %o', revisedClip);
+              }
+
+              db.clips
+                .toArray()
+                .then((clips) => {
+                  log('Got clips %o ', clips);
+                  clips.unshift(revisedClip);
+                  return resolve({'clips': clips});
+                });
+            });
         })
         .catch((err) => {
           log('Got error while uplading %o', err);

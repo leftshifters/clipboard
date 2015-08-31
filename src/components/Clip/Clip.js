@@ -105,13 +105,13 @@ class Clip extends React.Component {
   // }
 
   render () {
-    log('Rendering clip view');
     let editButtonClass = 'js-edit-button btn btn-default btn-xs ' + this.state.editButton;
     let titleInput = 'edit-name ' + this.state.titleInput;
     let aTitle = 'item-link ' + this.state.atitle;
     let clip = this.props.clip;
     let id = clip._id; // eslint-disable-line no-underscore-dangle
     let thumb = '';
+    log('Clip in render is %o', clip);
 
     if(clip.uploading) {
       thumb = <Progressbar strokeWidth="5" r="40" percentage={this.state.percentage} />;
