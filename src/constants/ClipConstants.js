@@ -6,5 +6,6 @@ export default keyMirror({
   CHANGE_TITLE: null,
   DELETE_CLIP: null,
   UPLOADING_CLIP: null,
-  UPLOADED: null
+  UPLOADED: null,
+  PROGRESS: null
 });

@@ -3,6 +3,7 @@ import {SET_CLIPS, CHANGE_TITLE, DELETE_CLIP, UPLOADING_CLIP, UPLOADED} from '..
 import {SET_PAGINATION} from '../constants/AppConstants';
 import Dispatcher from '../core/Dispatcher';
 import apiUtils from '../utils/apiUtils';
+
 const log = debug('clipboard:clipaction');
 
 export default {
@@ -67,8 +68,8 @@ export default {
       });
   },
 
-  deleteClip(id, pKey) {
-    apiUtils.deleteClip(id, pKey)
+  deleteClip(id, page) {
+    apiUtils.deleteClip(id, page)
     .then((res) => {
       log('Got response after deleting clips %o', res);
       Dispatcher.dispatch({

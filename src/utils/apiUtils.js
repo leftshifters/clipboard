@@ -1,4 +1,3 @@
-// import Dexie from 'dexie';
 import debug from 'debug';
 import _ from 'lodash';
 import basicUtils from './basicUtils';
@@ -11,7 +10,7 @@ if(!db || window.indexedDB) {
   db = new window.Dexie('clipboard');
 
   db.version(1).stores({
-    clips: '++id,page,hash,basename,basenameWithoutExt,extension,originalName,relativePathShort,relativePathLong,relativeThumbPathShort,relativeThumbPathLong,mime,name,type,bundleId,created,createdms,url,detailUrl,timeago',
+    clips: '++id,page,hash,basename,basenameWithoutExt,extension,originalName,relativePathShort,relativePathLong,relativeThumbPathShort,relativeThumbPathLong,mime,name,type,bundleId,created,createdms,url,detailUrl,timeago,downloaded',
     pages: '++id,leftArrow,more,nextPageLink,page,prevPageLink,query,rightArrow,searchBtn,searchIcon'
   });
 
@@ -92,6 +91,8 @@ export default {
             db.clips
               .toArray()
               .then((clips) => {
+                log('sort and reverse array!! This should be handeled by indexDB');
+                clips = _.sortBy(clips, 'createdms').reverse();
                 log('Fetched array from store %o', clips);
                 db.pages
                   .toArray()
@@ -221,16 +222,62 @@ export default {
     });
   },
 
-  deleteClip(id, pKey) {
+  deleteClip(id, page) {
     return new Promise((resolve, reject) => {
       basicUtils
       .delete('api/clip/' + id)
-      .then((res) => {
-        if(!db) {
-          return resolve(res);
-        }
+      .then(() => {
+        let url = `/api/clips/${page}`;
+        db.clips.clear();
+        db.pages.clear();
 
-        db.open();
+        this._fetch(url, page, (err, fetched) => { // eslint-disable-line no-underscore-dangle
+          if(err) {
+            return reject(err);
+          }
+          db.open();
+          db.on('ready', () => {
+            db.transaction('rw', db.clips, db.pages, () => {
+              log('fetched data is %o', fetched);
+
+              let p = {
+                'leftArrow': fetched.leftArrow,
+                'more': fetched.more,
+                'nextPageLink': fetched.nextPageLink,
+                'page': fetched.page,
+                'prevPageLink': fetched.prevPageLink,
+                'query': fetched.query,
+                'rightArrow': fetched.rightArrow,
+                'searchBtn': fetched.searchBtn,
+                'searchIcon': fetched.searchIcon
+              };
+
+              log('Paginate is %o', p);
+              db.pages.add(p);
+              fetched.items.forEach(function (item) {
+                log('Adding object: %o', item);
+                item.page = fetched.page + 1;
+                db.clips.add(item);
+              });
+            })
+            .then(() => {
+              db.clips
+                .toArray()
+                .then((clips) => {
+                  log('Fetched array from store %o', clips);
+                  db.pages
+                    .toArray()
+                    .then((pages) => {
+                      return resolve({
+                        'pages': pages,
+                        'clips': clips
+                      });
+                    });
+                });
+            });
+          });
+        });
+        /*db.open();
         db.on('ready', () => {
           db.clips
           .delete(parseInt(pKey))
@@ -246,7 +293,7 @@ export default {
           .catch((err) => {
             return reject(err);
           });
-        });
+        });*/
       });
     });
   },

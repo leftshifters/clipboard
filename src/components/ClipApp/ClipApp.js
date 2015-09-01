@@ -54,7 +54,7 @@ class ClipApp extends React.Component {
     if(clip.uploading) {
       ClipActions.getClips(this.props.page);
     } else {
-      ClipActions.deleteClip(clip._id, clip.id); // eslint-disable-line no-underscore-dangle
+      ClipActions.deleteClip(clip._id, this.props.page); // eslint-disable-line no-underscore-dangle
     }
   }
 

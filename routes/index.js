@@ -215,6 +215,7 @@ exports.deleteItem = function(req, res, next) {
           return next(err);
         }
 
+        console.log(item);
         toremove.push(path.join(process.cwd(), item.relativePathLong));
 
         if (item.type === 'ipa') {

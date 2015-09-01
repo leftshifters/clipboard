@@ -9,6 +9,7 @@ import Container from '../Container';
 import ClipApp from '../ClipApp';
 import debug from 'debug';
 import Dropzone from '../Dropzone';
+import ClipDetail from '../ClipDetail';
 import _ from 'lodash';
 
 const log = debug('clipboard:app');
@@ -59,7 +60,7 @@ class App extends React.Component {
 
   render() {
     log('App start: rendering first view');
-    let header, component;
+    let container, dropZone, header, component;
     let page = 1;
 
     if(this.props.path.indexOf('/page') >= 0) {
@@ -67,16 +68,27 @@ class App extends React.Component {
       page = _.isNaN(_.parseInt(this.props.path.split('/').pop())) ?
         1 :
         _.parseInt(this.props.path.split('/').pop());
+    } else if(this.props.path.indexOf('/clipd') >= 0) {
+      this.props.path = '/clipd';
     }
 
     switch (this.props.path) {
       case '/':
+      case '/page':
+        container = true;
+        dropZone = <Dropzone
+          ref="dropzone"
+          className={this.state.dragClass}
+          supportClick={false}
+          onDrop={this.onDrop.bind(this)}
+          multiple={false} />;
         header = <Header version={this.props.version} />;
         component = <ClipApp page={page} />;
         break;
-      case '/page':
-        header = <Header version={this.props.version} />;
-        component = <ClipApp page={page} />;
+      case '/clipd':
+        container = false;
+        dropZone = header = '';
+        component = <ClipDetail />;
         break;
       default:
         break;
@@ -84,15 +96,10 @@ class App extends React.Component {
 
     return component ? (
       <Container
-        onDragEnter={this.handleDragEnter.bind(this)}
-        onMouseLeave={this.handleDragLeave.bind(this)}>
+        onDragEnter={container ? this.handleDragEnter.bind(this) : ''}
+        onMouseLeave={container ? this.handleDragLeave.bind(this) : ''}>
         {header}
-        <Dropzone
-          ref="dropzone"
-          className={this.state.dragClass}
-          supportClick={false}
-          onDrop={this.onDrop.bind(this)}
-          multiple={false} />
+        {dropZone}
         {component}
       </Container>
     ) : <NotFoundPage />;

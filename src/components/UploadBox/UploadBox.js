@@ -71,6 +71,10 @@ class UploadBox extends React.Component {
     React.findDOMNode(this.refs.fileInput).focus();
   }
 
+  getRandomId() {
+    return Math.random();
+  }
+
   submitform(e) {
     e.stopPropagation();
     e.preventDefault();
@@ -86,7 +90,7 @@ class UploadBox extends React.Component {
       data.append('name', this.state.inputName);
 
       clip = {
-        _id: 'test1234',
+        _id: this.getRandomId(),
         uploading: true,
         name: files[0].name,
         originalName: files[0].name,
@@ -98,6 +102,11 @@ class UploadBox extends React.Component {
       if(data) {
         ClipActions.addClip(clip, data);
       }
+
+      this.setState({
+        files: null,
+        inputName: ''
+      });
     }
   }
 

@@ -2,19 +2,20 @@
 
 import 'babel/polyfill';
 import _ from 'lodash';
+import logger from 'morgan';
 import fs from 'fs';
 import path from 'path';
 import express from 'express';
-import methodOverride from 'method-override';
-import './core/Dispatcher';
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import reqstore from 'reqstore';
+import methodOverride from 'method-override';
+import './core/Dispatcher';
 import bootcheck from '../lib/bootcheck';
 import disksize from '../lib/disksize';
 import upload from '../routes/upload';
-import logger from 'morgan';
 import routes from '../routes';
+import clip from '../routes/clip';
 
 const pack = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8')
@@ -91,6 +92,14 @@ server.delete('/api/clip/:id', [
   routes.removeSearchIndex,
   routes.ok
 ]);
+
+server.get('/reindex', routes.reindex);
+server.get('/clipd/:hash/:name?', [
+  clip.fetch,
+  clip.qr,
+  routes.detail
+]);
+// server.get('/changelog', routes.changelog);
 
 server.get('*', async (req, res, next) => {
   try {

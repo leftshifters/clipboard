@@ -1,5 +1,7 @@
 import debug from 'debug';
 import http from 'superagent';
+import { PROGRESS } from '../constants/ClipConstants';
+import Dispatcher from '../core/Dispatcher';
 
 const log = debug('clipboard:baseutil');
 
@@ -78,6 +80,17 @@ export default {
       http
         .put(api)
         .send(data)
+        .on('progress', (e) => {
+          log('Uploading progress is %o', e.percent);
+          if(e.percent > 0) {
+            Dispatcher.dispatch({
+              actionType: PROGRESS,
+              payload: {
+                percent: Math.round(e.percent)
+              }
+            });
+          }
+        })
         .end((err, res) => {
           if(err) {
             log('POST-UPLOAD-ERROR >> %s >> %o', api, err);
@@ -88,9 +101,6 @@ export default {
           return resolve({
             'data': res.body.data
           });
-        })
-        .on('progress', () => {
-          log('Uploading progress is %o', arguments);
         });
     });
   }

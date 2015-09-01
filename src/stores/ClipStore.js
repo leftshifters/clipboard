@@ -1,6 +1,6 @@
-import BaseStore from './BaseStore';
-import {SET_CLIPS, CHANGE_TITLE, DELETE_CLIP, UPLOADING_CLIP, UPLOADED} from '../constants/ClipConstants';
 import debug from 'debug';
+import {SET_CLIPS, CHANGE_TITLE, DELETE_CLIP, UPLOADING_CLIP, UPLOADED} from '../constants/ClipConstants';
+import BaseStore from './BaseStore';
 
 const log = debug('clipboard:clipstore');
 

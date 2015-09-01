@@ -1,5 +1,5 @@
-import BaseStore from './BaseStore';
 import { CHANGE_LOCATION } from '../constants/AppConstants';
+import BaseStore from './BaseStore';
 
 class AppStore extends BaseStore {
   constructor() {
