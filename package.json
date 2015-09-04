@@ -43,6 +43,7 @@
     "qr": "^0.2.4",
     "react": "^0.13.3",
     "react-async": "^2.1.0",
+    "react-doc-meta": "^0.2.0",
     "react-dropzone": "^1.2.4",
     "react-loading": "0.0.7",
     "react-localstorage": "^0.2.4",

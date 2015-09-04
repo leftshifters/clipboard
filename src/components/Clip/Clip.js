@@ -89,7 +89,7 @@ class Clip extends React.Component {
 
   clipnavigate(e) {
     e.preventDefault();
-    let url = `/clipd/${this.props.clip.hash}/${this.props.clip.name}`;
+    let url = `/clipd/${this.props.clip.basenameWithoutExt}/${this.props.clip.name}`;
     AppActions.navigateTo(url);
   }
 

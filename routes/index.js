@@ -126,10 +126,8 @@ exports.detail = function(req, res, next) { // eslint-disable-line no-unused-var
     item.buttonText = 'Download APK';
   }
 
-  res.render('detail', {
-    title: item.name,
-    item: item
-  });
+  req.store.data = item;
+  next();
 };
 
 exports.changelog = function(req, res) {

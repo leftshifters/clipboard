@@ -3,6 +3,7 @@ import styles from './App.less'; // eslint-disable-line no-unused-vars
 import withContext from '../../decorators/withContext'; // eslint-disable-line no-unused-vars
 import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-unused-vars
 import Header from '../Header';
+import Footer from '../Footer';
 import NotFoundPage from '../NotFoundPage';
 import FileActions from '../../actions/FileActions';
 import Container from '../Container';
@@ -60,19 +61,23 @@ class App extends React.Component {
 
   render() {
     log('App start: rendering first view');
-    let container, dropZone, header, component;
+    let container, dropZone, header, component, footer;
+    let hash, name, path = this.props.path;
     let page = 1;
 
-    if(this.props.path.indexOf('/page') >= 0) {
-      this.props.path = '/page';
-      page = _.isNaN(_.parseInt(this.props.path.split('/').pop())) ?
+    if(path.indexOf('/page') >= 0) {
+      path = '/page';
+      page = _.isNaN(_.parseInt(path.split('/').pop())) ?
         1 :
-        _.parseInt(this.props.path.split('/').pop());
-    } else if(this.props.path.indexOf('/clipd') >= 0) {
-      this.props.path = '/clipd';
+        _.parseInt(path.split('/').pop());
+    } else if(path.indexOf('/clipd') >= 0) {
+      hash = path.split('/').slice(-2)[0];
+      name = path.split('/').pop();
+      log('hash: %s and name: %s', hash, name);
+      path = '/clipd';
     }
 
-    switch (this.props.path) {
+    switch (path) {
       case '/':
       case '/page':
         container = true;
@@ -84,11 +89,12 @@ class App extends React.Component {
           multiple={false} />;
         header = <Header version={this.props.version} />;
         component = <ClipApp page={page} />;
+        footer = <Footer />;
         break;
       case '/clipd':
         container = false;
-        dropZone = header = '';
-        component = <ClipDetail />;
+        dropZone = header = footer = '';
+        component = <ClipDetail hash={hash} name={name} />;
         break;
       default:
         break;
@@ -101,6 +107,7 @@ class App extends React.Component {
         {header}
         {dropZone}
         {component}
+        {footer}
       </Container>
     ) : <NotFoundPage />;
   }

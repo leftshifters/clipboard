@@ -10,7 +10,7 @@ if(!db || window.indexedDB) {
   db = new window.Dexie('clipboard');
 
   db.version(1).stores({
-    clips: '++id,page,hash,basename,basenameWithoutExt,extension,originalName,relativePathShort,relativePathLong,relativeThumbPathShort,relativeThumbPathLong,mime,name,type,bundleId,created,createdms,url,detailUrl,timeago,downloaded',
+    clips: '++id,page,hash,basename,basenameWithoutExt,extension,originalName,relativePathShort,relativePathLong,relativeThumbPathShort,relativeThumbPathLong,mime,name,type,bundleId,created,createdms,url,detailUrl,timeago,downloaded,[hash+name]',
     pages: '++id,leftArrow,more,nextPageLink,page,prevPageLink,query,rightArrow,searchBtn,searchIcon'
   });
 
@@ -150,6 +150,39 @@ export default {
           }
         });
       }
+    });
+  },
+
+  getClip(hash, name) {
+    return new Promise((resolve, reject) => {
+      // db.open();
+      // db
+      //   .on('error', function(e) {
+      //     return reject(e);
+      //   })
+      //   .on('ready', () => {
+      //     db.clips
+      //       .where('[hash+name]')
+      //       .equals([hash, name])
+      //       .toArray()
+      //       .then((clips) => {
+      //         log('Got single clip %o', clips);
+      //         resolve({
+      //           clip: clips[0]
+      //         });
+      //       });
+      //   });
+      basicUtils.get(`/api/clipd/${hash}/${name}`)
+        .then((res) => {
+          log('Got data in API %o', res);
+          return resolve({
+            clip: res.data
+          });
+        })
+        .catch((err) => {
+          log('Got error %o', err);
+          return reject(err);
+        });
     });
   },
 

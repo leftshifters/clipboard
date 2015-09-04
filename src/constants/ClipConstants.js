@@ -3,6 +3,7 @@ import keyMirror from 'react/lib/keyMirror';
 export default keyMirror({
   ADD_CLIP: null,
   SET_CLIPS: null,
+  SET_CLIP: null,
   CHANGE_TITLE: null,
   DELETE_CLIP: null,
   UPLOADING_CLIP: null,

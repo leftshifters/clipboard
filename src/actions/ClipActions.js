@@ -1,5 +1,9 @@
 import debug from 'debug';
-import {SET_CLIPS, CHANGE_TITLE, DELETE_CLIP, UPLOADING_CLIP, UPLOADED} from '../constants/ClipConstants'; // eslint-disable-line no-unused-vars
+import {SET_CLIPS,
+  SET_CLIP,
+  DELETE_CLIP,
+  UPLOADING_CLIP,
+  UPLOADED} from '../constants/ClipConstants'; // eslint-disable-line no-unused-vars
 import {SET_PAGINATION} from '../constants/AppConstants';
 import Dispatcher from '../core/Dispatcher';
 import apiUtils from '../utils/apiUtils';
@@ -29,6 +33,21 @@ export default {
         if (err.status === 401) {
           log('Error is %o', err);
         }
+      });
+  },
+
+  getClip(hash, name) {
+    log('Get clip initialized');
+    apiUtils.getClip(hash, name)
+      .then((res) => {
+        log('Got clip in actions %o', res);
+        Dispatcher.dispatch({
+          actionType: SET_CLIP,
+          payload: res
+        });
+      })
+      .catch((err) => {
+        log('Error is %o', err);
       });
   },
 

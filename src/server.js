@@ -51,7 +51,6 @@ if (server.get('env') === 'development') {
   server.use(logger('dev'));
 }
 
-
 // The top-level React component + HTML template for it
 const templateFile = path.join(__dirname, 'templates/index.html');
 const template = _.template(fs.readFileSync(templateFile, 'utf8'));
@@ -94,12 +93,18 @@ server.delete('/api/clip/:id', [
 ]);
 
 server.get('/reindex', routes.reindex);
-server.get('/clipd/:hash/:name?', [
+server.get('/api/clipd/:hash/:name?', [
   clip.fetch,
   clip.qr,
-  routes.detail
+  routes.detail,
+  routes.ok
 ]);
-// server.get('/changelog', routes.changelog);
+
+server.get('/clip/:hash/:name?', clip.fetch, clip.send);
+
+server.get('*', async (err, req, res, next) => {
+  console.log(err);
+});
 
 server.get('*', async (req, res, next) => {
   try {

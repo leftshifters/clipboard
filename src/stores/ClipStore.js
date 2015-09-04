@@ -1,5 +1,11 @@
 import debug from 'debug';
-import {SET_CLIPS, CHANGE_TITLE, DELETE_CLIP, UPLOADING_CLIP, UPLOADED} from '../constants/ClipConstants';
+import {SET_CLIPS,
+  SET_CLIP,
+  CHANGE_TITLE,
+  DELETE_CLIP,
+  UPLOADING_CLIP,
+  UPLOADED
+} from '../constants/ClipConstants';
 import BaseStore from './BaseStore';
 
 const log = debug('clipboard:clipstore');
@@ -8,12 +14,18 @@ class ClipsStore extends BaseStore {
   constructor() {
     super();
     this.clips = null;
+    this.clip = null;
   }
 
   registerToActions(action) {
     switch (action.actionType) {
       case SET_CLIPS:
         this.clips = action.payload.clips;
+        this.emitChange();
+        break;
+      case SET_CLIP:
+        log(action.payload);
+        this.clip = action.payload.clip;
         this.emitChange();
         break;
       case CHANGE_TITLE:

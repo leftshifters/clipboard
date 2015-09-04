@@ -3,7 +3,6 @@ var baseurl = require('../lib/baseurl');
 var path = require('path');
 var QR = require('qr').Encoder;
 
-
 /*
  * Fetch a single clip
  */
@@ -39,7 +38,8 @@ exports.qr = function(req, res, next) {
   baseurl.set(req.protocol, req.get('host'));
 //next();
   qr.on('end', function onEncodingComplete(png) {
-    res.locals.qrImage = 'data:image/png;base64,' + png.toString('base64');
+    item.qrImage = 'data:image/png;base64,' + png.toString('base64');
+    req.store.item = item;
     next();
   });
 
@@ -56,11 +56,10 @@ exports.qr = function(req, res, next) {
  */
 exports.send = function(req, res) {
   var item = req.store.item;
-
   if (item.type === 'image') {
-    res.sendfile(path.join(process.cwd(), item.relativePathLong));
+    res.sendfile(path.join(process.cwd(), item.relativePathShort));
   } else {
-    res.download(path.join(process.cwd(), item.relativePathLong), item.originalName);
+    res.download(path.join(process.cwd(), item.relativePathShort), item.originalName);
   }
 
 };

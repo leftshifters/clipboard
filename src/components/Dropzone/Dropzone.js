@@ -98,9 +98,11 @@ class Dropzone extends React.Component {
 
   render() {
     let className = this.props.className || 'dropzone';
-    if (this.state.isDragActive) {
-      className += this.props.activeClassName || ' active';
-    }
+    // if (this.state.isDragActive) {
+    //   className += this.props.activeClassName || ' active';
+    // } else {
+    //   className += this.props.activeClassName || ' inactive';
+    // }
 
     let style = {};
     if (this.props.style) { // user-defined inline styles take priority
@@ -114,20 +116,26 @@ class Dropzone extends React.Component {
     }
 
     return (
-      <div
-        className={className}
-        style={style}
-        onClick={this.onClick.bind(this)}
-        onDragLeave={this.onDragLeave.bind(this)}
-        onDragOver={this.onDragOver.bind(this)}
-        onDrop={this.onDrop.bind(this)}>
-        <TextBox
-          className='input-file'
-          type='file'
-          multiple={this.props.multiple}
-          ref='fileInput'
-          onChange={this.onDrop.bind(this)}
-          accept={this.props.accept} />
+      <div>
+        <div
+          className={className}
+          style={style}
+          onClick={this.onClick.bind(this)}
+          onDragLeave={this.onDragLeave.bind(this)}
+          onDragOver={this.onDragOver.bind(this)}
+          onDrop={this.onDrop.bind(this)}>
+          <TextBox
+            className='input-file'
+            type='file'
+            multiple={this.props.multiple}
+            ref='fileInput'
+            onChange={this.onDrop.bind(this)}
+            accept={this.props.accept} />
+
+          <div className="text-center dropcontainer">
+            <h1>Drop to upload</h1>
+          </div>
+        </div>
       </div>
     );
   }

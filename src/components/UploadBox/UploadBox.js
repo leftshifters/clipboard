@@ -44,7 +44,7 @@ class UploadBox extends React.Component {
     e.preventDefault();
     log('Change name of uplaod file');
     this.setState({
-      inputName: this.value
+      inputName: e.target.value
     });
   }
 
@@ -92,7 +92,7 @@ class UploadBox extends React.Component {
       clip = {
         _id: this.getRandomId(),
         uploading: true,
-        name: files[0].name,
+        name: this.state.inputName,
         originalName: files[0].name,
         timeago: 'Just Now',
         url: '#'
