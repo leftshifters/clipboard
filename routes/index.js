@@ -7,6 +7,7 @@ var fs = require('fs');
 var url = require('url');
 var moment = require('moment');
 var marked = require('marked');
+var disksize = require('../lib/disksize');
 var debug = require('debug')('clipboard:index');
 var _s = require('underscore.string'); // eslint-disable-line no-underscore-dangle
 var getDb = require('../lib/connect');
@@ -341,17 +342,17 @@ exports.reindex = function(req, res) {
     }
     create();
   });
-
 };
 
-exports.root = function(req, res, next) { // eslint-disable-line no-unused-vars
-  return res.json({
-    data: req.store.item || {}
-  });
-};
+exports.ok = function(req, res, next) { // eslint-disable-line no-unused-vars
+  disksize(function onsize(total, free) {
+    req.store.data.disksize = {
+      total: total,
+      free: free
+    };
 
-exports.ok = function(req, res) {
-  return res.json({
-    data: req.store.data || {}
+    return res.json({
+      data: req.store.data || {}
+    });
   });
 };

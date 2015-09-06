@@ -105,7 +105,7 @@ exports.upload = function(req, res, next) {
             return res.send(500);
           }
 
-          req.store.item = item;
+          req.store.data = item;
           req.store._id = results.insertedIds[0]; // eslint-disable-line no-underscore-dangle
           next();
         });

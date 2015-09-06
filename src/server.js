@@ -12,7 +12,6 @@ import reqstore from 'reqstore';
 import methodOverride from 'method-override';
 import './core/Dispatcher';
 import bootcheck from '../lib/bootcheck';
-import disksize from '../lib/disksize';
 import upload from '../routes/upload';
 import routes from '../routes';
 import clip from '../routes/clip';
@@ -57,13 +56,6 @@ const template = _.template(fs.readFileSync(templateFile, 'utf8'));
 let size = '';
 
 bootcheck();
-disksize(function onsize(total, free) {
-  size = {
-    total: total,
-    free: free
-  };
-  server.locals({ disksize: { total: total, free: free } });
-});
 
 // get clips
 //
@@ -81,7 +73,7 @@ server.put('/api/clip/upload', [
   upload.thumb,
   upload.diskspace,
   upload.addSearchIndex,
-  routes.root
+  routes.ok
 ]);
 
 server.delete('/api/clip/:id', [
@@ -96,14 +88,20 @@ server.get('/reindex', routes.reindex);
 server.get('/api/clipd/:hash/:name?', [
   clip.fetch,
   clip.qr,
-  routes.detail,
   routes.ok
 ]);
 
 server.get('/clip/:hash/:name?', clip.fetch, clip.send);
 
 server.get('*', async (err, req, res, next) => {
-  console.log(err);
+  if(!err) {
+    return next();
+  }
+
+  // logging error here
+  return res.json({
+    error: err.message || err
+  });
 });
 
 server.get('*', async (req, res, next) => {
