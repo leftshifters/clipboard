@@ -96,6 +96,10 @@ class App extends React.Component {
         dropZone = header = footer = '';
         component = <ClipDetail hash={hash} name={name} />;
         break;
+      case '/8b66041e096772f9c0c3c4adb2f625ab.txt':
+        container = false;
+        component = '<div>detectify</div>';
+        break;
       default:
         break;
     }

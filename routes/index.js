@@ -152,7 +152,6 @@ exports.detectify = function(req, res) {
 };
 
 exports.page = function(req, res, next) {
-  console.log(req.params);
   var page = parseInt(req.params.page, 10);
 
   if (page > 0) {
@@ -345,14 +344,22 @@ exports.reindex = function(req, res) {
 };
 
 exports.ok = function(req, res, next) { // eslint-disable-line no-unused-vars
-  disksize(function onsize(total, free) {
-    req.store.data.disksize = {
-      total: total,
-      free: free
-    };
+  // req.store = req.store || {
+  //   data: ''
+  // };
+  // disksize(function onsize(total, free) {
+  //   req.store.data.disksize = {
+  //     total: total,
+  //     free: free
+  //   };
 
-    return res.json({
-      data: req.store.data || {}
-    });
+  return res.json({
+    data: req.store.data || {}
   });
+
+  // });
+};
+
+exports.text = function(req, res, next) {
+  return res.send('detectify');
 };

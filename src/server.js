@@ -92,6 +92,7 @@ server.get('/api/clipd/:hash/:name?', [
 ]);
 
 server.get('/clip/:hash/:name?', clip.fetch, clip.send);
+server.get('/8b66041e096772f9c0c3c4adb2f625ab.txt', routes.text);
 
 server.get('*', async (err, req, res, next) => {
   if(!err) {
