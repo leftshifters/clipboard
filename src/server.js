@@ -41,6 +41,8 @@ server.use(compression());
 server.use(express.static(path.join(__dirname)));
 server.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 server.use(methodOverride());
+server.set('views', path.join(__dirname, '../views'));
+server.set('view engine', 'jade');
 
 // developement mode
 //
@@ -93,6 +95,8 @@ server.get('/api/clipd/:hash/:name?', [
 
 server.get('/clip/:hash/:name?', clip.fetch, clip.send);
 server.get('/8b66041e096772f9c0c3c4adb2f625ab.txt', routes.text);
+server.get('/changelog', routes.changelog);
+server.get('/reindex', routes.reindex);
 
 server.get('*', async (err, req, res, next) => {
   if(!err) {

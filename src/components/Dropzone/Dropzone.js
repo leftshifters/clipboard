@@ -133,7 +133,7 @@ class Dropzone extends React.Component {
             accept={this.props.accept} />
 
           <div className="text-center dropcontainer">
-            <h1>Drop to upload</h1>
+            <h1>Drop it here</h1>
           </div>
         </div>
       </div>

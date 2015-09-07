@@ -88,7 +88,7 @@ class Footer extends React.Component {
       <Row>
         <div className="col-md-8">
           <div className="pull-left memory">
-            <span className="lead">413.11gb</span>
+            <span className="lead"></span>
           </div>
         </div>
         <div className="col-md-4">

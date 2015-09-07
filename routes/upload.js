@@ -162,7 +162,6 @@ exports.addSearchIndex = function(req, res, next) {
 
 function type(item, done) {
   var ext = path.extname(item.basename);
-  console.log(ext);
   if (ext === '.ipa') {
     item.type = 'ipa';
     return manifest(uploadPath, item, done);

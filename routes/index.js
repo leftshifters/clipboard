@@ -166,9 +166,6 @@ exports.editItem = function(req, res, next) {
   var id = req.store.id;
   var name = req.store.name;
 
-  console.log(id);
-  console.log(name);
-
   function done(err) {
     if (err) {
       return res.send(500);
