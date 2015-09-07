@@ -1,10 +1,12 @@
 import React from 'react'; // eslint-disable-line no-unused-vars
+import debug from 'debug';
 import TextBox from '../TextBox';
 import FormGroup from '../FormGroup';
 import ClipActions from '../../actions/ClipActions';
 
 const origin = document.location.origin;
 const searchPlaceholder = 'Search';
+const log = debug('clipboard:searchform');
 
 class SearchForm extends React.Component {
   constructor(context, props) {
@@ -49,6 +51,16 @@ class SearchForm extends React.Component {
     ClipActions.searchClips(this.state.searchText, 1);
   }
 
+  keypress(e) {
+    let code = e.keyCode || e.which;
+    log('Key code is %s', code);
+    if(code !== 13) {
+      return;
+    }
+
+    React.findDOMNode(this.refs.searchbutton).click();
+  }
+
   render() {
     return (
       <FormGroup>
@@ -60,10 +72,12 @@ class SearchForm extends React.Component {
             placeholder={searchPlaceholder}
             value={this.state.searchText}
             onChange={this.textchange.bind(this)}
-            onKeyUp={this.keyup.bind(this)} />
+            onKeyUp={this.keyup.bind(this)}
+            onKeyPress={this.keypress.bind(this)} />
           <span className='input-group-btn'>
             <button
               type='button'
+              ref='searchbutton'
               onClick={this.submitsearch.bind(this)}
               className={this.state.iconClass}>
               <span className='glyphicon search-icon glyphicon-search'></span>
