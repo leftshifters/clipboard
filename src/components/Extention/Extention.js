@@ -7,8 +7,12 @@ class Extention {
 
   render () {
     let clip = this.props.clip;
+    let type = clip.type;
+    if(clip.type.length > 4) {
+      type = 'FILE';
+    }
     return (
-      <div className="unknown"><div className="file-block"><div>{clip.type}</div></div></div>
+      <div className="unknown"><div className="file-block"><div>{type}</div></div></div>
     );
   }
 }
