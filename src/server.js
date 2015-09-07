@@ -25,7 +25,7 @@ process.title = 'Clipboard';
 
 server.enable('trust proxy');
 server.set('port', (process.env.PORT || 3001));
-server.set('uploadpath', '../uploads');
+server.set('uploadpath', '../public/uploads');
 
 if(server.get('env') === 'developement') {
   server.use(logger('tiny'));
@@ -39,10 +39,9 @@ server.use(bodyParser.urlencoded({
 server.use(reqstore());
 server.use(compression());
 server.use(express.static(path.join(__dirname)));
-server.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+server.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 server.use(methodOverride());
 
-console.log(path.join(__dirname, '../uploads'));
 // developement mode
 //
 if (server.get('env') === 'development') {
@@ -87,6 +86,7 @@ server.delete('/api/clip/:id', [
 server.get('/reindex', routes.reindex);
 server.get('/api/clipd/:hash/:name?', [
   clip.fetch,
+  routes.detail,
   clip.qr,
   routes.ok
 ]);

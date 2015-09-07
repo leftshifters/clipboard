@@ -7,7 +7,7 @@ var fs = require('fs');
 var url = require('url');
 var moment = require('moment');
 var marked = require('marked');
-var disksize = require('../lib/disksize');
+// var disksize = require('../lib/disksize');
 var debug = require('debug')('clipboard:index');
 var _s = require('underscore.string'); // eslint-disable-line no-underscore-dangle
 var getDb = require('../lib/connect');
@@ -213,7 +213,6 @@ exports.deleteItem = function(req, res, next) {
           return next(err);
         }
 
-        console.log(item);
         toremove.push(path.join(process.cwd(), item.relativePathLong));
 
         if (item.type === 'ipa') {
@@ -354,12 +353,12 @@ exports.ok = function(req, res, next) { // eslint-disable-line no-unused-vars
   //   };
 
   return res.json({
-    data: req.store.data || {}
+    data: req.store.data || req.store.item || {}
   });
 
   // });
 };
 
-exports.text = function(req, res, next) {
+exports.text = function(req, res) {
   return res.send('detectify');
 };

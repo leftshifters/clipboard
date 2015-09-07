@@ -1,6 +1,7 @@
 node_modules
 uploads/*
 public/thumbs
+public/uploads
 .npm-debug
 *.sublime-*
 .DS_Store

@@ -33,6 +33,7 @@ class ClipDetail extends React.Component {
 
   componentDidMount() {
     log('Clip detail component mount');
+    log('Hash is %s and name is %s', this.props.hash, this.props.name);
     ClipStore.addChangeListener(this.onStoreChange);
     ClipActions.getClip(this.props.hash, this.props.name);
   }
@@ -78,6 +79,7 @@ class ClipDetail extends React.Component {
 
   get button() {
     let clip = this.state.clip || {};
+    log('clip is clip %o', clip);
 
     if(clip.type === 'ipa') {
       return (
@@ -96,6 +98,7 @@ class ClipDetail extends React.Component {
         </div>
       );
     } else {
+      log('COMING HERE %o', clip);
       return (
         <div className="download">
           <div className="btn-group">

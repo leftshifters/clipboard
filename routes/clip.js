@@ -57,9 +57,9 @@ exports.qr = function(req, res, next) {
 exports.send = function(req, res) {
   var item = req.store.item;
   if (item.type === 'image') {
-    res.sendfile(path.join(process.cwd(), item.relativePathShort));
+    res.sendfile(path.join(process.cwd(), item.relativePathLong));
   } else {
-    res.download(path.join(process.cwd(), item.relativePathShort), item.originalName);
+    res.download(path.join(process.cwd(), item.relativePathLong), item.originalName);
   }
 
 };

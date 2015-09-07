@@ -5,14 +5,14 @@ var fs = require('fs');
 // var gm = require('gm');
 
 var db = require('../lib/db');
-var disksize = require('../lib/disksize');
+// var disksize = require('../lib/disksize');
 var manifest = require('../lib/manifest');
 var baseurl = require('../lib/baseurl');
 var search = require('../lib/search');
 var cliputils = require('../lib/cliptils');
 
-var uploadDir = '/uploads';
-var thumbsDir = '/thumbs';
+var uploadDir = 'public/uploads';
+var thumbsDir = '/public/thumbs';
 
 var uploadPath = path.join(process.cwd(), uploadDir);
 var thumbsPath = path.join(process.cwd(), thumbsDir);
@@ -66,7 +66,7 @@ exports.upload = function(req, res, next) {
         extension: extension,
         originalName: file.originalFilename,
         relativePathShort: 'uploads/' + basename,
-        relativePathLong: uploadPath + '/' + basename,
+        relativePathLong: uploadDir + '/' + basename,
         relativeThumbPathShort: '',
         relativeThumbPathLong: '',
         mime: mimetype,
@@ -105,7 +105,7 @@ exports.upload = function(req, res, next) {
             return res.send(500);
           }
 
-          req.store.data = item;
+          req.store.data = req.store.item = item;
           req.store._id = results.insertedIds[0]; // eslint-disable-line no-underscore-dangle
           next();
         });
@@ -136,22 +136,22 @@ exports.thumb = function(req, res, next) {
 };
 
 exports.diskspace = function(req, res, next) {
-  var total = 0;
-  var free = 0;
+  // var total = 0;
+  // var free = 0;
+  next();
+  // req.app.locals.disksize.total = total;
+  // req.app.locals.disksize.free = free;
 
-  req.app.locals.disksize.total = total;
-  req.app.locals.disksize.free = free;
 
+  // disksize(function onsize(err, total, free) { // eslint-disable-line no-shadow
+  //   if (err) {
+  //     return next();
+  //   }
 
-  disksize(function onsize(err, total, free) { // eslint-disable-line no-shadow
-    if (err) {
-      return next();
-    }
-
-    req.app.locals.disksize.total = total;
-    req.app.locals.disksize.free = free;
-    next();
-  });
+  //   req.app.locals.disksize.total = total;
+  //   req.app.locals.disksize.free = free;
+  //   next();
+  // });
 };
 
 exports.addSearchIndex = function(req, res, next) {
