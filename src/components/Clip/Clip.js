@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react'; // eslint-disable-line no-unused-vars
-import {defer} from 'underscore';
-import _ from 'lodash';
+import _, {defer} from 'lodash';
 import debug from 'debug';
 import Image from '../Image';
 import Button from '../Button';
@@ -133,14 +132,14 @@ class Clip extends React.Component {
               </span>
             </span>
           </span>
-          <a href='#' className="link" onClick={this.clipnavigate.bind(this)}>
+          <a href={`/clipd/${this.props.clip.basenameWithoutExt}/${this.props.clip.name}`} className="link">
             <div className="item-inner">
               {thumb}
             </div>
           </a>
           <div className="title-block">
             <span className="title">
-              <a title={clip.originalName} href='#' onClick={this.clipnavigate.bind(this)} className={aTitle}>{clip.name}</a>
+              <a title={clip.originalName} href={`/clipd/${this.props.clip.basenameWithoutExt}/${this.props.clip.name}`} className={aTitle}>{clip.name}</a>
               <TextBox
                 className={titleInput}
                 type="text"

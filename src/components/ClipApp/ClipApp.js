@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, {PropTypes} from 'react'; // eslint-disable-line no-unused-vars
 import Styles from './ClipApp.less'; // eslint-disable-line no-unused-vars
 import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-unused-vars
@@ -5,6 +6,8 @@ import Row from '../Row';
 import UploadBox from '../UploadBox';
 import Clip from '../Clip';
 import Loader from '../Loader';
+import Header from '../Header';
+import Footer from '../Footer';
 import ClipsStore from '../../stores/ClipStore';
 import ClipActions from '../../actions/ClipActions';
 import debug from 'debug';
@@ -30,8 +33,12 @@ class ClipApp extends React.Component {
 
   componentDidMount() {
     log('Clips component mount');
+    let page = !_.isNaN(_.parseInt(this.props.params.page)) ?
+      _.parseInt(this.props.params.page) :
+      1;
+
     ClipsStore.addChangeListener(this.onStoreChange);
-    ClipActions.getClips(this.props.page);
+    ClipActions.getClips(page);
   }
 
   componentWillUnmount() {
@@ -52,9 +59,9 @@ class ClipApp extends React.Component {
   destroy(clip) {
     log('Deleted clip: Store change');
     if(clip.uploading) {
-      ClipActions.getClips(this.props.page);
+      ClipActions.getClips(this.props.params.page);
     } else {
-      ClipActions.deleteClip(clip._id, this.props.page); // eslint-disable-line no-underscore-dangle
+      ClipActions.deleteClip(clip._id, this.props.params.page); // eslint-disable-line no-underscore-dangle
     }
   }
 
@@ -87,14 +94,19 @@ class ClipApp extends React.Component {
 
   render() {
     log('Rendering clip view');
+
     return (
-      <Row>
-        {this.FileUploadForm}
-        <Loader loading={this.state.loading} />
-        <div className="clips" ref="clips">
-          {this.Clips}
-        </div>
-      </Row>
+      <div>
+        <Header version={this.props.version} />
+        <Row>
+          {this.FileUploadForm}
+          <Loader loading={this.state.loading} />
+          <div className="clips" ref="clips">
+            {this.Clips}
+          </div>
+        </Row>
+        <Footer />
+      </div>
     );
   }
 }

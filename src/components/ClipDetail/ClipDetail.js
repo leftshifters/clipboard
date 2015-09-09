@@ -33,9 +33,9 @@ class ClipDetail extends React.Component {
 
   componentDidMount() {
     log('Clip detail component mount');
-    log('Hash is %s and name is %s', this.props.hash, this.props.name);
+    log('Hash is %s and name is %s', this.props.params.hash, this.props.params.name);
     ClipStore.addChangeListener(this.onStoreChange);
-    ClipActions.getClip(this.props.hash, this.props.name);
+    ClipActions.getClip(this.props.params.hash, this.props.params.name);
   }
 
   componentWillUnmount() {
