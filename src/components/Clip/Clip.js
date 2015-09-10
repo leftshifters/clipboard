@@ -6,7 +6,6 @@ import Button from '../Button';
 import TextBox from '../TextBox';
 import Extention from '../Extention';
 import Progressbar from '../Progressbar';
-import AppActions from '../../actions/AppActions';
 
 const log = debug('clipboard:clip');
 
@@ -86,12 +85,6 @@ class Clip extends React.Component {
     log('On Edit button click: state is %o', this.state);
   }
 
-  clipnavigate(e) {
-    e.preventDefault();
-    let url = `/clipd/${this.props.clip.basenameWithoutExt}/${this.props.clip.name}`;
-    AppActions.navigateTo(url);
-  }
-
   onTitleChange(e) {
     log('Clip title change to: %s', e.target.value);
     this.setState({editText: e.target.value});
@@ -132,14 +125,14 @@ class Clip extends React.Component {
               </span>
             </span>
           </span>
-          <a href={`/clipd/${this.props.clip.basenameWithoutExt}/${this.props.clip.name}`} className="link">
+          <a href={`/clipd/${clip.basenameWithoutExt}/${clip.name}`} className="link">
             <div className="item-inner">
               {thumb}
             </div>
           </a>
           <div className="title-block">
             <span className="title">
-              <a title={clip.originalName} href={`/clipd/${this.props.clip.basenameWithoutExt}/${this.props.clip.name}`} className={aTitle}>{clip.name}</a>
+              <a title={clip.originalName} href={`/clipd/${clip.basenameWithoutExt}/${clip.name}`} className={aTitle}>{clip.name}</a>
               <TextBox
                 className={titleInput}
                 type="text"

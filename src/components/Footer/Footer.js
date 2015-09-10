@@ -2,11 +2,8 @@ import React, { PropTypes } from 'react'; // eslint-disable-line no-unused-vars
 import styles from '../Header/Header.less'; // eslint-disable-line no-unused-vars
 import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-unused-vars
 import HeaderStore from '../../stores/HeaderStore';
-import AppActions from '../../actions/AppActions';
-import ClipActions from '../../actions/ClipActions';
 import Row from '../Row';
 import debug from 'debug';
-import _ from 'lodash';
 
 const log = debug('clipboard:header');
 
@@ -30,9 +27,9 @@ class Footer extends React.Component {
     log('Pagination is %o', pagination);
     return {
       prevPage: pagination ? pagination.leftArrow : 'invisible',
-      prevLink: pagination && pagination.prevPageLink ? pagination.prevPageLink : '/',
+      prevPageLink: pagination ? `/${pagination.prevPageLink}` : '/',
       nextPage: pagination ? pagination.rightArrow : 'invisible',
-      nextLink: pagination && pagination.nextPageLink ? pagination.nextPageLink : '/'
+      nextPageLink: pagination ? `/${pagination.nextPageLink}` : '/'
     };
   }
 
@@ -50,35 +47,6 @@ class Footer extends React.Component {
     HeaderStore.removeChangeListener(this.onStoreChange);
   }
 
-  getPageNumber(link) {
-    let page = link.split('/').pop();
-    log('Page is %s', page);
-    if(!_.isNaN(_.parseInt(page))) {
-      return _.parseInt(page);
-    } else {
-      return 0;
-    }
-  }
-
-  prevLink(e) {
-    e.preventDefault();
-    log('Previous link is %s', this.state.prevLink);
-    if(this.state.prevLink === 'page/0' || this.state.prevLink === 'page/1') {
-      AppActions.navigateTo('/');
-    } else {
-      AppActions.navigateTo('/' + this.state.prevLink);
-    }
-    log('Page count is %s', this.getPageNumber(this.state.prevLink));
-    ClipActions.getClips(this.getPageNumber(this.state.prevLink));
-  }
-
-  nextLink(e) {
-    e.preventDefault();
-    log('Next link is %s', this.state.nextLink);
-    AppActions.navigateTo('/' + this.state.nextLink);
-    ClipActions.getClips(this.getPageNumber(this.state.nextLink));
-  }
-
   render() {
     let prevPage = 'page prev-page ' + this.state.prevPage;
     let nextPage = 'page next-page ' + this.state.nextPage;
@@ -94,10 +62,10 @@ class Footer extends React.Component {
         <div className="col-md-4">
           <h1>
             <div className="pages pull-right">
-              <a href='#' onClick={this.prevLink.bind(this)} className={prevPage}>
+              <a href={this.state.prevPageLink} className={prevPage}>
                 <span className="glyphicon glyphicon-chevron-left"></span>
               </a>
-              <a href='#' onClick={this.nextLink.bind(this)} className={nextPage}>
+              <a href={this.state.nextPageLink} className={nextPage}>
                 <span className="glyphicon glyphicon-chevron-right"></span>
               </a>
             </div>

@@ -15,7 +15,6 @@ class SearchForm extends React.Component {
       searchText: '',
       iconClass: 'btn btn-default disabled'
     };
-    window.history.replaceState(null, null, origin);
   }
 
   keyup(e) {

@@ -5,7 +5,6 @@ import SearchForm from '../SearchForm';
 import HeaderStore from '../../stores/HeaderStore';
 import Row from '../Row';
 import debug from 'debug';
-import _ from 'lodash';
 
 const log = debug('clipboard:header');
 
@@ -29,9 +28,9 @@ class Header extends React.Component {
     log('Pagination is %o', pagination);
     return {
       prevPage: pagination ? pagination.leftArrow : 'invisible',
-      prevPageLink: pagination ? pagination.prevPageLink : '/',
+      prevPageLink: pagination ? `/${pagination.prevPageLink}` : '/',
       nextPage: pagination ? pagination.rightArrow : 'invisible',
-      nextPageLink: pagination ? pagination.nextPageLink : '/'
+      nextPageLink: pagination ? `/${pagination.nextPageLink}` : '/'
     };
   }
 
@@ -47,16 +46,6 @@ class Header extends React.Component {
 
   componentWillUnmount() {
     HeaderStore.removeChangeListener(this.onStoreChange);
-  }
-
-  getPageNumber(link) {
-    let page = link.split('/').pop();
-    log('Page is %s', page);
-    if(!_.isNaN(_.parseInt(page))) {
-      return _.parseInt(page);
-    } else {
-      return 0;
-    }
   }
 
   get SearchForm() {

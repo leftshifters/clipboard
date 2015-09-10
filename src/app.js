@@ -1,11 +1,10 @@
 import 'babel/polyfill';
 import React from 'react';
 import FastClick from 'fastclick';
-// import Router from './Router';
 import App from './components/App';
-// import AppStore from './stores/AppStore';
 import pack, {version} from '../package.json'; // eslint-disable-line no-unused-vars
 import Router from 'react-router';
+// import Redirect from 'react-router';
 const Route = Router.Route;
 import ClipApp from './components/ClipApp';
 import ClipDetail from './components/ClipDetail';
