@@ -1,8 +1,9 @@
 node_modules
-public/uploads
+uploads/*
 public/thumbs
+public/uploads
 .npm-debug
 *.sublime-*
 .DS_Store
-.nodemonignore
+build/*
 npm-debug.log

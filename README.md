@@ -35,7 +35,7 @@ ELASTICSEARCH_LOG_LEVEL   // defaults to error
 To run
 
 ````
-node app.js
+gulp
 ````
 
 If you want to run the server till eternity, you can copy the upstart config file `clipboard.conf` to `/etc/init` and use service utility to start the process
