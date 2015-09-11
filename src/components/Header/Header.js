@@ -29,7 +29,9 @@ class Header extends React.Component {
     log('Pagination is %o', pagination);
     return {
       prevPage: pagination ? pagination.leftArrow : 'invisible',
-      prevPageLink: pagination ? `/${pagination.prevPageLink}` : '/',
+      prevPageLink: pagination ?
+        (!pagination.leftArrow ? '/' : `/${pagination.prevPageLink}`) :
+        '/',
       nextPage: pagination ? pagination.rightArrow : 'invisible',
       nextPageLink: pagination ? `/${pagination.nextPageLink}` : '/'
     };

@@ -1,8 +1,10 @@
 var multiparty = require('multiparty');
+var _ = require('lodash');
 var path = require('path');
 var mime = require('mime');
 var fs = require('fs');
-// var gm = require('gm');
+var gm = require('gm');
+var async = require('async');
 
 var db = require('../lib/db');
 // var disksize = require('../lib/disksize');
@@ -58,60 +60,89 @@ exports.upload = function(req, res, next) {
       extension = path.extname(file.path);
       mimetype = mime.lookup(file.path);
       date = new Date();
-
       var item = {
-        hash: '',
-        basename: basename,
-        basenameWithoutExt: basenameWithoutExt,
-        extension: extension,
-        originalName: file.originalFilename,
-        relativePathShort: 'uploads/' + basename,
-        relativePathLong: uploadDir + '/' + basename,
-        relativeThumbPathShort: '',
-        relativeThumbPathLong: '',
         mime: mimetype,
-        name: fields.name && fields.name.shift() || 'untitled',
-        type: '',
-        bundleId: fields.bundleId && fields.bundleId.shift() || '',
-        created: date.toISOString(),
-        createdms: date.getTime()
+        height: 0,
+        width: 0
       };
 
-      cliputils.seturl(item, baseuri);
+      async.waterfall([
+        function calculateSize(cb) {
+          if (!!~imageMimes.indexOf(mimetype)) {
+            gm(file.path).size(function(gmerr, size) {
+              if (gmerr) {
+                return cb(gmerr);
+              }
 
-      if (item.type === 'ipa') {
-        item.url = cliputils.ipaurl(item, baseuri);
-      }
+              item.height = size.height;
+              item.width = size.width;
+              cb(null, item);
+            });
+          } else {
+            cb(null, item);
+          }
+        },
 
-      if (item.type === 'image') {
-        item.imageurl = '../' + item.relativePathShort;
-      }
+        function AddImage(item, cb) {
+          item = _.extend(item, {
+            hash: '',
+            size: file.size,
+            basename: basename,
+            basenameWithoutExt: basenameWithoutExt,
+            extension: extension,
+            originalName: file.originalFilename,
+            relativePathShort: 'uploads/' + basename,
+            relativePathLong: uploadDir + '/' + basename,
+            relativeThumbPathShort: '',
+            relativeThumbPathLong: '',
+            name: fields.name && fields.name.shift() || 'untitled',
+            type: '',
+            bundleId: fields.bundleId && fields.bundleId.shift() || '',
+            created: date.toISOString(),
+            createdms: date.getTime()
+          });
 
-      cliputils.type(item);
-      cliputils.setname(item);
-      cliputils.settimeago(item);
+          cliputils.seturl(item, baseuri);
 
-      if (!!~imageMimes.indexOf(mimetype)) { // eslint-disable-line no-extra-boolean-cast
-        item.type = 'image';
-      }
-
-      type(item, function(err, item) { // eslint-disable-line no-shadow
-        if (err) {
-          return res.send(500);
-        }
-
-        db.insertItem(item, function(err, results) { // eslint-disable-line no-shadow
-          if (err) {
-            return res.send(500);
+          if (item.type === 'ipa') {
+            item.url = cliputils.ipaurl(item, baseuri);
           }
 
-          req.store.data = req.store.item = item;
-          req.store._id = results.insertedIds[0]; // eslint-disable-line no-underscore-dangle
-          next();
-        });
+          if (item.type === 'image') {
+            item.imageurl = '../' + item.relativePathShort;
+          }
+
+          cliputils.type(item);
+          cliputils.setname(item);
+          cliputils.settimeago(item);
+
+          if (!!~imageMimes.indexOf(mimetype)) { // eslint-disable-line no-extra-boolean-cast
+            item.type = 'image';
+          }
+
+          type(item, function(err, item) { // eslint-disable-line no-shadow
+            if (err) {
+              return cb(err);
+            }
+
+            db.insertItem(item, function(err, results) { // eslint-disable-line no-shadow
+              if (err) {
+                return cb(err);
+              }
+              req.store._id = results.insertedIds[0]; // eslint-disable-line no-underscore-dangle
+              cb(null, item);
+            });
+          });
+        }
+      ], function(err, item) {
+        if (err) {
+          return next(err);
+        }
+
+        req.store.data = req.store.item = item;
+        next();
       });
     }
-
   });
 
 };

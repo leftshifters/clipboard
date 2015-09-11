@@ -3,8 +3,7 @@ import React from 'react';
 import FastClick from 'fastclick';
 import App from './components/App';
 import pack, {version} from '../package.json'; // eslint-disable-line no-unused-vars
-import Router, { DefaultRoute } from 'react-router';
-// import Redirect from 'react-router';
+import Router from 'react-router';
 const Route = Router.Route;
 import ClipApp from './components/ClipApp';
 import ClipDetail from './components/ClipDetail';

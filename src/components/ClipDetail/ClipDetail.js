@@ -112,6 +112,16 @@ class ClipDetail extends React.Component {
   render() {
     let clip = this.state.clip || {};
     let clazz = this.state.loading ? 'row center-block hidden' : 'row center-block active';
+    let size = ` ${clip.mime} `;
+
+    if(clip.size) {
+      size += `(${clip.size} bytes) `;
+    }
+
+    if(clip.type === 'image') {
+      size += `(W x H): ${clip.width} x ${clip.height}`;
+    }
+
     let tags = [
       {name: 'og:title', content: clip.name},
       {name: 'og:type', content: 'object'},
@@ -140,8 +150,15 @@ class ClipDetail extends React.Component {
           {this.ifTypeQr}
           {this.button}
           <div className="stats-details panel panel-body">
-            <div className="interests col-xs-5 col-lg-2">
-              <span>{clip.downloaded} reps</span>
+            <div className="interests col-lg-7">
+              <span>
+                <i className="glyphicon glyphicon-download text-success"></i>
+                &nbsp;{clip.downloaded} reps
+              </span>&nbsp;
+              <span>
+                <i className="glyphicon glyphicon-file text-success"></i>
+                {size}
+              </span>
             </div>
             <div className="added col-xs-7 col-lg-2 pull-right">
               <span className="pull-right">Added on {clip.added}</span>

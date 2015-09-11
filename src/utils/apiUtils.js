@@ -10,7 +10,7 @@ if(!db || window.indexedDB) {
   db = new window.Dexie('clipboard');
 
   db.version(1).stores({
-    clips: '++id,page,hash,basename,basenameWithoutExt,extension,originalName,relativePathShort,relativePathLong,relativeThumbPathShort,relativeThumbPathLong,mime,name,type,bundleId,created,createdms,url,detailUrl,timeago,downloaded,[hash+name]',
+    clips: '++id,page,hash,basename,basenameWithoutExt,extension,originalName,height,width,relativePathShort,relativePathLong,relativeThumbPathShort,relativeThumbPathLong,mime,name,type,bundleId,created,createdms,url,detailUrl,timeago,downloaded,[hash+name]',
     pages: '++id,leftArrow,more,nextPageLink,page,prevPageLink,query,rightArrow,searchBtn,searchIcon'
   });
 
