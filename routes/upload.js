@@ -37,6 +37,18 @@ var imageMimes = [
   'image/x-icon'
 ];
 
+function type(item, done) {
+  var ext = path.extname(item.basename);
+  if (ext === '.ipa') {
+    item.type = 'ipa';
+    return manifest(uploadPath, item, done);
+  } else if (ext === '.apk') {
+    item.type = 'apk';
+  }
+
+  done(null, item);
+}
+
 exports.upload = function(req, res, next) {
   baseurl.set(req.protocol, req.get('host'));
   var form = new multiparty.Form({
@@ -68,7 +80,7 @@ exports.upload = function(req, res, next) {
 
       async.waterfall([
         function calculateSize(cb) {
-          if (!!~imageMimes.indexOf(mimetype)) {
+          if (!!~imageMimes.indexOf(mimetype)) { // eslint-disable-line no-extra-boolean-cast
             gm(file.path).size(function(gmerr, size) {
               if (gmerr) {
                 return cb(gmerr);
@@ -83,7 +95,7 @@ exports.upload = function(req, res, next) {
           }
         },
 
-        function AddImage(item, cb) {
+        function AddImage(item, cb) { // eslint-disable-line no-shadow
           item = _.extend(item, {
             hash: '',
             size: file.size,
@@ -134,7 +146,7 @@ exports.upload = function(req, res, next) {
             });
           });
         }
-      ], function(err, item) {
+      ], function(err, item) { // eslint-disable-line no-shadow
         if (err) {
           return next(err);
         }
@@ -189,16 +201,3 @@ exports.addSearchIndex = function(req, res, next) {
   search.add(req.store.item);
   next();
 };
-
-
-function type(item, done) {
-  var ext = path.extname(item.basename);
-  if (ext === '.ipa') {
-    item.type = 'ipa';
-    return manifest(uploadPath, item, done);
-  } else if (ext === '.apk') {
-    item.type = 'apk';
-  }
-
-  done(null, item);
-}

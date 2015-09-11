@@ -39,6 +39,10 @@ export default {
               .get(url)
               .then((res) => {
                 log('Base utils promised resolve %o', res);
+                if(res.error) {
+                  return cb(res.error);
+                }
+
                 cb(null, res.data);
               })
               .error((err) => {
@@ -61,6 +65,11 @@ export default {
         basicUtils
           .get(url)
           .then((res) => {
+
+            if(res.error) {
+              return reject(res.error);
+            }
+
             let page = {
               'leftArrow': res.data.leftArrow,
               'more': res.data.more,
@@ -175,6 +184,11 @@ export default {
       basicUtils.get(`/api/clipd/${hash}/${name}`)
         .then((res) => {
           log('Got data in API %o', res);
+
+          if(res.error) {
+            return reject(res.error);
+          }
+
           return resolve({
             clip: res.data
           });
@@ -197,6 +211,10 @@ export default {
       basicUtils
         .get(url)
         .then((res) => {
+          if(res.error) {
+            return reject(res.error);
+          }
+
           let page = {
             'leftArrow': res.data.leftArrow,
             'more': res.data.more,
@@ -227,6 +245,11 @@ export default {
       basicUtils
       .post('api/clip/' + id, title)
       .then((res) => {
+
+        if(res.error) {
+          return reject(res.error);
+        }
+
         if(!db) {
           return resolve(res);
         }
@@ -259,7 +282,11 @@ export default {
     return new Promise((resolve, reject) => {
       basicUtils
       .delete('api/clip/' + id)
-      .then(() => {
+      .then((res) => {
+        if(res.error) {
+          return reject(res.error);
+        }
+
         let url = `/api/clips/${page}`;
         db.clips.clear();
         db.pages.clear();
@@ -268,6 +295,7 @@ export default {
           if(err) {
             return reject(err);
           }
+
           db.open();
           db.on('ready', () => {
             db.transaction('rw', db.clips, db.pages, () => {
@@ -310,23 +338,28 @@ export default {
             });
           });
         });
-        /*db.open();
-        db.on('ready', () => {
+      });
+    });
+  },
+
+  deleteTmpClip(pKey) {
+    return new Promise((resolve, reject) => {
+      db.open();
+      db.on('ready', () => {
+        db.clips
+        .delete(parseInt(pKey))
+        .then(() => {
+          log('Deleted temp clip with index %s', pKey);
           db.clips
-          .delete(parseInt(pKey))
-          .then(() => {
-            log('Deleted clip with index %s', pKey);
-            db.clips
-            .toArray()
-            .then((clips) => {
-              log('Got clips %o ', clips);
-              return resolve({'clips': clips});
-            });
-          })
-          .catch((err) => {
-            return reject(err);
+          .toArray()
+          .then((clips) => {
+            log('Got clips %o ', clips);
+            return resolve({clips: clips});
           });
-        });*/
+        })
+        .catch((err) => {
+          return reject(err);
+        });
       });
     });
   },
@@ -354,6 +387,10 @@ export default {
         .upload('/api/clip/upload', data)
         .then((res) => {
           log('Got uplaod response %o', res);
+          if(res.error) {
+            return reject(res.error);
+          }
+
           clip.uploading = false;
           let revisedClip = _.merge(clip, res.data);
           db.clips

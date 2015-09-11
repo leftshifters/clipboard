@@ -5,6 +5,7 @@ import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-
 import FileActions from '../../actions/FileActions';
 import Container from '../Container';
 import Dropzone from '../Dropzone';
+import Notify from '../Notify';
 
 const log = debug('clipboard:apptemplate');
 var counter = 0;
@@ -57,6 +58,7 @@ class AppTemplate extends React.Component {
       <Container
         onDragEnter={this.handleDragEnter.bind(this)}
         onMouseLeave={this.handleDragLeave.bind(this)}>
+        <Notify />
         <Dropzone
           ref="dropzone"
           className={this.state.dragClass}

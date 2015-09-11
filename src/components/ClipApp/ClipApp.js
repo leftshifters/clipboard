@@ -39,6 +39,8 @@ class ClipApp extends React.Component {
 
     ClipsStore.addChangeListener(this.onStoreChange);
 
+    log(this.refs.searchbutton);
+
     if(query && !_.isEmpty(query.q)) {
       ClipActions.searchClips(query.q, parms.page);
     } else {

@@ -10,6 +10,8 @@ import bodyParser from 'body-parser';
 import compression from 'compression';
 import reqstore from 'reqstore';
 import methodOverride from 'method-override';
+import debug from 'debug';
+
 import './core/Dispatcher';
 import bootcheck from '../lib/bootcheck';
 import upload from '../routes/upload';
@@ -19,6 +21,7 @@ import clip from '../routes/clip';
 const pack = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8')
 );
+const log = debug('clipboard:server');
 const server = express();
 
 process.title = 'Clipboard';
@@ -103,9 +106,11 @@ server.get('*', async (err, req, res, next) => {
     return next();
   }
 
+  log('Got error ' + err);
+
   // logging error here
-  return res.json({
-    error: err.message || err
+  return res.status(err.code || 500).json({
+    error: err
   });
 });
 

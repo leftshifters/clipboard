@@ -131,7 +131,7 @@ class ClipDetail extends React.Component {
       size += `(${this.formatBytes(clip.size, 3)}) `;
     }
 
-    if(clip.type === 'image') {
+    if(clip.type === 'image' && clip.width && clip.height) {
       size += `(W x H): ${clip.width} x ${clip.height}`;
     }
 

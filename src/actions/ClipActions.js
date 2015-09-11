@@ -4,7 +4,7 @@ import {SET_CLIPS,
   DELETE_CLIP,
   UPLOADING_CLIP,
   UPLOADED} from '../constants/ClipConstants'; // eslint-disable-line no-unused-vars
-import {SET_PAGINATION} from '../constants/AppConstants';
+import {SET_PAGINATION, GOT_ERROR, GOT_SUCCESS} from '../constants/AppConstants';
 import Dispatcher from '../core/Dispatcher';
 import apiUtils from '../utils/apiUtils';
 
@@ -30,9 +30,12 @@ export default {
         });
       })
       .catch((err) => {
-        if (err.status === 401) {
-          log('Error is %o', err);
-        }
+        Dispatcher.dispatch({
+          actionType: GOT_ERROR,
+          payload: {
+            error: err
+          }
+        });
       });
   },
 
@@ -47,7 +50,12 @@ export default {
         });
       })
       .catch((err) => {
-        log('Error is %o', err);
+        Dispatcher.dispatch({
+          actionType: GOT_ERROR,
+          payload: {
+            error: err
+          }
+        });
       });
   },
 
@@ -70,9 +78,12 @@ export default {
         });
       })
       .catch((err) => {
-        if (err.status === 401) {
-          log('Error is %o', err);
-        }
+        Dispatcher.dispatch({
+          actionType: GOT_ERROR,
+          payload: {
+            error: err
+          }
+        });
       });
   },
 
@@ -80,10 +91,20 @@ export default {
     log('Change title action invoked');
     apiUtils.changeTitle(id, title, pKey)
       .then(() => {
-        log('Title change');
+        Dispatcher.dispatch({
+          actionType: GOT_SUCCESS,
+          payload: {
+            success: 'Successfully title change'
+          }
+        });
       })
       .catch((err) => {
-        log('Error is %o', err);
+        Dispatcher.dispatch({
+          actionType: GOT_ERROR,
+          payload: {
+            error: err
+          }
+        });
       });
   },
 
@@ -97,7 +118,12 @@ export default {
       });
     })
     .catch((err) => {
-      log('Error is %o', err);
+      Dispatcher.dispatch({
+        actionType: GOT_ERROR,
+        payload: {
+          error: err
+        }
+      });
     });
   },
 
@@ -121,11 +147,30 @@ export default {
             });
           })
           .catch((err) => {
-            log('Got uploaded err in clip actions %o', err);
+            Dispatcher.dispatch({
+              actionType: GOT_ERROR,
+              payload: {
+                error: err
+              }
+            });
+
+            apiUtils
+              .deleteTmpClip(res.clip.id)
+              .then((res) => {
+                Dispatcher.dispatch({
+                  actionType: DELETE_CLIP,
+                  payload: res
+                });
+              });
           });
       })
       .catch((err) => {
-        log('Got uploaded err in clip actions %o', err);
+        Dispatcher.dispatch({
+          actionType: GOT_ERROR,
+          payload: {
+            error: err
+          }
+        });
       });
 
     Dispatcher.dispatch({
