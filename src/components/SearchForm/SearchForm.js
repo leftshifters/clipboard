@@ -1,36 +1,43 @@
-import React from 'react'; // eslint-disable-line no-unused-vars
+import React, {PropTypes} from 'react'; // eslint-disable-line no-unused-vars
 import debug from 'debug';
 import TextBox from '../TextBox';
 import FormGroup from '../FormGroup';
 import ClipActions from '../../actions/ClipActions';
 
-const origin = document.location.origin;
 const searchPlaceholder = 'Search';
 const log = debug('clipboard:searchform');
 
 class SearchForm extends React.Component {
+
+  static contextTypes = {
+    router: React.PropTypes.func
+  };
+
+  static propTypes = {
+    query: PropTypes.string
+  };
+
   constructor(context, props) {
     super(context, props);
     this.state = {
-      searchText: '',
+      searchText: this.props.query || '',
       iconClass: 'btn btn-default disabled'
     };
   }
 
   keyup(e) {
     if (!e.target.value) {
-      window.history.replaceState(null, null, origin);
+      this.context.router.replaceWith('/');
       this.setState({
         iconClass: 'btn btn-default disabled',
         searchText: e.target.value
       });
       ClipActions.getClips(1);
     } else {
-      window.history.replaceState(
-        null,
-        null,
-        `${origin}?q=${encodeURIComponent(e.target.value)}`
-      );
+      this
+        .context
+        .router
+        .replaceWith('/?', null, {q: encodeURIComponent(e.target.value)});
 
       this.setState({
         iconClass: 'btn btn-default',

@@ -13,7 +13,8 @@ const log = debug('clipboard:header');
 class Header extends React.Component {
 
   static PropTypes = {
-    version: PropTypes.string
+    version: PropTypes.string,
+    query: PropTypes.string
   }
 
   constructor(props, context) {
@@ -52,7 +53,7 @@ class Header extends React.Component {
     return (
       <div className="col-md-4">
         <h1>
-          <SearchForm />
+          <SearchForm query={this.props.query} />
         </h1>
       </div>
     );

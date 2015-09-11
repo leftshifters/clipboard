@@ -3,7 +3,7 @@ import React from 'react';
 import FastClick from 'fastclick';
 import App from './components/App';
 import pack, {version} from '../package.json'; // eslint-disable-line no-unused-vars
-import Router from 'react-router';
+import Router, { DefaultRoute } from 'react-router';
 // import Redirect from 'react-router';
 const Route = Router.Route;
 import ClipApp from './components/ClipApp';
@@ -13,6 +13,7 @@ function run() {
   var routes = (
     <Route handler={App}>
       <Route path='/' name="clipapp" handler={ClipApp} />
+      <Route path='/?q=:q' name="?" handler={ClipApp} />
       <Route path='/page/:page' name="clip" handler={ClipApp} />
       <Route path='/clipd/:hash/:name?' name="clipDetails" handler={ClipDetail} />
     </Route>
@@ -43,7 +44,9 @@ function run() {
     let appElement = React.createElement(Handler, props);
     React.render(appElement, document.getElementById('clipapp'), () => {
       let css = document.getElementById('css');
-      css.parentNode.removeChild(css);
+      if(css) {
+        css.parentNode.removeChild(css);
+      }
     });
   });
 }

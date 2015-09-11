@@ -33,12 +33,17 @@ class ClipApp extends React.Component {
 
   componentDidMount() {
     log('Clips component mount');
-    let page = !_.isNaN(_.parseInt(this.props.params.page)) ?
-      _.parseInt(this.props.params.page) :
-      1;
+    let parms = this.props.params;
+    let query = this.props.query;
+    let page = !_.isNaN(_.parseInt(parms.page)) ? _.parseInt(parms.page) : 1;
 
     ClipsStore.addChangeListener(this.onStoreChange);
-    ClipActions.getClips(page);
+
+    if(query) {
+      ClipActions.searchClips(query.q, parms.page);
+    } else {
+      ClipActions.getClips(page);
+    }
   }
 
   componentWillUnmount() {
@@ -97,7 +102,7 @@ class ClipApp extends React.Component {
 
     return (
       <div>
-        <Header version={this.props.version} />
+        <Header version={this.props.version} query={this.props ? this.props.query.q : ''} />
         <Row>
           {this.FileUploadForm}
           <Loader loading={this.state.loading} />
