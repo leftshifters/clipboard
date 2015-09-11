@@ -77,6 +77,19 @@ class ClipDetail extends React.Component {
     );
   }
 
+  formatBytes(bytes, dec) {
+    let k = 1000;
+    let dm = dec + 1 || 2;
+    let sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB'];
+
+    if(bytes === 0) {
+      return false;
+    }
+
+    let i = Math.floor(Math.log(bytes) / Math.log(k));
+    return (bytes / Math.pow(k, i)).toPrecision(dm) + ' ' + sizes[i];
+  }
+
   get button() {
     let clip = this.state.clip || {};
     log('clip is clip %o', clip);
@@ -115,7 +128,7 @@ class ClipDetail extends React.Component {
     let size = ` ${clip.mime} `;
 
     if(clip.size) {
-      size += `(${clip.size} bytes) `;
+      size += `(${this.formatBytes(clip.size, 3)}) `;
     }
 
     if(clip.type === 'image') {
@@ -153,7 +166,7 @@ class ClipDetail extends React.Component {
             <div className="interests col-lg-7">
               <span>
                 <i className="glyphicon glyphicon-download text-success"></i>
-                &nbsp;{clip.downloaded} reps
+                &nbsp;{clip.downloaded} views
               </span>&nbsp;
               <span>
                 <i className="glyphicon glyphicon-file text-success"></i>
