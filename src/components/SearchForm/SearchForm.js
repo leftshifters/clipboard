@@ -70,7 +70,7 @@ class SearchForm extends React.Component {
   render() {
     return (
       <FormGroup>
-        <div className='input-group'>
+        <div className='input-group searchForm'>
           <TextBox
             name='q'
             type='search'
