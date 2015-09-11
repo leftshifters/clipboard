@@ -3044,12 +3044,27 @@
     },
     "react-notification-system": {
       "version": "0.1.14",
-      "from": "react-notification-system@>=0.1.14 <0.2.0",
+      "from": "https://registry.npmjs.org/react-notification-system/-/react-notification-system-0.1.14.tgz",
       "resolved": "https://registry.npmjs.org/react-notification-system/-/react-notification-system-0.1.14.tgz",
       "dependencies": {
         "object-assign": {
           "version": "3.0.0",
           "from": "object-assign@>=3.0.0 <4.0.0"
+        }
+      }
+    },
+    "react-router": {
+      "version": "0.13.3",
+      "from": "react-router@*",
+      "dependencies": {
+        "object-assign": {
+          "version": "2.1.1",
+          "from": "object-assign@>=2.0.0 <3.0.0"
+        },
+        "qs": {
+          "version": "2.4.1",
+          "from": "qs@2.4.1",
+          "resolved": "https://registry.npmjs.org/qs/-/qs-2.4.1.tgz"
         }
       }
     },
@@ -3478,11 +3493,6 @@
           }
         }
       }
-    },
-    "underscore": {
-      "version": "1.6.0",
-      "from": "underscore@>=1.6.0 <1.7.0",
-      "resolved": "https://registry.npmjs.org/underscore/-/underscore-1.6.0.tgz"
     },
     "underscore.string": {
       "version": "2.3.3",

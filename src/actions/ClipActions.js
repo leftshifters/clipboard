@@ -156,10 +156,10 @@ export default {
 
             apiUtils
               .deleteTmpClip(res.clip.id)
-              .then((res) => {
+              .then((delres) => {
                 Dispatcher.dispatch({
                   actionType: DELETE_CLIP,
-                  payload: res
+                  payload: delres
                 });
               });
           });
