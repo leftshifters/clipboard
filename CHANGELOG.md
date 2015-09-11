@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.0.0(Sept 11, 2015)
+* Added drag drop support
+* Show uploading progressbar
+* Show file details(size, mimetype, height, width)
+* Show status messages(error, success)
+
 ### 0.0.8 (Feb 5,2015)
 * Minor fixes
 
