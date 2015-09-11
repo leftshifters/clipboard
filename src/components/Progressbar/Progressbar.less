@@ -1,0 +1,26 @@
+.CircularProgress {
+  margin-top: 60px;
+}
+.CircularProgress-Bg,
+.CircularProgress-Fg {
+    fill: none;
+}
+
+.CircularProgress-Bg {
+    stroke: #ddd;
+}
+
+.CircularProgress-Fg {
+    transition: stroke-dashoffset .5s ease-in-out;
+    stroke: rgba(37, 153, 172, 0.7);
+    // -webkit-transform-origin: -100px 0;
+    // transform-origin: -100px 0;
+    // transform: rotateX(30deg);
+}
+
+.CircularProgress-Text {
+    font-family: sans-serif;
+    font-size: 20px;
+    fill: rgba(37, 153, 172, 0.7);
+    transform: translate(0 50%);
+}

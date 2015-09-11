@@ -1,0 +1,135 @@
+@import '../../styles/app.less';
+@import '../../styles/bootstrap/variables.less';
+
+.item-row {
+  margin-top: 16px;
+}
+
+.item {
+  vertical-align: top;
+  display: inline-block;
+  width: 100%;
+  background-color: #fefefe;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px #DCDADB;
+}
+
+.item-row .item-overlay {
+  position: absolute;
+  width: 90%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 6px;
+  z-index: 1;
+  opacity: 0;
+  -webkit-transition: opacity 2s;
+}
+
+.cog {
+  position: relative;
+  float: right;
+}
+
+.cog .cog-inner.remove {
+  font-size: 24px;
+  top: -10px;
+  right: -10px;
+  color: #FFF;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  padding: 0px;
+  margin: 1px;
+  z-index: 1;
+}
+
+.cog .cog-inner {
+  top: 0;
+  right: 0;
+  color: #EFF0EB;
+  text-decoration: none;
+  position: absolute;
+  line-height: 10px;
+  padding: 1px;
+  cursor: pointer;
+}
+
+.remove-circle {
+  top: 0;
+}
+
+.link {
+  display: block;
+  text-align: center;
+  height: 200px;
+}
+
+.item-inner {
+  margin: 10px;
+  height: inherit;
+}
+
+.unknown {
+  height: inherit;
+  text-align: center;
+}
+
+.unknown .file-block {
+  width: 64px;
+  height: 64px;
+  background-color: rgba(37, 153, 172, 0.7);
+  margin: 0 auto;
+  border-radius: 50%;
+  position: relative;
+  top: 36%;
+}
+
+.file-block div {
+  color: white;
+  font-size: 1.8em;
+  padding-top: 16px;
+  text-transform: uppercase;
+}
+
+.title-block {
+  display: block;
+  margin: 0;
+  padding: 8px 10px;
+  font-weight: 500;
+  color: rgba(37, 153, 172, 1);
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+.title-block .title {
+  white-space: nowrap;
+  width: 75%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.item-link {
+  border-bottom: 1px dashed white;
+}
+
+.edit-name {
+  padding: 0;
+  margin: 0;
+  outline: none;
+  border: none;
+  color: #3BBBB2;
+}
+
+.timeago-text {
+  font-size: 12px;
+  color: #988D79;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+.searchForm {
+  z-index: 1;
+}
