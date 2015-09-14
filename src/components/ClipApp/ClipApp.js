@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import debug from 'debug';
 import React, {PropTypes} from 'react'; // eslint-disable-line no-unused-vars
 import Styles from './ClipApp.less'; // eslint-disable-line no-unused-vars
 import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-unused-vars
@@ -8,10 +9,14 @@ import Clip from '../Clip';
 import Loader from '../Loader';
 import Header from '../Header';
 import Footer from '../Footer';
+import Container from '../Container';
+import Dropzone from '../Dropzone';
 import ClipsStore from '../../stores/ClipStore';
 import ClipActions from '../../actions/ClipActions';
-import debug from 'debug';
+import FileActions from '../../actions/FileActions';
+
 let log = debug('clipboard:dashboard');
+var counter = 0;
 
 @withStyles(Styles)
 class ClipApp extends React.Component {
@@ -27,8 +32,41 @@ class ClipApp extends React.Component {
     return {
       clips: ClipsStore.clips,
       loading: ClipsStore.clips ? false : true,
-      message: ClipsStore.clips && ClipsStore.clips.length === 0 ? true : false
+      message: ClipsStore.clips && ClipsStore.clips.length === 0 ? true : false,
+      dragClass: 'drop-container inactive'
     };
+  }
+
+  handleDragEnter(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if(counter === 0) {
+      counter++;
+      log('Drag counter is %s', counter);
+      this.setState({
+        dragClass: 'drop-container active'
+      });
+    }
+  }
+
+  handleDragLeave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if(counter === 1) {
+      counter--;
+      log('Leave Counter is %s', counter);
+      this.setState({
+        dragClass: 'drop-container inactive'
+      });
+    }
+  }
+
+  onDrop(file) {
+    log('Received files %o', file);
+    this.setState({
+      dragClass: 'drop-container inactive'
+    });
+    FileActions.dropFile(file);
   }
 
   componentDidMount() {
@@ -104,17 +142,26 @@ class ClipApp extends React.Component {
     log('Rendering clip view');
 
     return (
-      <div>
-        <Header version={this.props.version} query={this.props ? this.props.query.q : ''} />
-        <Row>
-          {this.FileUploadForm}
-          <Loader loading={this.state.loading} />
-          <div className="clips" ref="clips">
-            {this.Clips}
-          </div>
-        </Row>
-        <Footer />
-      </div>
+      <Container
+        onDragEnter={this.handleDragEnter.bind(this)}
+        onMouseLeave={this.handleDragLeave.bind(this)}>
+        <Dropzone
+          className={this.state.dragClass}
+          supportClick={false}
+          onDrop={this.onDrop.bind(this)}
+          multiple={false} />
+        <div>
+          <Header version={this.props.version} query={this.props ? this.props.query.q : ''} />
+          <Row>
+            {this.FileUploadForm}
+            <Loader loading={this.state.loading} />
+            <div className="clips" ref="clips">
+              {this.Clips}
+            </div>
+          </Row>
+          <Footer />
+        </div>
+      </Container>
     );
   }
 }
