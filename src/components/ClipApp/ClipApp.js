@@ -65,10 +65,11 @@ class ClipApp extends React.Component {
 
   destroy(clip) {
     log('Deleted clip: Store change');
+    let page = this.props.params.page || 1;
     if(clip.uploading) {
-      ClipActions.getClips(this.props.params.page);
+      ClipActions.getClips(page);
     } else {
-      ClipActions.deleteClip(clip._id, this.props.params.page); // eslint-disable-line no-underscore-dangle
+      ClipActions.deleteClip(clip._id, page); // eslint-disable-line no-underscore-dangle
     }
   }
 

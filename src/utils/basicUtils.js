@@ -70,7 +70,7 @@ export default {
             return reject(new Error('Internal server error'));
           }
 
-          return resolve();
+          return resolve(res);
         });
     });
   },

@@ -5,7 +5,7 @@ var mime = require('mime');
 var fs = require('fs');
 var gm = require('gm');
 var async = require('async');
-var debug = require('debug')('clipboard:upload');
+// var debug = require('debug')('clipboard:upload');
 
 var db = require('../lib/db');
 // var disksize = require('../lib/disksize');
