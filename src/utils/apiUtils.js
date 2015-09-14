@@ -279,6 +279,7 @@ export default {
   },
 
   deleteClip(id, page) {
+    console.log(page);
     return new Promise((resolve, reject) => {
       basicUtils
       .delete('api/clip/' + id)

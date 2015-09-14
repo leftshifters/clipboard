@@ -12,6 +12,10 @@ const log = debug('clipboard:app');
 @withStyles(styles)
 class App extends React.Component {
 
+  constructor(props, context) {
+    super(props, context);
+  }
+
   render() {
     log('App start: rendering first view');
     return (

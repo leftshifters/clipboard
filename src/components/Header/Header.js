@@ -3,6 +3,7 @@ import styles from './Header.less'; // eslint-disable-line no-unused-vars
 import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-unused-vars
 import SearchForm from '../SearchForm';
 import HeaderStore from '../../stores/HeaderStore';
+import pack, {version} from '../../../package.json'; // eslint-disable-line no-unused-vars
 import Row from '../Row';
 import debug from 'debug';
 
@@ -13,7 +14,6 @@ const log = debug('clipboard:header');
 class Header extends React.Component {
 
   static PropTypes = {
-    version: PropTypes.string,
     query: PropTypes.string
   }
 
@@ -44,6 +44,7 @@ class Header extends React.Component {
   }
 
   componentDidMount() {
+    this.version = version;
     HeaderStore.addChangeListener(this.onStoreChange);
   }
 
@@ -71,7 +72,7 @@ class Header extends React.Component {
         <div className="col-md-4">
           <h1>
             <a href="/" className="head-logo">Clipboard</a>
-            <span className="small"> {this.props.version}</span>
+            <span className="small"> {this.version}</span>
           </h1>
         </div>
 

@@ -5,6 +5,7 @@ import Styles from './ClipDetail.less'; // eslint-disable-line no-unused-vars
 import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-unused-vars
 import Row from '../Row';
 import Loader from '../Loader';
+import Container from '../Container';
 import ClipStore from '../../stores/ClipStore';
 import ClipActions from '../../actions/ClipActions';
 
@@ -155,29 +156,31 @@ class ClipDetail extends React.Component {
     log('rendering clip detail page');
     return (
       <div>
-        <DocMeta tags={tags} />
-        <Loader loading={this.state.loading} />
-        <Row className={clazz}>
-          <h2>{clip.name}</h2>
-          {this.ifTypeImage}
-          {this.ifTypeQr}
-          {this.button}
-          <div className="stats-details panel panel-body">
-            <div className="interests col-lg-7">
-              <span>
-                <i className="glyphicon glyphicon-download text-success"></i>
-                &nbsp;{clip.downloaded} views
-              </span>&nbsp;
-              <span>
-                <i className="glyphicon glyphicon-file text-success"></i>
-                {size}
-              </span>
+        <Container>
+          <DocMeta tags={tags} />
+          <Loader loading={this.state.loading} />
+          <Row className={clazz}>
+            <h2>{clip.name}</h2>
+            {this.ifTypeImage}
+            {this.ifTypeQr}
+            {this.button}
+            <div className="stats-details panel panel-body">
+              <div className="interests col-lg-7">
+                <span>
+                  <i className="glyphicon glyphicon-download text-success"></i>
+                  &nbsp;{clip.downloaded} views
+                </span>&nbsp;
+                <span>
+                  <i className="glyphicon glyphicon-file text-success"></i>
+                  {size}
+                </span>
+              </div>
+              <div className="added col-xs-7 col-lg-2 pull-right">
+                <span className="pull-right">Added on {clip.added}</span>
+              </div>
             </div>
-            <div className="added col-xs-7 col-lg-2 pull-right">
-              <span className="pull-right">Added on {clip.added}</span>
-            </div>
-          </div>
-        </Row>
+          </Row>
+        </Container>
       </div>
     );
   }

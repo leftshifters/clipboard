@@ -5,6 +5,7 @@ var mime = require('mime');
 var fs = require('fs');
 var gm = require('gm');
 var async = require('async');
+// var debug = require('debug')('clipboard:upload');
 
 var db = require('../lib/db');
 // var disksize = require('../lib/disksize');
@@ -132,15 +133,17 @@ exports.upload = function(req, res, next) {
             item.type = 'image';
           }
 
-          type(item, function(err, item) { // eslint-disable-line no-shadow
+          type(item, function(err, newitem) { // eslint-disable-line no-shadow
             if (err) {
               return cb(err);
             }
 
+            item = _.merge(item, newitem);
             db.insertItem(item, function(err, results) { // eslint-disable-line no-shadow
               if (err) {
                 return cb(err);
               }
+
               req.store._id = results.insertedIds[0]; // eslint-disable-line no-underscore-dangle
               cb(null, item);
             });
