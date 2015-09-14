@@ -2,7 +2,6 @@ import 'babel/polyfill';
 import React from 'react';
 import FastClick from 'fastclick';
 import App from './components/App';
-import pack, {version} from '../package.json'; // eslint-disable-line no-unused-vars
 import Router from 'react-router';
 const Route = Router.Route;
 import ClipApp from './components/ClipApp';
@@ -20,7 +19,6 @@ function run() {
 
   Router.run(routes, Router.HistoryLocation, function (Handler) {
     let props = {
-      version: version,
       context: {
         onSetTitle: value => document.title = value,
         onSetMeta: (name, content) => {
