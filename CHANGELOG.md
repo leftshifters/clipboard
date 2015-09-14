@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.0.1(Sept 14, 2015)
+* Fixed ios8 upload issue
+* Fixed delete clip issue
+* Update changelog style
+* Minor fixes
+
 ### 1.0.0(Sept 11, 2015)
 * Added drag drop support
 * Show uploading progressbar
