@@ -127,7 +127,7 @@ exports.detail = function(req, res, next) { // eslint-disable-line no-unused-var
     item.buttonText = 'Download APK';
   }
 
-  req.store.data = item;
+  req.store.item = item;
   next();
 };
 
@@ -344,15 +344,6 @@ exports.reindex = function(req, res) {
 };
 
 exports.ok = function(req, res, next) { // eslint-disable-line no-unused-vars
-  // req.store = req.store || {
-  //   data: ''
-  // };
-  // disksize(function onsize(total, free) {
-  //   req.store.data.disksize = {
-  //     total: total,
-  //     free: free
-  //   };
-
   return res.json({
     data: req.store.data || req.store.item || {}
   });
