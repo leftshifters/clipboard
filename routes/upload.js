@@ -133,15 +133,17 @@ exports.upload = function(req, res, next) {
             item.type = 'image';
           }
 
-          type(item, function(err, item) { // eslint-disable-line no-shadow
+          type(item, function(err, newitem) { // eslint-disable-line no-shadow
             if (err) {
               return cb(err);
             }
 
+            item = _.merge(item, newitem);
             db.insertItem(item, function(err, results) { // eslint-disable-line no-shadow
               if (err) {
                 return cb(err);
               }
+
               req.store._id = results.insertedIds[0]; // eslint-disable-line no-underscore-dangle
               cb(null, item);
             });
