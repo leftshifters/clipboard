@@ -47,6 +47,7 @@
     "node-jsx": "^0.13.3",
     "normalize.css": "^3.0.3",
     "npm": "^2.14.2",
+    "newrelic": "^1.21.1",
     "qr": "^0.2.4",
     "react": "^0.13.3",
     "react-async": "^2.1.0",

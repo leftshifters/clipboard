@@ -18,7 +18,7 @@ exports.fetch = function(req, res, next) {
       return res.send(404);
     }
 
-    // dunno, why mongodb is returning a wrapped object
+    // mongodb driver > v2.x returns a wrapped object
     req.store.item = item.value;
     next();
   });
@@ -36,7 +36,7 @@ exports.qr = function(req, res, next) {
   }
 
   baseurl.set(req.protocol, req.get('host'));
-//next();
+
   qr.on('end', function onEncodingComplete(png) {
     item.qrImage = 'data:image/png;base64,' + png.toString('base64');
     req.store.item = item;
