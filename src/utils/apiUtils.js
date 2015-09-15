@@ -1,7 +1,9 @@
 import debug from 'debug';
 import _ from 'lodash';
 import basicUtils from './basicUtils';
+import copy from 'copy-to-clipboard';
 
+const origin = document.location.origin;
 const isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
 const log = debug('clipboard:apiutil');
 let db = null;
@@ -408,6 +410,8 @@ export default {
 
           clip.uploading = false;
           let revisedClip = _.merge(clip, res.data);
+          // Copy uploaded clip path to clipboard
+          copy(`${origin}/clipd/${revisedClip.basenameWithoutExt}/${revisedClip.name}`);
           if(db) {
             db.clips
               .update(clip.id, revisedClip)

@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'; // eslint-disable-line no-unused-vars
-import Loading from 'react-loading';
 import Styles from './Loader.less'; // eslint-disable-line no-unused-vars
 import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-unused-vars
+var Loder = require('halogen/RingLoader');
 
 @withStyles(Styles)
 class Loader extends React.Component {
@@ -14,7 +14,7 @@ class Loader extends React.Component {
     let claz = this.props.loading ? 'body-loader block' : 'body-loader hide';
     return (
       <div className={claz}>
-        <Loading type="spin" color="#222" />
+        <Loder color="#222" size="70px" margin="5px" />
       </div>
     );
   }
