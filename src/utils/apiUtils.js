@@ -2,10 +2,11 @@ import debug from 'debug';
 import _ from 'lodash';
 import basicUtils from './basicUtils';
 
+const isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
 const log = debug('clipboard:apiutil');
-let db;
+let db = null;
 
-if(!db || window.indexedDB) {
+if(!isSafari && (!db || window.indexedDB)) {
   log('Initializing indexDB');
   db = new window.Dexie('clipboard');
 
@@ -21,36 +22,52 @@ export default {
   // Do Ajax;
   //
   _fetch(url, p, cb) {
-    db.open();
-    db.on('error', function(e) { console.error(e.stack || e); });
-    db.on('ready', () => {
-      log('Got page %s', p);
-      return db
-        .clips
-        .where('page')
-        .equals(p)
-        .count((count) => {
-          log('Count %s', count);
-          log('Records count is %s', count);
-          if(count > 0) {
-            cb(null);
-          } else {
-            basicUtils
-              .get(url)
-              .then((res) => {
-                log('Base utils promised resolve %o', res);
-                if(res.error) {
-                  return cb(res.error);
-                }
+    if(db) {
+      db.open();
+      db.on('error', function(e) { console.error(e.stack || e); });
+      db.on('ready', () => {
+        console.log('Got page %s', p);
+        return db
+          .clips
+          .where('page')
+          .equals(p)
+          .count((count) => {
+            log('Count %s', count);
+            log('Records count is %s', count);
+            if(count > 0) {
+              cb(null);
+            } else {
+              basicUtils
+                .get(url)
+                .then((res) => {
+                  log('Base utils promised resolve %o', res);
+                  if(res.error) {
+                    return cb(res.error);
+                  }
 
-                cb(null, res.data);
-              })
-              .error((err) => {
-                cb(err);
-              });
+                  cb(null, res.data);
+                })
+                .catch((err) => {
+                  cb(err);
+                });
+            }
+          });
+      });
+    } else {
+      basicUtils
+        .get(url)
+        .then((res) => {
+          log('Base utils promised resolve %o', res);
+          if(res.error) {
+            return cb(res.error);
           }
+
+          cb(null, res.data);
+        })
+        .catch((err) => {
+          cb(err);
         });
-    });
+    }
   },
 
   getClips(p) {
@@ -65,7 +82,6 @@ export default {
         basicUtils
           .get(url)
           .then((res) => {
-
             if(res.error) {
               return reject(res.error);
             }
@@ -81,13 +97,14 @@ export default {
               'searchBtn': res.data.searchBtn,
               'searchIcon': res.data.searchIcon
             };
-            return resolve({
+
+            resolve({
               'clips': res.data.items,
               'pages': page
             });
           })
-          .error((err) => {
-            return reject(err);
+          .catch((err) => {
+            reject(err);
           });
       } else {
         log('Fetching records from IndexDB');
@@ -164,23 +181,6 @@ export default {
 
   getClip(hash, name) {
     return new Promise((resolve, reject) => {
-      // db.open();
-      // db
-      //   .on('error', function(e) {
-      //     return reject(e);
-      //   })
-      //   .on('ready', () => {
-      //     db.clips
-      //       .where('[hash+name]')
-      //       .equals([hash, name])
-      //       .toArray()
-      //       .then((clips) => {
-      //         log('Got single clip %o', clips);
-      //         resolve({
-      //           clip: clips[0]
-      //         });
-      //       });
-      //   });
       basicUtils.get(`/api/clipd/${hash}/${name}`)
         .then((res) => {
           log('Got data in API %o', res);
@@ -279,7 +279,6 @@ export default {
   },
 
   deleteClip(id, page) {
-    console.log(page);
     return new Promise((resolve, reject) => {
       basicUtils
       .delete('api/clip/' + id)
@@ -289,55 +288,64 @@ export default {
         }
 
         let url = `/api/clips/${page}`;
-        db.clips.clear();
-        db.pages.clear();
+
+        if(db) {
+          db.clips.clear();
+          db.pages.clear();
+        }
 
         this._fetch(url, page, (err, fetched) => { // eslint-disable-line no-underscore-dangle
           if(err) {
             return reject(err);
           }
 
-          db.open();
-          db.on('ready', () => {
-            db.transaction('rw', db.clips, db.pages, () => {
-              log('fetched data is %o', fetched);
+          let p = {
+            'leftArrow': fetched.leftArrow,
+            'more': fetched.more,
+            'nextPageLink': fetched.nextPageLink,
+            'page': fetched.page,
+            'prevPageLink': fetched.prevPageLink,
+            'query': fetched.query,
+            'rightArrow': fetched.rightArrow,
+            'searchBtn': fetched.searchBtn,
+            'searchIcon': fetched.searchIcon
+          };
 
-              let p = {
-                'leftArrow': fetched.leftArrow,
-                'more': fetched.more,
-                'nextPageLink': fetched.nextPageLink,
-                'page': fetched.page,
-                'prevPageLink': fetched.prevPageLink,
-                'query': fetched.query,
-                'rightArrow': fetched.rightArrow,
-                'searchBtn': fetched.searchBtn,
-                'searchIcon': fetched.searchIcon
-              };
-
-              log('Paginate is %o', p);
-              db.pages.add(p);
-              fetched.items.forEach(function (item) {
-                log('Adding object: %o', item);
-                item.page = fetched.page + 1;
-                db.clips.add(item);
-              });
-            })
-            .then(() => {
-              db.clips
-                .toArray()
-                .then((clips) => {
-                  log('Fetched array from store %o', clips);
-                  db.pages
-                    .toArray()
-                    .then((pages) => {
-                      return resolve({
-                        'pages': pages,
-                        'clips': clips
-                      });
-                    });
+          if(db) {
+            db.open();
+            db.on('ready', () => {
+              db.transaction('rw', db.clips, db.pages, () => {
+                log('fetched data is %o', fetched);
+                log('Paginate is %o', p);
+                db.pages.add(p);
+                fetched.items.forEach(function (item) {
+                  log('Adding object: %o', item);
+                  item.page = fetched.page + 1;
+                  db.clips.add(item);
                 });
+              })
+              .then(() => {
+                db.clips
+                  .toArray()
+                  .then((clips) => {
+                    log('Fetched array from store %o', clips);
+                    db.pages
+                      .toArray()
+                      .then((pages) => {
+                        return resolve({
+                          'pages': pages,
+                          'clips': clips
+                        });
+                      });
+                  });
+              });
             });
-          });
+          } else {
+            resolve({
+              pages: p,
+              clips: fetched.items
+            });
+          }
         });
       });
     });
@@ -367,18 +375,24 @@ export default {
 
   tempClip(clip) {
     return new Promise((resolve) => {
-      db.open();
-      db.on('ready', () => {
-        db.transaction('rw', db.clips, () => {
-          db.clips.add(clip).then((id) => {
-            clip.id = id;
-            log('Temp clip is %o', clip);
-            return resolve({
-              clip: clip
+      if(db) {
+        db.open();
+        db.on('ready', () => {
+          db.transaction('rw', db.clips, () => {
+            db.clips.add(clip).then((id) => {
+              clip.id = id;
+              log('Temp clip is %o', clip);
+              return resolve({
+                clip: clip
+              });
             });
           });
         });
-      });
+      } else {
+        resolve({
+          'clip': clip
+        });
+      }
     });
   },
 
@@ -394,24 +408,50 @@ export default {
 
           clip.uploading = false;
           let revisedClip = _.merge(clip, res.data);
-          db.clips
-            .update(clip.id, revisedClip)
-            .then((updated) => {
-              log('Updated value is %o', updated);
-              if(updated > 0) {
-                log('Updated clip clip successfully: %o', revisedClip);
-              } else {
-                log('Error while updating clip in IndexDB: %o', revisedClip);
+          if(db) {
+            db.clips
+              .update(clip.id, revisedClip)
+              .then((updated) => {
+                log('Updated value is %o', updated);
+                if(updated > 0) {
+                  log('Updated clip clip successfully: %o', revisedClip);
+                } else {
+                  log('Error while updating clip in IndexDB: %o', revisedClip);
+                }
+
+                db.clips
+                  .toArray()
+                  .then((clips) => {
+                    log('Got clips %o ', clips);
+                    clips.unshift(revisedClip);
+                    return resolve({'clips': clips});
+                  });
+              });
+          } else {
+            let url = '/api/clips/1';
+            this._fetch(url, 1, (err, fetched) => { // eslint-disable-line no-underscore-dangle
+              if(err) {
+                return reject(err);
               }
 
-              db.clips
-                .toArray()
-                .then((clips) => {
-                  log('Got clips %o ', clips);
-                  clips.unshift(revisedClip);
-                  return resolve({'clips': clips});
-                });
+              let page = {
+                'leftArrow': fetched.leftArrow,
+                'more': fetched.more,
+                'nextPageLink': fetched.nextPageLink,
+                'page': fetched.page,
+                'prevPageLink': fetched.prevPageLink,
+                'query': fetched.query,
+                'rightArrow': fetched.rightArrow,
+                'searchBtn': fetched.searchBtn,
+                'searchIcon': fetched.searchIcon
+              };
+
+              resolve({
+                pages: page,
+                clips: fetched.items
+              });
             });
+          }
         })
         .catch((err) => {
           log('Got error while uplading %o', err);

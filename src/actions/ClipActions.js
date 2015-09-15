@@ -9,12 +9,13 @@ import Dispatcher from '../core/Dispatcher';
 import apiUtils from '../utils/apiUtils';
 
 const log = debug('clipboard:clipaction');
+const isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
 
 export default {
   getClips(page) {
     apiUtils.getClips(page)
       .then((res) => {
-        log('Got clips in actions %o', res);
+        console.log('Got clips in actions %o', res);
         Dispatcher.dispatch({
           actionType: SET_CLIPS,
           payload: {
@@ -94,7 +95,7 @@ export default {
         Dispatcher.dispatch({
           actionType: GOT_SUCCESS,
           payload: {
-            success: 'Successfully title change'
+            success: 'Changed title successfully'
           }
         });
       })
@@ -132,10 +133,12 @@ export default {
     apiUtils
       .tempClip(clip)
       .then((res) => {
-        Dispatcher.dispatch({
-          actionType: UPLOADING_CLIP,
-          payload: res
-        });
+        if(!isSafari) {
+          Dispatcher.dispatch({
+            actionType: UPLOADING_CLIP,
+            payload: res
+          });
+        }
 
         apiUtils
           .addClip(res.clip, data)

@@ -140,7 +140,6 @@ class ClipApp extends React.Component {
 
   render() {
     log('Rendering clip view');
-
     return (
       <Container
         onDragEnter={this.handleDragEnter.bind(this)}

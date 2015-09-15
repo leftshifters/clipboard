@@ -21,6 +21,7 @@ class Notify extends React.Component {
   }
 
   addNotification() {
+    console.log(this.state.error);
     this.notificationSystem.addNotification({
       message: this.state.error ? this.state.error.message : this.state.success,
       level: this.state.error ? 'error' : 'success',
