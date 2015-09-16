@@ -30,7 +30,7 @@ server.enable('trust proxy');
 server.set('port', (process.env.PORT || 3001));
 server.set('uploadpath', '../public/uploads');
 
-if(server.get('env') === 'developement') {
+if (server.get('env') === 'developement') {
   server.use(logger('tiny'));
 }
 
@@ -73,11 +73,11 @@ server.post('/api/clip/:id', [
 ]);
 
 server.put('/api/clip/upload', [
-  upload.upload,
-  upload.thumb,
-  upload.diskspace,
-  upload.addSearchIndex,
-  routes.ok
+  upload.upload
+  // upload.thumb,
+  // upload.diskspace,
+  // upload.addSearchIndex,
+  // routes.ok
 ]);
 
 server.delete('/api/clip/:id', [
@@ -101,8 +101,8 @@ server.get('/8b66041e096772f9c0c3c4adb2f625ab.txt', routes.text);
 server.get('/changelog', routes.changelog);
 server.get('/reindex', routes.reindex);
 
-server.get('*', async (err, req, res, next) => {
-  if(!err) {
+server.get('*', async(err, req, res, next) => {
+  if (!err) {
     return next();
   }
 
@@ -114,7 +114,7 @@ server.get('*', async (err, req, res, next) => {
   });
 });
 
-server.get('*', async (req, res, next) => {
+server.get('*', async(req, res, next) => {
   try {
     let notFound = false;
     let data = {
@@ -141,6 +141,7 @@ server.listen(server.get('port'), () => {
   if (process.send) {
     process.send('online');
   } else {
-    console.log('The server is running at http://localhost:' + server.get('port'));
+    console.log('The server is running at http://localhost:' + server.get(
+      'port'));
   }
 });
