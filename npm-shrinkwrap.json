@@ -508,6 +508,18 @@
       "from": "bootstrap@>=3.3.5 <4.0.0",
       "resolved": "https://registry.npmjs.org/bootstrap/-/bootstrap-3.3.5.tgz"
     },
+    "boron": {
+      "version": "0.1.2",
+      "from": "boron@*",
+      "resolved": "https://registry.npmjs.org/boron/-/boron-0.1.2.tgz",
+      "dependencies": {
+        "react-kit": {
+          "version": "0.1.6",
+          "from": "react-kit@>=0.1.2 <0.2.0",
+          "resolved": "https://registry.npmjs.org/react-kit/-/react-kit-0.1.6.tgz"
+        }
+      }
+    },
     "bplist-parser": {
       "version": "0.0.5",
       "from": "bplist-parser@0.0.5",

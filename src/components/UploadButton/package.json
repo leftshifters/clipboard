@@ -1,0 +1,6 @@
+{
+  "name": "UploadButton",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./UploadButton.js"
+}

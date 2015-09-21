@@ -1,7 +1,4 @@
-import React, {
-  PropTypes // eslint-disable-line no-unused-vars
-}
-from 'react';
+import React, {PropTypes} from 'react';
 import _ from 'lodash';
 import Styles from './UploadBox.less'; // eslint-disable-line no-unused-vars
 import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-unused-vars
@@ -11,13 +8,15 @@ import TextBox from '../TextBox';
 import FormGroup from '../FormGroup';
 import Form from '../Form';
 import Button from '../Button';
+import UploadButton from '../UploadButton';
 import debug from 'debug';
+
+var Modal = require('boron/DropModal');
 
 const log = debug('clipboard:uplaodbox');
 const uploadPlaceholder = 'clipboard';
 
-@
-withStyles(Styles)
+@withStyles(Styles)
 class UploadBox extends React.Component {
 
   constructor(props, context) {
@@ -36,6 +35,14 @@ class UploadBox extends React.Component {
     };
   }
 
+  openModal() {
+    this.refs.modal.show();
+  }
+
+  closeModal() {
+    this.refs.modal.hide();
+  }
+
   componentDidMount() {
     log('Upload box mount');
     FileStore.addChangeListener(this.onStoreChange);
@@ -45,9 +52,9 @@ class UploadBox extends React.Component {
     // React
     //   .findDOMNode(this.refs.inputFile)
     //   .setAttribute('directory', '');
-    React
-      .findDOMNode(this.refs.inputFile)
-      .setAttribute('multiple', '');
+    // React
+    //   .findDOMNode(this.refs.inputFile)
+    //   .setAttribute('multiple', '');
   }
 
   componentWillUnmount() {
@@ -66,11 +73,6 @@ class UploadBox extends React.Component {
   onStoreChange() {
     log('File store change');
     this.setState(this.getStateFromStore());
-  }
-
-  onClick(e) {
-    e.preventDefault();
-    React.findDOMNode(this.refs.inputFile).click();
   }
 
   convertImgToBase64(file) {
@@ -174,54 +176,55 @@ class UploadBox extends React.Component {
 
   render() {
     log('Rendering upload box');
-    return ( < div className = "item add-dialog" >
-      < Form role = "form"
-      method = "post"
-      action = "#"
-      className = "upload-form"
-      ref = "uploadform"
-      onSubmit = {
-        this.submitform.bind(this)
-      } >
-      < FormGroup className = "form-group extra-margin" >
-      < Button type = "button"
-      className = "btn-default btn-block btn-select"
-      buttonFor = "Select a file"
-      onClick = {
-        this.onClick.bind(this)
-      }
-      /> < /FormGroup > < FormGroup className = "form-group extra-margin" >
-      < label htmlFor = "name" >
-      < span > Name < /span> < span className = "color-9a" > < small > <
-      em > (optional) < /em></small >
-      < /span> < /label > < TextBox name = "name"
-      ref = "fileInput"
-      onChange = {
-        this.onChange.bind(this)
-      }
-      value = {
-        this.state.inputName
-      }
-      placeholder = {
-        uploadPlaceholder
-      }
-      className = "form-control" / >
-      < /FormGroup> < Button type = "submit"
-      disabled = {
-        this.state.button
-      }
-      className = "btn-primary btn-submit center-block btn-lg"
-      buttonFor = "Upload" / >
-      < TextBox type = "file"
-      name = "content"
-      ref = "inputFile"
-      webkitdirectory = ""
-      directory = ""
-      className = "input-file"
-      onChange = {
-        this.onFileChange.bind(this)
-      }
-      /> < /Form > < /div>
+    return (
+      <div className="pull-left">
+
+        <UploadButton onFileChange={this.onFileChange.bind(this)} />
+
+        <Modal className="clip-modal" ref="modal">
+          <div className="header">
+            <button
+              className="close"
+              onClick={this.closeModal.bind(this)}>
+              <span aria-hidden="true">×</span>
+            </button>
+            <h4 className="modal-title">Upload Clip</h4>
+          </div>
+          <div className="modal-body">
+            <Form role = "form"
+              method = "post"
+              action = "#"
+              className = "upload-form"
+              ref = "uploadform"
+              onSubmit = { this.submitform.bind(this)}>
+              <FormGroup className="form-group extra-margin">
+                <label htmlFor="name">
+                  <span>Name</span>
+                  <span className="color-9a">
+                    <small><em>(optional)</em></small>
+                    </span>
+                </label>
+                <TextBox
+                  name="name"
+                  ref="fileInput"
+                  onChange={this.onChange.bind(this)}
+                  value={this.state.inputName}
+                  placeholder={uploadPlaceholder}
+                  className="form-control"/>
+              </FormGroup>
+            </Form>
+          </div>
+          <div className="modal-footer">
+            <Button
+              buttonFor="Close"
+              className="btn btn-default"
+              onClick={this.closeModal.bind(this)}/>
+            <Button
+              buttonFor="Uplaod"
+              className="btn btn-primary"/>
+          </div>
+        </Modal>
+      </div>
     );
   }
 }

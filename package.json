@@ -19,6 +19,7 @@
     "babel": "^5.8.21",
     "body-parser": "^1.13.3",
     "bootstrap": "^3.3.5",
+    "boron": "^0.1.2",
     "bplist-parser": "0.0.5",
     "bytes": "^0.3.0",
     "classnames": "^2.1.3",
