@@ -20,6 +20,12 @@ class UploadButton extends React.Component {
     React.findDOMNode(this.refs.inputFile).click();
   }
 
+  componentDidMount() {
+    React
+      .findDOMNode(this.refs.inputFile)
+      .setAttribute('multiple', '');
+  }
+
   render() {
     log('Rendering uplaod button');
     return (

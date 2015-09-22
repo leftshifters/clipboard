@@ -1,7 +1,7 @@
 import Dispatcher from '../core/Dispatcher';
 import {DROP_FILE} from '../constants/AppConstants';
-// import debug from 'debug';
-// let dbg = debug('clipboard:fileaction');
+import debug from 'debug';
+let log = debug('clipboard:fileaction');
 
 export default {
   dropFile(files) {

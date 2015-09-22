@@ -131,19 +131,12 @@ class ClipApp extends React.Component {
     if (this.state.clips && this.state.clips.length > 0) {
       this.state.clips.map((clip, key) => {
         if (key <= 19) {
-          clips.push( < Clip key = {
-              clip.id
-            }
-            clip = {
-              clip
-            }
-            onEditSave = {
-              this.onEditSave.bind(this, clip)
-            }
-            onDestory = {
-              this.destroy.bind(this, clip)
-            }
-            />
+          clips.push(
+            <Clip
+              key={clip.id}
+              clip={clip}
+              onEditSave={this.onEditSave.bind(this, clip)}
+              onDestory={this.destroy.bind(this, clip)} />
           );
         }
       });
