@@ -22,52 +22,65 @@ export default {
   // Do Ajax;
   //
   _fetch(url, p, cb) {
-    if(db) {
-      db.open();
-      db.on('error', function(e) { console.error(e.stack || e); });
-      db.on('ready', () => {
-        console.log('Got page %s', p);
-        return db
-          .clips
-          .where('page')
-          .equals(p)
-          .count((count) => {
-            log('Count %s', count);
-            log('Records count is %s', count);
-            if(count > 0) {
-              cb(null);
-            } else {
-              basicUtils
-                .get(url)
-                .then((res) => {
-                  log('Base utils promised resolve %o', res);
-                  if(res.error) {
-                    return cb(res.error);
-                  }
+    basicUtils
+      .get(url)
+      .then((res) => {
+        log('Base utils promised resolve %o', res);
+        if(res.error) {
+          return cb(res.error);
+        }
 
-                  cb(null, res.data);
-                })
-                .catch((err) => {
-                  cb(err);
-                });
-            }
-          });
+        cb(null, res.data);
+      })
+      .catch((err) => {
+        cb(err);
       });
-    } else {
-      basicUtils
-        .get(url)
-        .then((res) => {
-          log('Base utils promised resolve %o', res);
-          if(res.error) {
-            return cb(res.error);
-          }
-
-          cb(null, res.data);
-        })
-        .catch((err) => {
-          cb(err);
-        });
-    }
+    // if(db) {
+    //   db.open();
+    //   db.on('error', function(e) { console.error(e.stack || e); });
+    //   db.on('ready', () => {
+    //     console.log('Got page %s', p);
+    //     return db
+    //       .clips
+    //       .where('page')
+    //       .equals(p)
+    //       .count((count) => {
+    //         log('Count %s', count);
+    //         log('Records count is %s', count);
+    //         if(count > 0) {
+    //           cb(null);
+    //         } else {
+    //           basicUtils
+    //             .get(url)
+    //             .then((res) => {
+    //               log('Base utils promised resolve %o', res);
+    //               if(res.error) {
+    //                 return cb(res.error);
+    //               }
+    //
+    //               cb(null, res.data);
+    //             })
+    //             .catch((err) => {
+    //               cb(err);
+    //             });
+    //         }
+    //       });
+    //   });
+    // } else {
+    //   basicUtils
+    //     .get(url)
+    //     .then((res) => {
+    //       log('Base utils promised resolve %o', res);
+    //       if(res.error) {
+    //         return cb(res.error);
+    //       }
+    //
+    //       cb(null, res.data);
+    //     })
+    //     .catch((err) => {
+    //       cb(err);
+    //     });
+    // }
   },
 
   getClips(p) {
