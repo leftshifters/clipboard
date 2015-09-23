@@ -73,11 +73,11 @@ server.post('/api/clip/:id', [
 ]);
 
 server.put('/api/clip/upload', [
-  upload.upload
-  // upload.thumb,
-  // upload.diskspace,
-  // upload.addSearchIndex,
-  // routes.ok
+  upload.upload,
+  upload.thumb,
+  upload.diskspace,
+  upload.addSearchIndex,
+  routes.ok
 ]);
 
 server.delete('/api/clip/:id', [

@@ -1,20 +1,20 @@
 import React, {PropTypes} from 'react';// eslint-disable-line no-unused-vars
-import _ from 'lodash';
+// import _ from 'lodash';
 import debug from 'debug';
 import Styles from './UploadBox.less'; // eslint-disable-line no-unused-vars
 import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-unused-vars
 // import FileStore from '../../stores/FileStore';
 import FileActions from '../../actions/FileActions';
-import ClipActions from '../../actions/ClipActions';
-import TextBox from '../TextBox';
-import FormGroup from '../FormGroup';
-import Form from '../Form';
-import Button from '../Button';
+// import ClipActions from '../../actions/ClipActions';
+// import TextBox from '../TextBox';
+// import FormGroup from '../FormGroup';
+// import Form from '../Form';
+// import Button from '../Button';
 import UploadButton from '../UploadButton';
 import ClipModal from '../Modal';
 
 const log = debug('clipboard:uplaodbox');
-const uploadPlaceholder = 'clipboard';
+// const uploadPlaceholder = 'clipboard';
 
 @withStyles(Styles)
 class UploadBox extends React.Component {
@@ -115,7 +115,7 @@ class UploadBox extends React.Component {
     return Math.random();
   }
 
-  submitform(e) {
+  submitform() {
     // e.stopPropagation();
     // e.preventDefault();
     //

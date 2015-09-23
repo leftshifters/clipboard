@@ -5,20 +5,27 @@ import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-
 @withStyles(Styles)
 class Image {
   static propTypes = {
-    clip: PropTypes.object
+    clip: PropTypes.object,
+    base64: PropTypes.string
   };
 
   render () {
     let clip = this.props.clip;
-    let imgUrl = clip.relativePathShort;
-    let divStyle = {
-      backgroundImage: `url('../${imgUrl}')`
-    };
+    let imgSrc = this.props.base64;
 
-    return (
-      <div
-        style={divStyle} className='fixed-image'></div>
-    );
+    if(clip) {
+      let imgUrl = clip.relativePathShort;
+      let divStyle = {
+        backgroundImage: `url('../${imgUrl}')`
+      };
+      return (
+        <div style={divStyle} className='fixed-image'></div>
+      );
+    } else {
+      return (
+        <div className='fixed-image' src={imgSrc}></div>
+      );
+    }
   }
 }
 

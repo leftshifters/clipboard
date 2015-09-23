@@ -58,116 +58,106 @@ exports.upload = function(req, res, next) {
   });
 
   form.parse(req, function(err, fields, files) {
-    console.log(files);
-    console.log(fields);
-    console.log(err);
-    // if (err) {
-    //   console.error(err);
-    //   return next(new Error('Internal Server Error'));
-    // }
-    //
-    // var file = files.content && files.content[0];
-    // var baseuri = req.protocol + '://' + req.headers.host;
-    // var basename, mimetype, date, basenameWithoutExt, extension;
-    //
-    // require('fs').writeFile(path.join(process.cwd(), uploadDir) +
-    //   '/temp.zip', fields.content[0], 'base64',
-    //   function(err) {
-    //     console.log(err);
-    //   });
-    // if (file && file.fieldName === 'content') {
-    //   basename = path.basename(file.path);
-    //   basenameWithoutExt = path.basename(file.path, path.extname(file.path));
-    //   extension = path.extname(file.path);
-    //   mimetype = mime.lookup(file.path);
-    //   date = new Date();
-    //   var item = {
-    //     mime: mimetype,
-    //     height: 0,
-    //     width: 0
-    //   };
-    //
-    //   async.waterfall([
-    //     function calculateSize(cb) {
-    //       if (!!~imageMimes.indexOf(mimetype)) { // eslint-disable-line no-extra-boolean-cast
-    //         gm(file.path).size(function(gmerr, size) {
-    //           if (gmerr) {
-    //             return cb(gmerr);
-    //           }
-    //
-    //           item.height = size.height;
-    //           item.width = size.width;
-    //           cb(null, item);
-    //         });
-    //       } else {
-    //         cb(null, item);
-    //       }
-    //     },
-    //
-    //     function AddImage(item, cb) { // eslint-disable-line no-shadow
-    //       item = _.extend(item, {
-    //         hash: '',
-    //         size: file.size,
-    //         basename: basename,
-    //         basenameWithoutExt: basenameWithoutExt,
-    //         extension: extension,
-    //         originalName: file.originalFilename,
-    //         relativePathShort: 'uploads/' + basename,
-    //         relativePathLong: uploadDir + '/' + basename,
-    //         relativeThumbPathShort: '',
-    //         relativeThumbPathLong: '',
-    //         name: fields.name && fields.name.shift() ||
-    //           'untitled',
-    //         type: '',
-    //         bundleId: fields.bundleId && fields.bundleId.shift() ||
-    //           '',
-    //         created: date.toISOString(),
-    //         createdms: date.getTime()
-    //       });
-    //
-    //       cliputils.seturl(item, baseuri);
-    //
-    //       if (item.type === 'ipa') {
-    //         item.url = cliputils.ipaurl(item, baseuri);
-    //       }
-    //
-    //       if (item.type === 'image') {
-    //         item.imageurl = '../' + item.relativePathShort;
-    //       }
-    //
-    //       cliputils.type(item);
-    //       cliputils.setname(item);
-    //       cliputils.settimeago(item);
-    //
-    //       if (!!~imageMimes.indexOf(mimetype)) { // eslint-disable-line no-extra-boolean-cast
-    //         item.type = 'image';
-    //       }
-    //
-    //       type(item, function(err, newitem) { // eslint-disable-line no-shadow
-    //         if (err) {
-    //           return cb(err);
-    //         }
-    //
-    //         item = _.merge(item, newitem);
-    //         db.insertItem(item, function(err, results) { // eslint-disable-line no-shadow
-    //           if (err) {
-    //             return cb(err);
-    //           }
-    //
-    //           req.store._id = results.insertedIds[0]; // eslint-disable-line no-underscore-dangle
-    //           cb(null, item);
-    //         });
-    //       });
-    //     }
-    //   ], function(err, item) { // eslint-disable-line no-shadow
-    //     if (err) {
-    //       return next(err);
-    //     }
-    //
-    //     req.store.data = req.store.item = item;
-    //     next();
-    //   });
-    // }
+    if (err) {
+      console.error(err);
+      return next(new Error('Internal Server Error'));
+    }
+
+    var file = files.content && files.content[0];
+    var baseuri = req.protocol + '://' + req.headers.host;
+    var basename, mimetype, date, basenameWithoutExt, extension;
+
+    if (file && file.fieldName === 'content') {
+      basename = path.basename(file.path);
+      basenameWithoutExt = path.basename(file.path, path.extname(file.path));
+      extension = path.extname(file.path);
+      mimetype = mime.lookup(file.path);
+      date = new Date();
+      var item = {
+        mime: mimetype,
+        height: 0,
+        width: 0
+      };
+
+      async.waterfall([
+        function calculateSize(cb) {
+          if (!!~imageMimes.indexOf(mimetype)) { // eslint-disable-line no-extra-boolean-cast
+            gm(file.path).size(function(gmerr, size) {
+              if (gmerr) {
+                return cb(gmerr);
+              }
+
+              item.height = size.height;
+              item.width = size.width;
+              cb(null, item);
+            });
+          } else {
+            cb(null, item);
+          }
+        },
+
+        function AddImage(item, cb) { // eslint-disable-line no-shadow
+          item = _.extend(item, {
+            hash: '',
+            size: file.size,
+            basename: basename,
+            basenameWithoutExt: basenameWithoutExt,
+            extension: extension,
+            originalName: file.originalFilename,
+            relativePathShort: 'uploads/' + basename,
+            relativePathLong: uploadDir + '/' + basename,
+            relativeThumbPathShort: '',
+            relativeThumbPathLong: '',
+            name: fields.name && fields.name.shift() || 'untitled',
+            type: '',
+            bundleId: fields.bundleId && fields.bundleId.shift() || '',
+            created: date.toISOString(),
+            createdms: date.getTime()
+          });
+
+          cliputils.seturl(item, baseuri);
+
+          if (item.type === 'ipa') {
+            item.url = cliputils.ipaurl(item, baseuri);
+          }
+
+          if (item.type === 'image') {
+            item.imageurl = '../' + item.relativePathShort;
+          }
+
+          cliputils.type(item);
+          cliputils.setname(item);
+          cliputils.settimeago(item);
+
+          if (!!~imageMimes.indexOf(mimetype)) { // eslint-disable-line no-extra-boolean-cast
+            item.type = 'image';
+          }
+
+          type(item, function(err, newitem) { // eslint-disable-line no-shadow
+            if (err) {
+              return cb(err);
+            }
+
+            item = _.merge(item, newitem);
+            db.insertItem(item, function(err, results) { // eslint-disable-line no-shadow
+              if (err) {
+                return cb(err);
+              }
+
+              req.store._id = results.insertedIds[0]; // eslint-disable-line no-underscore-dangle
+              cb(null, item);
+            });
+          });
+        }
+      ], function(err, item) { // eslint-disable-line no-shadow
+        if (err) {
+          return next(err);
+        }
+
+        req.store.data = req.store.item = item;
+        next();
+      });
+    }
   });
 
 };

@@ -1,9 +1,6 @@
 import _ from 'lodash';
 import debug from 'debug';
-import React, {
-  PropTypes
-}
-from 'react'; // eslint-disable-line no-unused-vars
+import React, { PropTypes } from 'react'; // eslint-disable-line no-unused-vars
 import Styles from './ClipApp.less'; // eslint-disable-line no-unused-vars
 import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-unused-vars
 import Row from '../Row';
@@ -21,8 +18,7 @@ import FileActions from '../../actions/FileActions';
 let log = debug('clipboard:dashboard');
 var counter = 0;
 
-@
-withStyles(Styles)
+@withStyles(Styles)
 class ClipApp extends React.Component {
 
   constructor(props, context) {
@@ -103,7 +99,7 @@ class ClipApp extends React.Component {
 
   onEditSave(clip, text) {
     log('Clip title change: Change the state');
-    ClipActions.changeTitle(clip._id, {
+    ClipActions.changeTitle(clip._id, { // eslint-disable-line no-underscore-dangle
       name: text
     }, clip.id); // eslint-disable-line no-underscore-dangle
   }

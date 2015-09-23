@@ -1,6 +1,6 @@
-import React, {PropTypes} from 'react';
+import React, {PropTypes} from 'react';// eslint-disable-line no-unused-vars
 import debug from 'debug';
-import Styles from './UploadButton.less'; // eslint-disable-line no-unused-vars
+import Styles from './UploadButton.less';
 import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-unused-vars
 import TextBox from '../TextBox';
 import Button from '../Button';
