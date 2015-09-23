@@ -27,7 +27,17 @@ class Footer extends React.Component {
     log('Pagination is %o', pagination);
     return {
       prevPage: pagination ? pagination.leftArrow : 'invisible',
-      prevPageLink: pagination ? `/${pagination.prevPageLink}` : '/',
+      prevPageLink: pagination ?
+        (
+          (
+            !pagination.prevPageLink ||
+            pagination.page === 0 ||
+            pagination.page === 1
+          )
+          ? '/' :
+          `/${pagination.prevPageLink}`
+        ) :
+        '/',
       nextPage: pagination ? pagination.rightArrow : 'invisible',
       nextPageLink: pagination ? `/${pagination.nextPageLink}` : '/'
     };

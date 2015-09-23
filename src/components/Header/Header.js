@@ -30,7 +30,15 @@ class Header extends React.Component {
     return {
       prevPage: pagination ? pagination.leftArrow : 'invisible',
       prevPageLink: pagination ?
-        (!pagination.leftArrow ? '/' : `/${pagination.prevPageLink}`) :
+        (
+          (
+            !pagination.prevPageLink ||
+            pagination.page === 0 ||
+            pagination.page === 1
+          )
+          ? '/' :
+          `/${pagination.prevPageLink}`
+        ) :
         '/',
       nextPage: pagination ? pagination.rightArrow : 'invisible',
       nextPageLink: pagination ? `/${pagination.nextPageLink}` : '/'
