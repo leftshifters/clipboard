@@ -24,7 +24,7 @@ class Clip extends React.Component {
       editClick: false,
       editClikCount: 0,
       editText: this.props.clip.name,
-      uplaoding: this.props.clip.uploading ? true : false,
+      uploading: this.props.clip.uploading ? true : false,
       percentage: 0
     };
     log('Clip initial state is %o', this.state);
@@ -44,11 +44,30 @@ class Clip extends React.Component {
     e.preventDefault();
     this.setState({
       removeButton: 'cog ',
-      editButton: this.state.uplaoding ?
+      editButton: this.state.uploading ?
         'hide' :
         (this.state.editClick ? 'active' : '')
     });
     log('On Mouse enter: state change to %o', this.state);
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if(
+      nextProps.clip.id === this.props.clip.id &&
+      nextState.removeButton === this.state.removeButton &&
+      nextState.editButton === this.state.editButton &&
+      nextState.titleInput === this.state.titleInput &&
+      nextState.atitle === this.state.atitle &&
+      nextState.editClick === this.state.editClick &&
+      nextState.editClikCount === this.state.editClikCount &&
+      nextState.editText === this.state.editText &&
+      nextState.uploading === this.state.uploading &&
+      nextState.percentage === this.state.percentage
+    ) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   onMouseLeave(e) {
