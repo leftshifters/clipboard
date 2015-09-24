@@ -21,65 +21,56 @@ class UploadBox extends React.Component {
 
   constructor(props, context) {
     super(props, context);
-    // this.state = this.getStateFromStore();
+    this.state = {
+      files: null
+    };
     // this.onStoreChange = this.onStoreChange.bind(this);
   }
 
-  getStateFromStore() {
-    // log('Files from store are %o', FileStore.files);
-    return {
-      // files: FileStore.files,
-      // inputName: FileStore.files && FileStore.files[0] ? FileStore.files[0]
-      //   .name : '',
-      // button: FileStore.files && FileStore.files[0] ? '' : 'disabled'
-    };
-  }
+  // getStateFromStore() {
+  //   log('Files from store are %o', FileStore.files);
+  //   return {
+  //     files: FileStore.files
+  //   };
+  // }
 
-  componentDidMount() {
-    log('Upload box mount');
-    // FileStore.addChangeListener(this.onStoreChange);
-    // React
-    //   .findDOMNode(this.refs.inputFile)
-    //   .setAttribute('webkitdirectory', '');
-    // React
-    //   .findDOMNode(this.refs.inputFile)
-    //   .setAttribute('directory', '');
-    // React
-    //   .findDOMNode(this.refs.inputFile)
-    //   .setAttribute('multiple', '');
-  }
+  // componentDidMount() {
+  //   log('Upload box mount');
+  //   FileStore.addChangeListener(this.onStoreChange);
+  // }
+  //
+  // componentWillUnmount() {
+  //   log('Uplaod box unmount');
+  //   // FileStore.removeChangeListener(this.onStoreChange);
+  // }
 
-  componentWillUnmount() {
-    log('Uplaod box unmount');
-    // FileStore.removeChangeListener(this.onStoreChange);
-  }
+  // onChange(e) {
+  //   e.preventDefault();
+  //   log('Change name of uplaod file');
+  //   // this.setState({
+  //   //   inputName: e.target.value
+  //   // });
+  // }
 
-  onChange(e) {
-    e.preventDefault();
-    log('Change name of uplaod file');
-    // this.setState({
-    //   inputName: e.target.value
-    // });
-  }
+  // onStoreChange() {
+  //   log('File store change');
+  //   // this.setState(this.getStateFromStore());
+  // }
 
-  onStoreChange() {
-    log('File store change');
-    // this.setState(this.getStateFromStore());
-  }
-
-  convertImgToBase64(file) {
-    var fileReader = new FileReader();
-    return fileReader.readAsDataURL(file);
-  }
+  // convertImgToBase64(file) {
+  //   var fileReader = new FileReader();
+  //   return fileReader.readAsDataURL(file);
+  // }
 
   onFileChange(e) {
     e.preventDefault();
-    // this.setState({
-    //   files: e.target.files
-    // });
+    this.setState({
+      files: e.target.files
+    });
 
     log('Files are %o', e.target.files);
-    FileActions.dropFile(e.target.files);
+
+    // FileActions.dropFile(e.target.files);
     // let zip = new window.JSZip();
     // zip.folder('test');
     // _.each(e.target.files, (f) => {
@@ -111,9 +102,9 @@ class UploadBox extends React.Component {
     // React.findDOMNode(this.refs.fileInput).focus();
   }
 
-  getRandomId() {
-    return Math.random();
-  }
+  // getRandomId() {
+  //   return Math.random();
+  // }
 
   submitform() {
     // e.stopPropagation();
@@ -176,7 +167,7 @@ class UploadBox extends React.Component {
     return (
       <div className="pull-left">
         <UploadButton onFileChange={this.onFileChange.bind(this)} />
-        <ClipModal refs="modal" />
+        <ClipModal refs="modal" files={this.state.files} />
       </div>
     );
   }

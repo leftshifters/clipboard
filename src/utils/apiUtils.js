@@ -422,50 +422,50 @@ export default {
           clip.uploading = false;
           let revisedClip = _.merge(clip, res.data);
 
-          if(db) {
-            db.clips
-              .update(clip.id, revisedClip)
-              .then((updated) => {
-                log('Updated value is %o', updated);
-                if(updated > 0) {
-                  log('Updated clip clip successfully: %o', revisedClip);
-                } else {
-                  log('Error while updating clip in IndexDB: %o', revisedClip);
-                }
+          // if(db) {
+          //   db.clips
+          //     .update(clip.id, revisedClip)
+          //     .then((updated) => {
+          //       log('Updated value is %o', updated);
+          //       if(updated > 0) {
+          //         log('Updated clip clip successfully: %o', revisedClip);
+          //       } else {
+          //         log('Error while updating clip in IndexDB: %o', revisedClip);
+          //       }
+          //
+          //       db.clips
+          //         .toArray()
+          //         .then((clips) => {
+          //           log('Got clips %o ', clips);
+          //           clips.unshift(revisedClip);
+          //           return resolve({'clips': clips});
+          //         });
+          //     });
+          // } else {
+          let url = '/api/clips/1';
+          this._fetch(url, 1, (err, fetched) => { // eslint-disable-line no-underscore-dangle
+            if(err) {
+              return reject(err);
+            }
 
-                db.clips
-                  .toArray()
-                  .then((clips) => {
-                    log('Got clips %o ', clips);
-                    clips.unshift(revisedClip);
-                    return resolve({'clips': clips});
-                  });
-              });
-          } else {
-            let url = '/api/clips/1';
-            this._fetch(url, 1, (err, fetched) => { // eslint-disable-line no-underscore-dangle
-              if(err) {
-                return reject(err);
-              }
+            let page = {
+              'leftArrow': fetched.leftArrow,
+              'more': fetched.more,
+              'nextPageLink': fetched.nextPageLink,
+              'page': fetched.page,
+              'prevPageLink': fetched.prevPageLink,
+              'query': fetched.query,
+              'rightArrow': fetched.rightArrow,
+              'searchBtn': fetched.searchBtn,
+              'searchIcon': fetched.searchIcon
+            };
 
-              let page = {
-                'leftArrow': fetched.leftArrow,
-                'more': fetched.more,
-                'nextPageLink': fetched.nextPageLink,
-                'page': fetched.page,
-                'prevPageLink': fetched.prevPageLink,
-                'query': fetched.query,
-                'rightArrow': fetched.rightArrow,
-                'searchBtn': fetched.searchBtn,
-                'searchIcon': fetched.searchIcon
-              };
-
-              resolve({
-                pages: page,
-                clips: fetched.items
-              });
+            resolve({
+              pages: page,
+              clips: fetched.items
             });
-          }
+          });
+          // }
         })
         .catch((err) => {
           log('Got error while uplading %o', err);

@@ -1,11 +1,11 @@
 import _ from 'lodash';
 import debug from 'debug';
 import React, {PropTypes} from 'react'; // eslint-disable-line no-unused-vars
+import Form from '../Form';
 import FormGroup from '../FormGroup';
 import TextBox from '../TextBox';
 import Button from '../Button';
 import Extention from '../Extention';
-import FileStore from '../../stores/FileStore';
 import ClipActions from '../../actions/ClipActions';
 import Modal from 'react-bootstrap/lib/Modal';
 
@@ -22,72 +22,34 @@ const imageMimes = [
 
 class ClipModal extends React.Component {
 
+  static propTypes = {
+    files: PropTypes.object
+  }
+
   constructor(props, context) {
     super(props, context);
     this.state = this.getStateFromStore();
-    this.onStoreChange = this.onStoreChange.bind(this);
-    this.index = 0;
+    this.inputName = '';
   }
 
   getStateFromStore() {
+    log(this.props);
     return {
-      files: FileStore.files,
-      showModal: false,
-      fileNames: FileStore.files ? _.map(FileStore.files, (file) => {
-        return file.name;
-      }) : [],
-      inputName: FileStore.files ? FileStore.files[this.index].name : '',
-      headerTitle: this.getHeaderTitle(FileStore.files)
+      showModal: this.props.files ? true : false,
+      index: 0
     };
   }
 
   getHeaderTitle(files) {
-    files = this.state && this.state.files ? this.state.files : files;
     if(
       _.isEmpty(files) ||
       files.length === 1 ||
-      files.length === (this.index + 1)
+      files.length === (this.state.index + 1)
     ) {
       return 'Upload Clip?';
     } else {
-      return `Upload Clip? and ${files.length - (this.index + 1)} more...`;
+      return `Upload Clip? and ${files.length - (this.state.index + 1)} more...`;
     }
-  }
-
-  onStoreChange() {
-    this.setState(this.getStateFromStore());
-    log('Store change %o', this.state.files);
-    _.defer(() => {
-      this.openModal();
-    });
-  }
-
-  componentDidMount() {
-    log('Component mounted');
-    FileStore.addChangeListener(this.onStoreChange);
-  }
-
-  componentWillUnmount() {
-    log('Component unmounted');
-    FileStore.removeChangeListener(this.onStoreChange);
-  }
-
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   if(
-  //     nextState.inputName !== this.state.inputName
-  //   ) {
-  //     return false;
-  //   } else {
-  //     return true;
-  //   }
-  // }
-
-  onFileNameChange(e) {
-    e.preventDefault();
-    log('File input change');
-    this.setState({
-      inputName: e.target.value
-    });
   }
 
   openModal() {
@@ -110,16 +72,22 @@ class ClipModal extends React.Component {
 
   regenerateModal() {
     log('modal regenerated');
-    this.index = this.index + 1;
-    if(this.state.files.length === this.index) {
+    if(this.props.files.length === this.state.index) {
       this.closeModal();
     } else {
       this.setState({
-        files: this.state.files,
-        inputName: this.state.files[this.index].name,
-        headerTitle: this.getHeaderTitle()
+        headerTitle: this.getHeaderTitle(this.props.files)
       });
     }
+
+    this.setState({
+      index: this.state.index + 1
+    });
+  }
+
+  onTitleChange(e) {
+    e.preventDefault();
+    this.inputName = e.target.value;
   }
 
   upload(e) {
@@ -130,14 +98,14 @@ class ClipModal extends React.Component {
     let data = new FormData();
     let clip = {};
 
-    data.append('content', this.state.files[this.index]);
-    data.append('name', this.state.inputName);
+    data.append('content', this.props.files[this.state.index]);
+    data.append('name', this.inputName);
 
     clip = {
       _id: this.getRandomId(),
       uploading: true,
-      name: this.state.inputName,
-      originalName: this.state.inputName,
+      name: this.inputName,
+      originalName: this.props.files[this.state.index].name,
       timeago: 'Just Now',
       url: '#'
     };
@@ -150,11 +118,19 @@ class ClipModal extends React.Component {
     }
   }
 
+  componentWillReceiveProps() {
+    log('Received new props')
+    this.getStateFromStore();
+  }
+
   get files() {
-    log('Index is %s', this.index);
-    log('State change and files are %o', this.state.files);
+    log('Index is %s', this.state.index);
+    log('State change and files are %o', this.props.files);
+    log('State is %o', this.state);
     let files = [];
-    let file = this.state.files ? this.state.files[this.index] : null;
+    let file = this.props.files ? this.props.files[this.state.index] : null;
+    this.inputName = file ? file.name : '';
+
     log('File is %o', file);
 
     if (file) {
@@ -178,8 +154,8 @@ class ClipModal extends React.Component {
           <TextBox
             name="name"
             ref="fileInput"
-            placeholder={ this.state.inputName }
-            onChange={this.onFileNameChange.bind(this)}
+            onChange={this.onTitleChange.bind(this)}
+            placeholder={file.name}
             className="form-control" />
         </FormGroup>
       );
@@ -189,28 +165,42 @@ class ClipModal extends React.Component {
   }
 
   render() {
+    log('File length %s', this.props.files ? this.props.files.length : 0);
+    log('Index is %s', this.state.index);
+
+    let showModal = (
+        this.props.files && this.props.files.length > (this.state.index)
+      ) ? true : this.state.showModal;
+    let headerTitle = this.getHeaderTitle(this.props.files);
+
     return (
       <div>
-        <Modal show={this.state.showModal} onHide={this.closeModal.bind(this)}>
-          <Modal.Header closeButton>
-            <Modal.Title>{this.state.headerTitle}</Modal.Title>
-          </Modal.Header>
-
-          <Modal.Body>
-            {this.files}
-          </Modal.Body>
-
-          <Modal.Footer>
-            <Button
-              buttonFor="Close"
-              className="btn btn-default"
-              onClick={this.closeModal.bind(this)}/>
-            <Button
-              buttonFor="Uplaod"
-              onClick={this.upload.bind(this)}
-              className="btn btn-primary"/>
-          </Modal.Footer>
-
+        <Modal show={showModal} onHide={this.closeModal.bind(this)}>
+          <Form
+           role="form"
+           method="post"
+           action="#"
+           encType="multipart/form-data"
+           className="upload-form"
+           ref="uploadform"
+           onSubmit={this.upload.bind(this)}>
+            <Modal.Header closeButton>
+              <Modal.Title>{headerTitle}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {this.files}
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                buttonFor="Close"
+                className="btn btn-default"
+                onClick={this.closeModal.bind(this)}/>
+              <Button
+                buttonFor="Uplaod"
+                onClick={this.upload.bind(this)}
+                className="btn btn-primary"/>
+            </Modal.Footer>
+          </Form>
         </Modal>
       </div>
     );
