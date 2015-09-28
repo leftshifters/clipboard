@@ -9,19 +9,19 @@ class Silent extends React.Component {
 
   constructor(props, context) {
     super(props, context);
-    this.state = getStateFromStore();
+    this.state = this.getStateFromStore();
     this.onStoreChange = this.onStoreChange.bind(this);
   }
 
   getStateFromStore() {
-    this.setState({
-      index: 0
-    });
+    return {
+      files: FileStore.files || null
+    };
   }
 
   onStoreChange() {
-    log('Store change %o', this.state.files);
     this.setState(this.getStateFromStore());
+    log('Store change %o', this.state.files);
   }
 
   componentDidMount() {
@@ -37,8 +37,10 @@ class Silent extends React.Component {
   render() {
     return (
       <div>
-        <ClipModal refs="modal" file={this.state.file} />
+        <ClipModal refs="modal" files={this.state.files} />
       </div>
     );
   }
 }
+
+export default Silent;

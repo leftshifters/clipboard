@@ -52,6 +52,7 @@ function type(item, done) {
 
 exports.upload = function(req, res, next) {
   baseurl.set(req.protocol, req.get('host'));
+
   var form = new multiparty.Form({
     autoFiles: true,
     uploadDir: path.join(process.cwd(), uploadDir)
@@ -63,100 +64,147 @@ exports.upload = function(req, res, next) {
       return next(new Error('Internal Server Error'));
     }
 
-    var file = files.content && files.content[0];
     var baseuri = req.protocol + '://' + req.headers.host;
-    var basename, mimetype, date, basenameWithoutExt, extension;
+    var basename, mimetype, date = new Date(), basenameWithoutExt, extension;
+    var item = {
+      mime: mimetype,
+      height: 0,
+      width: 0
+    };
 
-    if (file && file.fieldName === 'content') {
-      basename = path.basename(file.path);
-      basenameWithoutExt = path.basename(file.path, path.extname(file.path));
-      extension = path.extname(file.path);
-      mimetype = mime.lookup(file.path);
-      date = new Date();
-      var item = {
-        mime: mimetype,
-        height: 0,
-        width: 0
-      };
+    if(fields.isbase64) {
+      basename = fields.name[0];
+      basenameWithoutExt = fields.name[0];
 
-      async.waterfall([
-        function calculateSize(cb) {
-          if (!!~imageMimes.indexOf(mimetype)) { // eslint-disable-line no-extra-boolean-cast
-            gm(file.path).size(function(gmerr, size) {
-              if (gmerr) {
-                return cb(gmerr);
-              }
+      item = _.extend(item, {
+        hash: '',
+        size: 0,
+        basename: fields.name[0],
+        basenameWithoutExt: basenameWithoutExt,
+        extension: 'zip',
+        originalName: basename,
+        relativePathShort: 'uploads/' + basename,
+        relativePathLong: uploadDir + '/' + basename,
+        relativeThumbPathShort: '',
+        relativeThumbPathLong: '',
+        name: basename,
+        type: 'zip',
+        bundleId: fields.bundleId && fields.bundleId.shift() || '',
+        created: date.toISOString(),
+        createdms: date.getTime()
+      });
 
-              item.height = size.height;
-              item.width = size.width;
-              cb(null, item);
-            });
-          } else {
-            cb(null, item);
-          }
-        },
+      cliputils.seturl(item, baseuri);
 
-        function AddImage(item, cb) { // eslint-disable-line no-shadow
-          item = _.extend(item, {
-            hash: '',
-            size: file.size,
-            basename: basename,
-            basenameWithoutExt: basenameWithoutExt,
-            extension: extension,
-            originalName: file.originalFilename,
-            relativePathShort: 'uploads/' + basename,
-            relativePathLong: uploadDir + '/' + basename,
-            relativeThumbPathShort: '',
-            relativeThumbPathLong: '',
-            name: fields.name && fields.name.shift() || 'untitled',
-            type: '',
-            bundleId: fields.bundleId && fields.bundleId.shift() || '',
-            created: date.toISOString(),
-            createdms: date.getTime()
-          });
+      cliputils.setname(item);
+      cliputils.settimeago(item);
 
-          cliputils.seturl(item, baseuri);
-
-          if (item.type === 'ipa') {
-            item.url = cliputils.ipaurl(item, baseuri);
-          }
-
-          if (item.type === 'image') {
-            item.imageurl = '../' + item.relativePathShort;
-          }
-
-          cliputils.type(item);
-          cliputils.setname(item);
-          cliputils.settimeago(item);
-
-          if (!!~imageMimes.indexOf(mimetype)) { // eslint-disable-line no-extra-boolean-cast
-            item.type = 'image';
-          }
-
-          type(item, function(err, newitem) { // eslint-disable-line no-shadow
-            if (err) {
-              return cb(err);
+      require('fs')
+        .writeFile(
+          path.join(process.cwd(), uploadDir) + '/' + item.name + '.zip',
+          fields.content,
+          'base64', function(err) { // eslint-disable-line no-shadow
+            if(err) {
+              return next(err);
             }
 
-            item = _.merge(item, newitem);
             db.insertItem(item, function(err, results) { // eslint-disable-line no-shadow
+              if (err) {
+                return next(err);
+              }
+
+              req.store._id = results.insertedIds[0]; // eslint-disable-line no-underscore-dangle
+              req.store.data = req.store.item = item;
+              next();
+            });
+          });
+    } else {
+      var file = files.content && files.content[0];
+      if (file && file.fieldName === 'content') {
+        basename = path.basename(file.path);
+        basenameWithoutExt = path.basename(file.path, path.extname(file.path));
+        extension = path.extname(file.path);
+        mimetype = mime.lookup(file.path);
+
+        async.waterfall([
+          function calculateSize(cb) {
+            if (!!~imageMimes.indexOf(mimetype)) { // eslint-disable-line no-extra-boolean-cast
+              gm(file.path).size(function(gmerr, size) {
+                if (gmerr) {
+                  return cb(gmerr);
+                }
+
+                item.height = size.height;
+                item.width = size.width;
+                cb(null, item);
+              });
+            } else {
+              cb(null, item);
+            }
+          },
+
+          function AddImage(item, cb) { // eslint-disable-line no-shadow
+            item = _.extend(item, {
+              hash: '',
+              size: file.size,
+              basename: basename,
+              basenameWithoutExt: basenameWithoutExt,
+              extension: extension,
+              originalName: file.originalFilename,
+              relativePathShort: 'uploads/' + basename,
+              relativePathLong: uploadDir + '/' + basename,
+              relativeThumbPathShort: '',
+              relativeThumbPathLong: '',
+              name: fields.name && fields.name.shift() || 'untitled',
+              type: '',
+              bundleId: fields.bundleId && fields.bundleId.shift() || '',
+              created: date.toISOString(),
+              createdms: date.getTime()
+            });
+
+            cliputils.seturl(item, baseuri);
+
+            if (item.type === 'ipa') {
+              item.url = cliputils.ipaurl(item, baseuri);
+            }
+
+            if (item.type === 'image') {
+              item.imageurl = '../' + item.relativePathShort;
+            }
+
+            cliputils.type(item);
+            cliputils.setname(item);
+            cliputils.settimeago(item);
+
+            if (!!~imageMimes.indexOf(mimetype)) { // eslint-disable-line no-extra-boolean-cast
+              item.type = 'image';
+            }
+
+            type(item, function(err, newitem) { // eslint-disable-line no-shadow
               if (err) {
                 return cb(err);
               }
 
-              req.store._id = results.insertedIds[0]; // eslint-disable-line no-underscore-dangle
-              cb(null, item);
-            });
-          });
-        }
-      ], function(err, item) { // eslint-disable-line no-shadow
-        if (err) {
-          return next(err);
-        }
+              item = _.merge(item, newitem);
+              db.insertItem(item, function(err, results) { // eslint-disable-line no-shadow
+                if (err) {
+                  return cb(err);
+                }
 
-        req.store.data = req.store.item = item;
-        next();
-      });
+                req.store._id = results.insertedIds[0]; // eslint-disable-line no-underscore-dangle
+                cb(null, item);
+              });
+            });
+          }
+        ], function(err, item) { // eslint-disable-line no-shadow
+          if (err) {
+            return next(err);
+          }
+
+          req.store.data = req.store.item = item;
+          next();
+        });
+      }
     }
   });
 

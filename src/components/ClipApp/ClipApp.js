@@ -11,6 +11,7 @@ import Header from '../Header';
 import Footer from '../Footer';
 import Container from '../Container';
 import Dropzone from '../Dropzone';
+import Silent from '../Silent';
 import ClipsStore from '../../stores/ClipStore';
 import ClipActions from '../../actions/ClipActions';
 import FileActions from '../../actions/FileActions';
@@ -61,12 +62,13 @@ class ClipApp extends React.Component {
     }
   }
 
-  onDrop(file) {
-    log('Received files %o', file);
+  onDrop(files) {
+    log('Received files %o', files);
     this.setState({
       dragClass: 'drop-container inactive'
     });
-    FileActions.dropFile(file);
+
+    FileActions.dropFile(files);
   }
 
   componentDidMount() {
@@ -115,10 +117,10 @@ class ClipApp extends React.Component {
   }
 
   get FileUploadForm() {
-    return ( < div className =
-      "col-lg-3 col-xs-12 col-md-4 col-sm-6 item-row" >
-      < UploadBox / >
-      < /div>
+    return (
+      <div className="col-lg-3 col-xs-12 col-md-4 col-sm-6 item-row">
+        <UploadBox/>
+      </div>
     );
   }
 
@@ -143,38 +145,28 @@ class ClipApp extends React.Component {
 
   render() {
     log('Rendering clip view');
-    return ( < Container onDragEnter = {
-        this.handleDragEnter.bind(this)
-      }
-      onMouseLeave = {
-        this.handleDragLeave.bind(this)
-      } >
-      < Dropzone className = {
-        this.state.dragClass
-      }
-      supportClick = {
-        false
-      }
-      onDrop = {
-        this.onDrop.bind(this)
-      }
-      multiple = {
-        false
-      }
-      /> < div > < Header version = {
-        this.props.version
-      }
-      query = {
-        this.props ? this.props.query.q : ''
-      }
-      /> < Row > < Loader loading = {
-        this.state.loading
-      }
-      /> < div className = "clips"
-      ref = "clips" > {
-        this.Clips
-      } < /div> < /Row > < Footer / >
-      < /div> < /Container >
+    return (
+      <Container
+        onDragEnter={this.handleDragEnter.bind(this)}
+        onMouseLeave={this.handleDragLeave.bind(this)}>
+        <Dropzone
+          className={this.state.dragClass}
+          onDrop={this.onDrop.bind(this)}/>
+        <Silent />
+        <div>
+          <Header
+            version={this.props.version}
+            query={this.props ? this.props.query.q : ''}/>
+
+          <Row>
+            <Loader loading={this.state.loading}/>
+            <div className="clips" ref="clips">
+              {this.Clips}
+            </div>
+          </Row>
+          <Footer/>
+        </div>
+      </Container>
     );
   }
 }

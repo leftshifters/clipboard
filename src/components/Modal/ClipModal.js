@@ -98,8 +98,18 @@ class ClipModal extends React.Component {
     let data = new FormData();
     let clip = {};
 
-    data.append('content', this.props.files[this.state.index]);
-    data.append('name', this.inputName);
+    log('Uplaoded content is %o', this.props.files[this.state.index]);
+    if(
+      this.props.files[this.state.index].content &&
+      this.props.files[this.state.index].name
+    ) {
+      data.append('content', this.props.files[this.state.index].content);
+      data.append('name', this.inputName);
+      data.append('isbase64', this.props.files[this.state.index].base64);
+    } else {
+      data.append('content', this.props.files[this.state.index]);
+      data.append('name', this.inputName);
+    }
 
     clip = {
       _id: this.getRandomId(),
@@ -134,8 +144,13 @@ class ClipModal extends React.Component {
     log('File is %o', file);
 
     if (file) {
-      let type = !!~imageMimes.indexOf(file.type) ? 'image' : file.name.split('.').pop(); //eslint-disable-line no-extra-boolean-cast
+      let type;
       let thumb = '';
+      if(_.indexOf('.', file.name) === -1) {
+        type = 'DIR';
+      } else {
+        type = !!~imageMimes.indexOf(file.type) ? 'image' : file.name.split('.').pop(); //eslint-disable-line no-extra-boolean-cast
+      }
 
       log('File type is %o', type);
       if(type) {
