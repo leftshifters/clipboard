@@ -99,6 +99,8 @@ exports.upload = function(req, res, next) {
       cliputils.setname(item);
       cliputils.settimeago(item);
 
+      console.log(fields.content);
+      
       require('fs')
         .writeFile(
           path.join(process.cwd(), uploadDir) + '/' + item.name + '.zip',

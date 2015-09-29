@@ -1,4 +1,5 @@
 import {extend} from 'lodash'; // eslint-disable-line no-unused-vars
+import async from 'async';
 import debug from 'debug';
 import React, {PropTypes} from 'react'; // eslint-disable-line no-unused-vars
 import Styles from './Dropzone.less'; // eslint-disable-line no-unused-vars
@@ -69,6 +70,8 @@ class Dropzone extends React.Component {
     let files = e.dataTransfer.files;
     let finalFiles = [];
 
+    log('Dropped files are %o', files);
+
     for (let i = 0, item; item = items[i]; ++i) { // eslint-disable-line no-cond-assign
       // Skip this one if we didn't get a file.
       if (item.kind !== 'file') {
@@ -83,27 +86,50 @@ class Dropzone extends React.Component {
 
         let dirReader = entry.createReader();
         dirReader.readEntries((entries) => { // eslint-disable-line no-loop-func
-          for (let j = 0; j < entries.length; j++) {
-            let reader = new FileReader();
-            reader.onload = (evt) => { // eslint-disable-line no-loop-func
-              zip.file(
-                entries[j].name,
-                evt.target.result,
-                {base64: true}
-              );
+          log('Set of entries are %o', entries);
+          async.series(entries.map((entry) => {
+            return (cb) => {
+              entry.file((f) => {
+                let reader = new FileReader();
+                reader.onload = (evt) => { // eslint-disable-line no-loop-func
+                  zip.file('/Users/Shekhar/Desktop' + entry.fullPath);
 
-              console.log('test zip test etesterwtkehr jkerhgrejkg hejkrhjekrghekrg');
+                  log('Generate base64 for %o', f);
+                  cb(null);
+                };
+
+                log('Entry is %o', f);
+                reader.readAsDataURL(f);
+              });
             };
-            reader.readAsDataURL(entries[j]);
-          }
-        });
+          }), (err) => {
+            log('Error is %o', err);
+            log('Read all data now');
+            finalFiles.push({
+              name: entry.name,
+              content: zip.generate({
+                type: 'base64'
+              }),
+              base64: true
+            });
 
-        finalFiles.push({
-          name: entry.name,
-          content: zip.generate({
-            type: 'base64'
-          }),
-          base64: true
+            if(this.props.onDrop) {
+              this.props.onDrop(finalFiles, e);
+            }
+          });
+          // for (let j = 0; j < entries.length; j++) {
+          //   let reader = new FileReader();
+          //   reader.onload = (evt) => { // eslint-disable-line no-loop-func
+          //     zip.file(
+          //       entries[j].name,
+          //       evt.target.result,
+          //       {base64: true}
+          //     );
+          //
+          //     console.log('test zip test etesterwtkehr jkerhgrejkg hejkrhjekrghekrg');
+          //   };
+          //   reader.readAsDataURL(entries[j]);
+          // }
         });
       } else {
         if (entry.isFile && files[i].type.match('^image/')) {
@@ -112,14 +138,18 @@ class Dropzone extends React.Component {
         } else {
           finalFiles.push(files[i]);
         }
+
+        if(this.props.onDrop) {
+          this.props.onDrop(finalFiles, e);
+        }
       }
     }
 
-    log('Final files inside dropzone are %o', finalFiles);
-
-    if(this.props.onDrop) {
-      this.props.onDrop(finalFiles, e);
-    }
+    // log('Final files inside dropzone are %o', finalFiles);
+    //
+    // if(this.props.onDrop) {
+    //   this.props.onDrop(finalFiles, e);
+    // }
 
     // let files;
     // if (e.dataTransfer) {
