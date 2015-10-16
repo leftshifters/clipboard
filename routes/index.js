@@ -16,6 +16,7 @@ var search = require('../lib/search');
 var ObjectId = require('mongodb').ObjectID;
 var cliputils = require('../lib/cliptils');
 var search = require('../lib/search');
+var passport = require("passport");
 
 function nextPageLink(page, query) {
   var urlobj = {
@@ -40,6 +41,108 @@ function prevPageLink(page, query) {
 
   return url.format(urlobj);
 }
+
+exports.checkLogin = function(req, res, next) {
+  var accessToken = req.cookies ? req.cookies.authtoken : null;
+  if(accessToken) {
+    db.fetchUserByToken(accessToken, function(err, user) {
+      if(err || !user) {
+        return res.redirect('/auth/google');
+      }
+
+      if (!user) {
+        res.clearCookie('authtoken', {
+          path: '/'
+        });
+				return res.redirect('/auth/google');
+			}
+
+      // Check for valid access token and access token expiry
+			if (Math.round((Date.now() - user.token.created) / 1000) > process.env.TOKEN_EXPIRY) {
+        // Invalid redirect again to auth
+        //
+        res.clearCookie('authtoken', {
+					path: '/'
+				});
+				return res.redirect('/auth/google');
+      }
+
+      next();
+    });
+  } else {
+    res.clearCookie('authtoken', {
+      path: '/'
+    });
+    return res.redirect('/auth/google');
+  }
+};
+
+exports.oAuthCallback = function(req, res, next) {
+  passport.authenticate('google', {
+    successRedirect : '/',
+    failureRedirect : '/'
+  }, function(err, profile) {
+    if(err) {
+      return res.send(err.message || err.text);
+    }
+
+    db.fetchUserByEmail(profile.email, function(err, user) {
+      if(err) {
+        return res.send(err.message || err.text);
+      }
+
+      if(user) {
+        db.insertAccessToken({
+          accessToken: profile.accessToken,
+          created: new Date().getTime(),
+          user: profile.email
+        }, function(err, tokens) {
+          if(err) {
+            return res.send(err.message || err.text);
+          }
+
+          var token = tokens.ops[0];
+          res.cookie('authtoken', token.accessToken, {
+            maxAge: (process.env.TOKEN_EXPIRY * 1000)
+          });
+
+          return res.redirect('/');
+        });
+      } else {
+        db.insertUser({
+          provider: profile.provider,
+          id: profile.id,
+          displayName: profile.displayName,
+          name: profile.name,
+          isPerson: profile.isPerson,
+          emails: profile.emails,
+          email: profile.email
+        }, function(err) {
+          if(err) {
+            return res.send(err.message || err.text);
+          }
+
+          db.insertAccessToken({
+            accessToken: profile.accessToken,
+            created: new Date().getTime(),
+            user: profile.email
+          }, function(err, tokens) {
+            if(err) {
+              return res.send(err.message || err.text);
+            }
+
+            var token = tokens.ops[0];
+            res.cookie('authtoken', token.accessToken, {
+              maxAge: (process.env.TOKEN_EXPIRY * 1000)
+            });
+
+            return res.redirect('/');
+          });
+        });
+      }
+    });
+  })(req, res, next);
+};
 
 exports.index = function(req, res) {
   var page = req.store.page || 0;

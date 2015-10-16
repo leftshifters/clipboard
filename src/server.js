@@ -11,6 +11,8 @@ import compression from 'compression';
 import reqstore from 'reqstore';
 import methodOverride from 'method-override';
 import debug from 'debug';
+import cookieSession from 'cookie-session';
+import cookieParser from 'cookie-parser';
 
 import './core/Dispatcher';
 import bootcheck from '../lib/bootcheck';
@@ -18,6 +20,11 @@ import upload from '../routes/upload';
 import routes from '../routes';
 import clip from '../routes/clip';
 
+import passport from 'passport';
+var GoogleStrategy = require('passport-google-oauth2').Strategy;
+
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const pack = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8')
 );
@@ -25,6 +32,33 @@ const log = debug('clipboard:server');
 const server = express();
 
 process.title = 'Clipboard';
+
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(obj, done) {
+  done(null, obj);
+});
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.HOST + '/auth/google/callback',
+    passReqToCallback   : true
+  },
+  function(request, accessToken, refreshToken, profile, done) {
+    process.nextTick(function () {
+      if(profile._json.domain === "leftshift.io" && profile.isPerson) {
+        profile.accessToken = accessToken;
+        return done(null, profile);
+      } else {
+        return done(new Error("Unauthorized"));
+      }
+    });
+  }
+));
+
 
 server.enable('trust proxy');
 server.set('port', (process.env.PORT || 3001));
@@ -36,6 +70,7 @@ if(server.get('env') === 'developement') {
 
 server.use(logger('common'));
 server.use(bodyParser.json());
+server.use(cookieParser());
 server.use(bodyParser.urlencoded({
   extended: true
 }));
@@ -46,6 +81,15 @@ server.use('/uploads', express.static(path.join(__dirname, '../public/uploads'))
 server.use(methodOverride());
 server.set('views', path.join(__dirname, '../views'));
 server.set('view engine', 'jade');
+server.use(cookieSession({
+    secret: 'KD4U454WjxPGfLgX7Mr6',
+    cookie: {
+      maxage: 60000
+    }
+  })
+);
+server.use(passport.initialize());
+server.use(passport.session());
 
 // developement mode
 //
@@ -63,6 +107,10 @@ bootcheck();
 
 // get clips
 //
+
+server.get('/', routes.checkLogin);
+server.get('/clipd/:hash/:name?', routes.checkLogin);
+
 server.get('/api/clips/:page', routes.page, routes.index);
 server.post('/api/clip/:id', [
   routes.validateId,
@@ -88,7 +136,6 @@ server.delete('/api/clip/:id', [
   routes.ok
 ]);
 
-server.get('/reindex', routes.reindex);
 server.get('/api/clipd/:hash/:name?', [
   clip.fetch,
   routes.detail,
@@ -96,10 +143,22 @@ server.get('/api/clipd/:hash/:name?', [
   routes.ok
 ]);
 
-server.get('/clip/:hash/:name?', clip.fetch, clip.send);
+server.get('/clip/:hash/:name?', routes.checkLogin, clip.fetch, clip.send);
 server.get('/8b66041e096772f9c0c3c4adb2f625ab.txt', routes.text);
 server.get('/changelog', routes.changelog);
-server.get('/reindex', routes.reindex);
+server.get('/reindex', routes.checkLogin, routes.reindex);
+
+// =====================================
+// GOOGLE ROUTES =======================
+// =====================================
+// send to google to do the authentication
+// profile gets us their basic information including their name
+// email gets their emails
+//
+server.get('/auth/google', passport.authenticate('google', {scope : ['profile', 'email']}));
+
+// the callback after google has authenticated the user
+server.get('/auth/google/callback', routes.oAuthCallback);
 
 server.get('*', async (err, req, res, next) => {
   if(!err) {
