@@ -133,13 +133,6 @@ export default {
     apiUtils
       .tempClip(clip)
       .then((res) => {
-        if(!isSafari) {
-          Dispatcher.dispatch({
-            actionType: UPLOADING_CLIP,
-            payload: res
-          });
-        }
-
         apiUtils
           .addClip(res.clip, data)
           .then((newres) => {
