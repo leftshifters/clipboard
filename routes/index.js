@@ -16,7 +16,7 @@ var search = require('../lib/search');
 var ObjectId = require('mongodb').ObjectID;
 var cliputils = require('../lib/cliptils');
 var search = require('../lib/search');
-var passport = require("passport");
+var passport = require('passport');
 
 function nextPageLink(page, query) {
   var urlobj = {
@@ -54,17 +54,18 @@ exports.checkLogin = function(req, res, next) {
         res.clearCookie('authtoken', {
           path: '/'
         });
-				return res.redirect('/auth/google');
-			}
+
+        return res.redirect('/auth/google');
+			} // eslint-disable-line indent
 
       // Check for valid access token and access token expiry
-			if (Math.round((Date.now() - user.token.created) / 1000) > process.env.TOKEN_EXPIRY) {
+			if (Math.round((Date.now() - user.token.created) / 1000) > process.env.TOKEN_EXPIRY) { // eslint-disable-line indent
         // Invalid redirect again to auth
         //
         res.clearCookie('authtoken', {
 					path: '/'
 				});
-				return res.redirect('/auth/google');
+				return res.redirect('/auth/google'); // eslint-disable-line indent
       }
 
       next();
@@ -79,16 +80,16 @@ exports.checkLogin = function(req, res, next) {
 
 exports.oAuthCallback = function(req, res, next) {
   passport.authenticate('google', {
-    successRedirect : '/',
-    failureRedirect : '/'
+    successRedirect: '/',
+    failureRedirect: '/'
   }, function(err, profile) {
     if(err) {
       return res.send(err.message || err.text);
     }
 
-    db.fetchUserByEmail(profile.email, function(err, user) {
-      if(err) {
-        return res.send(err.message || err.text);
+    db.fetchUserByEmail(profile.email, function(newerr, user) {
+      if(newerr) {
+        return res.send(newerr.message || newerr.text);
       }
 
       if(user) {
@@ -96,9 +97,9 @@ exports.oAuthCallback = function(req, res, next) {
           accessToken: profile.accessToken,
           created: new Date().getTime(),
           user: profile.email
-        }, function(err, tokens) {
-          if(err) {
-            return res.send(err.message || err.text);
+        }, function(insertErr, tokens) {
+          if(insertErr) {
+            return res.send(insertErr.message || insertErr.text);
           }
 
           var token = tokens.ops[0];
@@ -117,7 +118,7 @@ exports.oAuthCallback = function(req, res, next) {
           isPerson: profile.isPerson,
           emails: profile.emails,
           email: profile.email
-        }, function(err) {
+        }, function(err) { // eslint-disable-line no-shadow
           if(err) {
             return res.send(err.message || err.text);
           }
@@ -126,8 +127,8 @@ exports.oAuthCallback = function(req, res, next) {
             accessToken: profile.accessToken,
             created: new Date().getTime(),
             user: profile.email
-          }, function(err, tokens) {
-            if(err) {
+          }, function(err, tokens) { // eslint-disable-line no-shadow
+            if(err) { // eslint-disable-line no-shadow
               return res.send(err.message || err.text);
             }
 

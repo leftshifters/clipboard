@@ -42,18 +42,18 @@ passport.deserializeUser(function(obj, done) {
 });
 
 passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    clientID: GOOGLE_CLIENT_ID,
+    clientSecret: GOOGLE_CLIENT_SECRET,
     callbackURL: process.env.HOST + '/auth/google/callback',
-    passReqToCallback   : true
+    passReqToCallback: true
   },
   function(request, accessToken, refreshToken, profile, done) {
     process.nextTick(function () {
-      if(profile._json.domain === "leftshift.io" && profile.isPerson) {
+      if(profile._json.domain === 'leftshift.io' && profile.isPerson) { // eslint-disable-line no-underscore-dangle
         profile.accessToken = accessToken;
         return done(null, profile);
       } else {
-        return done(new Error("Unauthorized"));
+        return done(new Error('Unauthorized'));
       }
     });
   }
@@ -155,7 +155,7 @@ server.get('/reindex', routes.checkLogin, routes.reindex);
 // profile gets us their basic information including their name
 // email gets their emails
 //
-server.get('/auth/google', passport.authenticate('google', {scope : ['profile', 'email']}));
+server.get('/auth/google', passport.authenticate('google', {scope: ['profile', 'email']}));
 
 // the callback after google has authenticated the user
 server.get('/auth/google/callback', routes.oAuthCallback);
