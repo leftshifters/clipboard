@@ -1,5 +1,4 @@
 import debug from 'debug';
-import _ from 'lodash';
 import basicUtils from './basicUtils';
 const log = debug('clipboard:apiutil');
 let db = null;
@@ -219,8 +218,8 @@ export default {
           }
 
           clip.uploading = false;
-          
-          let url = '/api/clips/1';
+
+          let url = '/api/clips/1'; // eslint-disable-line no-trailing-spaces
           this._fetch(url, 1, (err, fetched) => { // eslint-disable-line no-underscore-dangle
             if(err) {
               return reject(err);
