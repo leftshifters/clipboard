@@ -17,7 +17,7 @@ var ObjectId = require('mongodb').ObjectID;
 var cliputils = require('../lib/cliptils');
 var search = require('../lib/search');
 var passport = require('passport');
-var rangeCheck = require('range_check');
+  var rangeCheck = require('range_check');
 
 function nextPageLink(page, query) {
   var urlobj = {
@@ -44,7 +44,8 @@ function prevPageLink(page, query) {
 }
 
 exports.checkLogin = function(req, res, next) {
-  if(rangeCheck.inRange(process.env.IP_START, process.env.IP_END)) {
+  console.log('Is it in range %s', rangeCheck.in_range(process.env.IP_START, process.env.IP_END));
+  if(rangeCheck.in_range(process.env.IP_START, process.env.IP_END)) {
     return next();
   }
 
