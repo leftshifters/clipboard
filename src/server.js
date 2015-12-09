@@ -49,7 +49,7 @@ passport.use(new GoogleStrategy({
   },
   function(request, accessToken, refreshToken, profile, done) {
     process.nextTick(function () {
-      if(profile._json.domain === 'leftshift.io' && profile.isPerson) { // eslint-disable-line no-underscore-dangle
+      if((profile._json.domain === 'leftshift.io' || profile._json.domain === 'vxtindia.com') && profile.isPerson) { // eslint-disable-line no-underscore-dangle
         profile.accessToken = accessToken;
         return done(null, profile);
       } else {
@@ -109,7 +109,7 @@ bootcheck();
 //
 
 server.get('/', routes.checkLogin);
-server.get('/clipd/:hash/:name?', routes.checkLogin);
+server.get('/clipd/:hash/:name?', routes.checkLogin, routes.checkLogin);
 
 server.get('/api/clips/:page', routes.page, routes.index);
 server.post('/api/clip/:id', [
