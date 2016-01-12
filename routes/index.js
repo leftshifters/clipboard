@@ -18,6 +18,7 @@ var cliputils = require('../lib/cliptils');
 var search = require('../lib/search');
 var passport = require('passport');
 var rangeCheck = require('range_check');
+var MobileDetect = require('mobile-detect');
 
 function nextPageLink(page, query) {
   var urlobj = {
@@ -44,9 +45,16 @@ function prevPageLink(page, query) {
 }
 
 exports.checkLogin = function(req, res, next) {
-  var ip = req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  var md = new MobileDetect(req.headers['user-agent']);
+
+  if(md.mobile()) {
+    return next();
+  }
+
+  var ip = req.ip || req.headers[ 'x-forwarded-for'] || req.connection.remoteAddress;
   console.log('IP is ', ip);
   console.log('Is it in range %s', rangeCheck.in_range(ip, process.env.IP_END));
+
   if(rangeCheck.in_range(ip, process.env.IP_END)) {
     return next();
   }
@@ -264,11 +272,16 @@ exports.detectify = function(req, res) {
 };
 
 exports.page = function(req, res, next) {
-  var page = parseInt(req.params.page, 10);
+  var page = req.params.page;
+
+  page = page || 0;
+  page = parseInt(page, 10);
 
   if (page > 0) {
     page = page - 1;
   }
+
+  console.log(page);
 
   req.store.page = page || 0;
   next();

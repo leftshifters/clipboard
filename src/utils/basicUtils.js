@@ -76,6 +76,7 @@ export default {
   },
 
   upload(api, data) {
+    log('Uploaded data is %o', data);
     return new Promise((resolve, reject) => {
       http
         .put(api)
