@@ -164,11 +164,11 @@ exports.upload = function(req, res, next) {
 
 exports.thumb = function(req, res, next) {
   var item = req.store.item;
-  if (!item) return next();
-  if (item.type !== 'image' || item.mime === 'image/gif') return next();
+  if (!item) { return next(); }
+  if (item.type !== 'image' || item.mime === 'image/gif') { return next(); }
 
-  var inp = path.join(process.cwd(), item.relativePathLong);
-  var out = path.join(thumbsPath, item.basename);
+  // var inp = path.join(process.cwd(), item.relativePathLong);
+  // var out = path.join(thumbsPath, item.basename);
   var Jimp = require('jimp');
   var thumbname = item.basenameWithoutExt + '-thumb' + item.extension;
   var thumbUploadDir = path.join(process.cwd(), thumbsDir);
@@ -183,9 +183,9 @@ exports.thumb = function(req, res, next) {
         item.relativeThumbPathShort = 'thumbs/' + thumbname;
         item.relativeThumbPathLong = thumbsDir + '/' + thumbname;
 
-        db.updateItemThumb(item, function(err) {
-          if(err) {
-            return next(err);
+        db.updateItemThumb(item, function(erri) {
+          if(erri) {
+            return next(erri);
           }
 
           req.store.data = req.store.item = item;
