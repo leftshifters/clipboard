@@ -10,7 +10,8 @@ class Image {
 
   render () {
     let clip = this.props.clip;
-    let imgUrl = clip.relativePathShort;
+    let imgUrl = clip.relativeThumbPathShort;
+    console.log('Images are ', imgUrl);
     let divStyle = {
       backgroundImage: `url('../${imgUrl}')`
     };

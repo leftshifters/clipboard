@@ -163,22 +163,38 @@ exports.upload = function(req, res, next) {
 };
 
 exports.thumb = function(req, res, next) {
-  return next();
+  var item = req.store.item;
+  if (!item) return next();
+  if (item.type !== 'image') return next();
 
-  // var item = req.store.item;
-  // if (!item) return next();
-  // if (item.type !== 'image') return next();
+  var inp = path.join(process.cwd(), item.relativePathLong);
+  var out = path.join(thumbsPath, item.basename);
+  var Jimp = require('jimp');
+  var thumbname = item.basenameWithoutExt + '-thumb' + item.extension;
+  var thumbUploadDir = path.join(process.cwd(), thumbsDir);
 
-  // var inp = path.join(process.cwd(), item.relativePathLong);
-  // var out = path.join(thumbsPath, item.basename);
+  Jimp.read(path.join(process.cwd(), item.relativePathLong)).then(function (img) {
+    img
+      .resize(250, Jimp.AUTO)
+      .write(thumbUploadDir + '/' + thumbname, function(err) {
+        if(err) {
+          return next(err);
+        }
+        item.relativeThumbPathShort = 'thumbs/' + thumbname;
+        item.relativeThumbPathLong = thumbsDir + '/' + thumbname;
 
-  // gm(inp)
-  //   .resize(300, 300)
-  //   .write(out, function done(err) {
-  //     if (err) return console.error(err);
-  //     next();
-  //   });
+        db.updateItemThumb(item, function(err) {
+          if(err) {
+            return next(err);
+          }
 
+          req.store.data = req.store.item = item;
+          next();
+        });
+      });
+  }).catch(function (err) {
+    return next(err);
+  });
 };
 
 exports.diskspace = function(req, res, next) {
@@ -201,6 +217,7 @@ exports.diskspace = function(req, res, next) {
 };
 
 exports.addSearchIndex = function(req, res, next) {
+  console.log(req.store.item);
   search.add(req.store.item);
   next();
 };

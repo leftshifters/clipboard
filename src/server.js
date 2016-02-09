@@ -78,6 +78,7 @@ server.use(reqstore());
 server.use(compression());
 server.use(express.static(path.join(__dirname)));
 server.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
+server.use('/thumbs', express.static(path.join(__dirname, '../public/thumbs')));
 server.use(methodOverride());
 server.set('views', path.join(__dirname, '../views'));
 server.set('view engine', 'jade');
