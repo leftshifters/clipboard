@@ -165,7 +165,7 @@ exports.upload = function(req, res, next) {
 exports.thumb = function(req, res, next) {
   var item = req.store.item;
   if (!item) return next();
-  if (item.type !== 'image') return next();
+  if (item.type !== 'image' || item.mime === 'image/gif') return next();
 
   var inp = path.join(process.cwd(), item.relativePathLong);
   var out = path.join(thumbsPath, item.basename);

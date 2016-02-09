@@ -10,7 +10,7 @@ class Image {
 
   render () {
     let clip = this.props.clip;
-    let imgUrl = clip.relativeThumbPathShort;
+    let imgUrl = clip.mime === 'image/gif' ? clip.relativePathShort : clip.relativeThumbPathShort;
     console.log('Images are ', imgUrl);
     let divStyle = {
       backgroundImage: `url('../${imgUrl}')`

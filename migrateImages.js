@@ -8,8 +8,8 @@ var query = {
   type: 'image'
 };
 
-var limit = 50;
-var page = 1;
+var limit = 200;
+var page = 0;
 
 db.fetchItemByQuery(query, limit, page, function(err, results) {
   if(err) {
@@ -17,7 +17,8 @@ db.fetchItemByQuery(query, limit, page, function(err, results) {
     process.exit(1);
   }
 
-  console.log(results.length);
+  console.log(results);
+
   async.series(results.map(function(item) {
     return function(cb) {
       var thumbname = item.basenameWithoutExt + '-thumb' + item.extension;
@@ -29,28 +30,36 @@ db.fetchItemByQuery(query, limit, page, function(err, results) {
         }
 
         Jimp.read(path.join(process.cwd(), item.relativePathLong)).then(function (img) {
-          img
-            .resize(250, Jimp.AUTO)
-            .write(thumbUploadDir + '/' + thumbname, function(err) {
-              if(err) {
-                console.error(err);
-                cb(null);
-              }
-              item.relativeThumbPathShort = 'thumbs/' + thumbname;
-              item.relativeThumbPathLong = thumbsDir + '/' + thumbname;
+          fs.access(thumbUploadDir + '/' + thumbname, function(err) {
+            console.log(err);
+            if(!err) {
+              console.log('Image exist');
+              cb(null);
+            }
 
-              db.updateItemThumb(item, function(err) {
+            img
+              .resize(250, Jimp.AUTO)
+              .write(thumbUploadDir + '/' + thumbname, function(err) {
                 if(err) {
-                  return cb(err);
+                  console.error(err);
+                  cb(null);
                 }
-                console.log('done with id ' + item._id + 'with thumb path ' + thumbname);
-                cb(null);
+                item.relativeThumbPathShort = 'thumbs/' + thumbname;
+                item.relativeThumbPathLong = thumbsDir + '/' + thumbname;
+
+                db.updateItemThumb(item, function(err) {
+                  if(err) {
+                    return cb(err);
+                  }
+                  console.log('done with id ' + item._id + 'with thumb path ' + thumbname);
+                  cb(null);
+                });
               });
+            }).catch(function (err) {
+              console.log(err);
+              cb(null);
             });
-        }).catch(function (err) {
-          console.log(err);
-          cb(null);
-        });
+          });
       });
     };
   }), function(err) {
