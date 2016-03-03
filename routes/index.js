@@ -52,8 +52,6 @@ exports.checkLogin = function(req, res, next) {
   }
 
   var ip = req.ip || req.headers[ 'x-forwarded-for'] || req.connection.remoteAddress;
-  console.log('IP is ', ip);
-  console.log('Is it in range %s', rangeCheck.in_range(ip, process.env.IP_END));
 
   if(rangeCheck.in_range(ip, process.env.IP_END)) {
     return next();
@@ -469,8 +467,6 @@ exports.reindex = function(req, res) {
 };
 
 exports.ok = function(req, res, next) { // eslint-disable-line no-unused-vars
-  console.log(req.store.data);
-  console.log(req.store.item);
   return res.json({
     data: req.store.data || req.store.item || {}
   });
