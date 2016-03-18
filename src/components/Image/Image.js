@@ -5,8 +5,7 @@ import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-
 @withStyles(Styles)
 class Image {
   static propTypes = {
-    clip: PropTypes.object,
-    base64: PropTypes.string
+    clip: PropTypes.object
   };
 
   render () {
@@ -17,19 +16,10 @@ class Image {
       backgroundImage: `url('../${imgUrl}')`
     };
 
-    if(clip) {
-      let imgUrl = clip.relativePathShort;
-      let divStyle = {
-        backgroundImage: `url('../${imgUrl}')`
-      };
-      return (
-        <div style={divStyle} className='fixed-image'></div>
-      );
-    } else {
-      return (
-        <div className='fixed-image' src={imgSrc}></div>
-      );
-    }
+    return (
+      <div
+        style={divStyle} className='fixed-image'></div>
+    );
   }
 }
 
