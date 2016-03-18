@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import debug from 'debug';
-import React, { PropTypes } from 'react'; // eslint-disable-line no-unused-vars
+import React, {PropTypes} from 'react'; // eslint-disable-line no-unused-vars
 import Styles from './ClipApp.less'; // eslint-disable-line no-unused-vars
 import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-unused-vars
 import Row from '../Row';
@@ -11,7 +11,6 @@ import Header from '../Header';
 import Footer from '../Footer';
 import Container from '../Container';
 import Dropzone from '../Dropzone';
-import Silent from '../Silent';
 import ClipsStore from '../../stores/ClipStore';
 import ClipActions from '../../actions/ClipActions';
 import FileActions from '../../actions/FileActions';
@@ -41,7 +40,7 @@ class ClipApp extends React.Component {
   handleDragEnter(e) {
     e.preventDefault();
     e.stopPropagation();
-    if (counter === 0) {
+    if(counter === 0) {
       counter++;
       log('Drag counter is %s', counter);
       this.setState({
@@ -53,7 +52,7 @@ class ClipApp extends React.Component {
   handleDragLeave(e) {
     e.preventDefault();
     e.stopPropagation();
-    if (counter === 1) {
+    if(counter === 1) {
       counter--;
       log('Leave Counter is %s', counter);
       this.setState({
@@ -62,27 +61,25 @@ class ClipApp extends React.Component {
     }
   }
 
-  onDrop(files) {
-    log('Received files %o', files);
+  onDrop(file) {
+    log('Received files %o', file);
     this.setState({
       dragClass: 'drop-container inactive'
     });
-
-    FileActions.dropFile(files);
+    FileActions.dropFile(file);
   }
 
   componentDidMount() {
     log('Clips component mount');
     let parms = this.props.params;
     let query = this.props.query;
-    let page = !_.isNaN(_.parseInt(parms.page)) ? _.parseInt(parms.page) :
-      1;
+    let page = !_.isNaN(_.parseInt(parms.page)) ? _.parseInt(parms.page) : 1;
 
     ClipsStore.addChangeListener(this.onStoreChange);
 
     log(this.refs.searchbutton);
 
-    if (query && !_.isEmpty(query.q)) {
+    if(query && !_.isEmpty(query.q)) {
       ClipActions.searchClips(query.q, parms.page);
     } else {
       ClipActions.getClips(page);
@@ -101,15 +98,13 @@ class ClipApp extends React.Component {
 
   onEditSave(clip, text) {
     log('Clip title change: Change the state');
-    ClipActions.changeTitle(clip._id, { // eslint-disable-line no-underscore-dangle
-      name: text
-    }, clip.id); // eslint-disable-line no-underscore-dangle
+    ClipActions.changeTitle(clip._id, {name: text}, clip.id); // eslint-disable-line no-underscore-dangle
   }
 
   destroy(clip) {
     log('Deleted clip: Store change');
     let page = this.props.params.page || 1;
-    if (clip.uploading) {
+    if(clip.uploading) {
       ClipActions.getClips(page);
     } else {
       ClipActions.deleteClip(clip._id, page); // eslint-disable-line no-underscore-dangle
@@ -119,16 +114,16 @@ class ClipApp extends React.Component {
   get FileUploadForm() {
     return (
       <div className="col-lg-3 col-xs-12 col-md-4 col-sm-6 item-row">
-        <UploadBox/>
+       <UploadBox />
       </div>
     );
   }
 
   get Clips() {
     let clips = [];
-    if (this.state.clips && this.state.clips.length > 0) {
+    if(this.state.clips && this.state.clips.length > 0) {
       this.state.clips.map((clip, key) => {
-        if (key <= 19) {
+        if(key <= 18) {
           clips.push(
             <Clip
               key={clip.id}
@@ -151,20 +146,19 @@ class ClipApp extends React.Component {
         onMouseLeave={this.handleDragLeave.bind(this)}>
         <Dropzone
           className={this.state.dragClass}
-          onDrop={this.onDrop.bind(this)}/>
-        <Silent />
+          supportClick={false}
+          onDrop={this.onDrop.bind(this)}
+          multiple={false} />
         <div>
-          <Header
-            version={this.props.version}
-            query={this.props ? this.props.query.q : ''}/>
-
+          <Header version={this.props.version} query={this.props ? this.props.query.q : ''} />
           <Row>
-            <Loader loading={this.state.loading}/>
+            {this.FileUploadForm}
+            <Loader loading={this.state.loading} />
             <div className="clips" ref="clips">
               {this.Clips}
             </div>
           </Row>
-          <Footer/>
+          <Footer />
         </div>
       </Container>
     );

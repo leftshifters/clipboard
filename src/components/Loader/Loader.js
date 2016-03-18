@@ -14,7 +14,7 @@ class Loader extends React.Component {
     let claz = this.props.loading ? 'body-loader block' : 'body-loader hide';
     return (
       <div className={claz}>
-        <Loder color="#222" size="42px" margin="5px" />
+        <Loder color="#222" size="70px" margin="5px" />
       </div>
     );
   }

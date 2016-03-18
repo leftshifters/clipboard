@@ -1,15 +1,15 @@
-import React, {PropTypes} from 'react'; // eslint-disable-line no-unused-vars
+import React, { PropTypes } from 'react'; // eslint-disable-line no-unused-vars
 import styles from './Header.less'; // eslint-disable-line no-unused-vars
 import withStyles from '../../decorators/withStyles'; // eslint-disable-line no-unused-vars
 import SearchForm from '../SearchForm';
-import UploadBox from '../UploadBox';
 import HeaderStore from '../../stores/HeaderStore';
-import pack, { version } from '../../../package.json'; // eslint-disable-line no-unused-vars
+import pack, {version} from '../../../package.json'; // eslint-disable-line no-unused-vars
 import Row from '../Row';
 import debug from 'debug';
 
 const log = debug('clipboard:header');
 
+// @withContext
 @withStyles(styles)
 class Header extends React.Component {
 
@@ -62,9 +62,9 @@ class Header extends React.Component {
 
   get SearchForm() {
     return (
-      <div className = "col-md-4">
+      <div className="col-md-4">
         <h1>
-          <SearchForm query = { this.props.query } />
+          <SearchForm query={this.props.query} />
         </h1>
       </div>
     );
@@ -75,27 +75,25 @@ class Header extends React.Component {
     let nextPage = 'page next-page ' + this.state.nextPage;
     //invisible
 
-    log(this.state);
     return (
       <Row>
-        <div className = "col-md-4">
+        <div className="col-md-4">
           <h1>
-            <a href = "/" className = "head-logo"> Clipboard </a>
-            <span className = "small"> {this.version} </span>
-          </h1 >
+            <a href="/" className="head-logo">Clipboard</a>
+            <span className="small"> {this.version}</span>
+          </h1>
         </div>
 
-        { this.SearchForm }
+        {this.SearchForm}
 
-        <div className = "col-md-4">
-          <UploadBox />
+        <div className="col-md-4">
           <h1>
-            <div className = "pages pull-right">
-              <a href = { this.state.prevPageLink } className = { prevPage }>
-                <span className = "glyphicon glyphicon-chevron-left"></span>
+            <div className="pages pull-right">
+              <a href={this.state.prevPageLink} className={prevPage}>
+                <span className="glyphicon glyphicon-chevron-left"></span>
               </a>
-              <a href = { this.state.nextPageLink } className = { nextPage}>
-                <span className = "glyphicon glyphicon-chevron-right"></span>
+              <a href={this.state.nextPageLink} className={nextPage}>
+                <span className="glyphicon glyphicon-chevron-right"></span>
               </a>
             </div>
           </h1>

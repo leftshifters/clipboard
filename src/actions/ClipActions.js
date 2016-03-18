@@ -9,7 +9,6 @@ import Dispatcher from '../core/Dispatcher';
 import apiUtils from '../utils/apiUtils';
 
 const log = debug('clipboard:clipaction');
-const isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
 
 export default {
   getClips(page) {
@@ -133,13 +132,6 @@ export default {
     apiUtils
       .tempClip(clip)
       .then((res) => {
-        if(!isSafari) {
-          Dispatcher.dispatch({
-            actionType: UPLOADING_CLIP,
-            payload: res
-          });
-        }
-
         apiUtils
           .addClip(res.clip, data)
           .then((newres) => {

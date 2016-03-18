@@ -5,14 +5,12 @@ import Styles from './Extention.less';
 @withStyles(Styles)
 class Extention {
   static propTypes = {
-    clip: PropTypes.object,
-    ext: PropTypes.string
+    clip: PropTypes.object
   };
 
   render () {
     let clip = this.props.clip;
-    let ext = this.props.ext;
-    let type = !clip ? ext : clip.type;
+    let type = clip.type;
     let clazz = 'file-block ';
 
     if(type.length > 4) {

@@ -2,6 +2,7 @@ node_modules
 uploads/*
 public/thumbs
 public/uploads
+export.sh
 .npm-debug
 *.sublime-*
 .DS_Store
