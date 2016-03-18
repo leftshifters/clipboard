@@ -5,21 +5,22 @@
 var path = require('path');
 var fs = require('fs');
 var url = require('url');
-var moment = require('moment');
-var marked = require('marked');
+var moment = require('moment');// parsing date
+var marked = require('marked');// for parsing and compiling Markdown
 // var disksize = require('../lib/disksize');
 var debug = require('debug')('clipboard:index');
-var _s = require('underscore.string'); // eslint-disable-line no-underscore-dangle
+var _s = require('underscore.string'); // eslint-disable-line no-underscore-dangle // string manipulation
 var getDb = require('../lib/connect');
 var db = require('../lib/db');
-var search = require('../lib/search');
+var search = require('../lib/search'); //
 var ObjectId = require('mongodb').ObjectID;
 var cliputils = require('../lib/cliptils');
 var search = require('../lib/search');
 
 function nextPageLink(page, query) {
+  console.log('nextPageLink  pages', page);
   var urlobj = {
-    pathname: 'page/' + (page + 2)
+    pathname: 'page/' + (page + 1)
   };
 
   if (query) {
@@ -30,20 +31,29 @@ function nextPageLink(page, query) {
 }
 
 function prevPageLink(page, query) {
-  var urlobj = {
-    pathname: 'page/' + page
-  };
+  console.log('prevPageLink page value :' + page);
 
-  if (query) {
-    urlobj.search = 'q=' + query;
+  if(page > 1) {
+    var urlobj = {
+      pathname: 'page/' + (page - 1)
+
+    };
+
+    if (query) {
+      urlobj.search = 'q=' + query;
+    }
+
+    return url.format(urlobj);
   }
-
-  return url.format(urlobj);
 }
 
+
 exports.index = function(req, res) {
-  var page = req.store.page || 0;
+  console.log('In the index module !!');
+  var page = req.store.page || 1;
   var q = req.query.q || '';
+  //re
+  console.log('Intial Page variable (index):', page);
 
   function onItems(err, items, more) {
     if (err) {
@@ -67,7 +77,7 @@ exports.index = function(req, res) {
       cliputils.setname(items[i]);
       cliputils.settimeago(items[i]);
     }
-
+    console.log('pags is' + page);
     return res.json({
       data: {
         title: 'Clipboard',
@@ -80,13 +90,16 @@ exports.index = function(req, res) {
         searchBtn: q ? true : false,
         nextPageLink: nextPageLink(page, q),
         prevPageLink: prevPageLink(page, q),
-        leftArrow: !!page > 0 ? '' : 'invisible',
+        leftArrow: page > 1 ? '' : 'invisible',
         rightArrow: more ? '' : 'invisible'
+        // leftArrow: !!page > 0 ? '' : 'invisible',
+        // rightArrow: more ? '' : 'invisible'
       }
     });
   }
 
   if (q) {
+    console.log('Page in query :' + page);
     search.search(page, q, function(err, itemIds, more) {
       if (err) {
         return res.send(500);
@@ -152,11 +165,12 @@ exports.detectify = function(req, res) {
 };
 
 exports.page = function(req, res, next) {
+  console.log(req.params);
   var page = parseInt(req.params.page, 10);
 
-  if (page > 0) {
-    page = page - 1;
-  }
+  // if (page > 0) {
+  //   page = page - 1;
+  // }
 
   req.store.page = page || 0;
   next();
@@ -298,6 +312,7 @@ exports.reindex = function(req, res) {
         if (buffer.length) {
           flush(buffer, function() {
             debug('done re-indexing all items');
+
             res.send(util.format('Re-indexed %d items', donecount));
           });
         }

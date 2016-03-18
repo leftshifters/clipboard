@@ -83,7 +83,7 @@
     "gulp-if": "^1.2.5",
     "gulp-less": "^3.0.3",
     "gulp-load-plugins": "^0.10.0",
-    "gulp-nodemon": "^2.0.3",
+    "gulp-nodemon": "^2.0.6",
     "gulp-rename": "^1.2.2",
     "gulp-size": "^1.2.1",
     "gulp-util": "^3.0.5",
