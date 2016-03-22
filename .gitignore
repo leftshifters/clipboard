@@ -3,6 +3,7 @@ uploads/*
 public/thumbs
 public/uploads
 export.sh
+lib/errHandler.js
 .npm-debug
 *.sublime-*
 .DS_Store

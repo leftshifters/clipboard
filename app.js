@@ -24,9 +24,11 @@ var bootcheck = require('./lib/bootcheck');
 var disksize = require('./lib/disksize');
 var http = require('http');
 var path = require('path');
+var query = require('query');
 var reqstore = require('reqstore');
 var debug = require('debug')('clipboard:app');
 var version = require('./package').version;
+var errHandler = require(./lib/errHandler);
 
 var app = express();
 
@@ -49,6 +51,7 @@ if ('development' == app.get('env')) {
   app.use(express.logger('dev'));
 }
 
+app.use(errHandler);
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 

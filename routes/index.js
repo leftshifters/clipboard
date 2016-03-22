@@ -21,10 +21,16 @@ var rangeCheck = require('range_check');
 var MobileDetect = require('mobile-detect');
 
 function nextPageLink(page, query) {
+  var urlobj = {};
   console.log('nextPageLink  pages', page);
-  var urlobj = {
-    pathname: 'page/' + (page + 1)
-  };
+
+  if(page === 1 || page === 0) {
+    urlobj.pathname = 'page/2';
+  } else {
+    urlobj.pathname = 'page/' + (page + 1);
+  }
+
+  console.log('nextPageLink  pages', urlobj.pathname);
 
   if (query) {
     urlobj.search = 'q=' + query;
@@ -36,12 +42,12 @@ function nextPageLink(page, query) {
 function prevPageLink(page, query) {
   console.log('prevPageLink page value :' + page);
 
-  if(page > 1) {
+  if(page > 0) {
     var urlobj = {
       pathname: 'page/' + (page - 1)
 
     };
-
+    console.log('prevPageLink page value :' + page);
     if (query) {
       urlobj.search = 'q=' + query;
     }
@@ -166,10 +172,10 @@ exports.oAuthCallback = function(req, res, next) {
 };
 
 exports.index = function(req, res) {
-  console.log('In the index module !!');
-  var page = req.store.page || 1;
+  //console.log('In the index module !!');
+  var page = req.store.page || 0;
   var q = req.query.q || '';
-  //re
+    //var errorObject;
   console.log('Intial Page variable (index):', page);
 
   function onItems(err, items, more) {
@@ -283,16 +289,28 @@ exports.detectify = function(req, res) {
 
 exports.page = function(req, res, next) {
   var page = req.params.page;
-  page = page || 0;
+  //console.log(''req.params.page);
+/* Test case : Check for the page value :
+  -> For home page reques : either page have zero ,one or not any value.
+  1) if it is comming 0, it let page pass to next middleware
+  2) if it comming 1, again home page :- decrement page to make it 0;
+  -> For value greater than 1, send as it is
+*/
+  if(isNaN(page)){
+    return res.send(400);
+  }
+  //page = page || 1;
   page = parseInt(page, 10);
 
-  // if (page > 0) {
-  //   page = page - 1;
-  // }
+  if (page === 1) {
+    page = page - 1;
+    req.store.page = page;
+  } else {
+    req.store.page = page;
+  }
 
-  console.log(page);
+  console.log('in page module' + page);
 
-  req.store.page = page || 0;
   next();
 };
 
@@ -395,7 +413,7 @@ exports.validateName = function(req, res, next) {
   var name = req.body.name;
   name = name && name.trim();
   if (!name) {
-    return res.send(400, 'Need name');
+    return res.status(400).send('Not a valid page Request !!');
   }
 
   req.store.name = name;
