@@ -109,10 +109,14 @@ bootcheck();
 // get clips
 //
 
+
 server.get('/', routes.checkLogin);
 server.get('/clipd/:hash/:name?', routes.checkLogin, routes.checkLogin);
 
-server.get('/api/clips/:page', routes.page, routes.index);
+
+debug('In the server !!');
+server.get('/api/clips', routes.page, routes.index);
+
 server.post('/api/clip/:id', [
   routes.validateId,
   routes.validateName,
@@ -166,11 +170,13 @@ server.get('*', async(err, req, res, next) => {
     return next();
   }
 
-  log('Got error ' + err);
-
   // logging error here
-  return res.status(err.code || 500).json({
-    error: err
+  log('Got error ' + err);
+  res.format({
+    'application/json': function() {
+      res.status(err.status || 500);
+      res.json({error: err.message, code: err.code});
+    }
   });
 });
 

@@ -25,10 +25,12 @@ var disksize = require('./lib/disksize');
 var http = require('http');
 var path = require('path');
 var query = require('query');
+var url = require('url');
 var reqstore = require('reqstore');
+var querystring = require('query-string');
 var debug = require('debug')('clipboard:app');
 var version = require('./package').version;
-var errHandler = require(./lib/errHandler);
+var errHandler = require('./lib/errHandler');
 
 var app = express();
 
@@ -45,19 +47,21 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(reqstore());
+app.use(querystring());
 // development only
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
   app.use(express.logger('dev'));
 }
 
-app.use(errHandler);
+app.use(errHandler());
 app.use(app.router);
+app.use(url());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.locals({ version: version });
 
-app.get('/', routes.index);
+app.get('/', routes.page, routes.index);
 app.get('/changelog', routes.changelog);
 app.get('/reindex', routes.reindex);
 app.get('/page/:page', routes.page, routes.index);

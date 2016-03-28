@@ -57,6 +57,7 @@
     "passport": "^0.3.0",
     "passport-google-oauth2": "^0.1.6",
     "qr": "^0.2.4",
+    "query-parse": "^0.1.1",
     "range_check": "^1.2.0",
     "react": "^0.13.3",
     "react-async": "^2.1.0",
@@ -70,7 +71,8 @@
     "request": "^2.60.0",
     "source-map-support": "^0.3.2",
     "superagent": "^1.2.0",
-    "underscore.string": "~2.3.3"
+    "underscore.string": "~2.3.3",
+    "url": "^0.11.0"
   },
   "devDependencies": {
     "autoprefixer-core": "^5.2.1",
