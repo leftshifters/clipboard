@@ -303,12 +303,11 @@ exports.page = function(req, res, next) {
   // if(isNaN(page)) {
   //   return next(new Error('Invalid request !!'));
   // }
-
   page = parseInt(page, 10);
-  page -= 1
-  // if(!(page >= 0)) {
-  //   return next(new Error('Not a valid page Request !!'));
-  // }
+
+  if(!(page >= 0)) {
+    return next(new Error('Not a valid page Request !!'));
+  }
 
   req.store.page = page;
   debug('in page module' + page);
