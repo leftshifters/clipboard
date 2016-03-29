@@ -34,7 +34,7 @@ function nextPageLink(page, query) {
     urlobj.search = 'q=' + query;
   }
 
-  return url.format(urlobj);
+  return (debug('urlobj after format '+ url.format(urlobj)));
 }
 
 function prevPageLink(page, query) {
@@ -172,7 +172,7 @@ exports.oAuthCallback = function(req, res, next) {
 
 exports.index = function(req, res) {
   debug('In the index module !!');
-  var page = req.store.page || 1;
+  var page = req.store.page || 0;
   var q = req.query.q || '';
 
   debug('Intial Page variable (index):', page);
@@ -212,7 +212,7 @@ exports.index = function(req, res) {
         searchBtn: q ? true : false,
         nextPageLink: nextPageLink(page, q),
         prevPageLink: prevPageLink(page, q),
-        leftArrow: page > 1 ? '' : 'invisible',
+        leftArrow: page > 0 ? '' : 'invisible',
         rightArrow: more ? '' : 'invisible'
         // leftArrow: !!page > 0 ? '' : 'invisible',
         // rightArrow: more ? '' : 'invisible'
@@ -294,20 +294,21 @@ exports.detectify = function(req, res) {
 */
 
 exports.page = function(req, res, next) {
-  var err;
-  var page = req.query.page;
+
+   var page = req.query.page || req.params.page;
   debug('url ', req.url);
   debug('query is ', req.query);
   debug('In page module ' + page);
   debug('In page module' + req.params.page);
-  if(isNaN(page)) {
-    err = new Error('Page is not a no !!');
-    err.status = 400;
-    return next(err);
-  }
+  // if(isNaN(page)) {
+  //   return next(new Error('Invalid request !!'));
+  // }
 
   page = parseInt(page, 10);
-  page = page || 1;
+  page -= 1
+  // if(!(page >= 0)) {
+  //   return next(new Error('Not a valid page Request !!'));
+  // }
 
   req.store.page = page;
   debug('in page module' + page);

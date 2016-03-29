@@ -115,7 +115,7 @@ server.get('/clipd/:hash/:name?', routes.checkLogin, routes.checkLogin);
 
 
 debug('In the server !!');
-server.get('/api/clips', routes.page, routes.index);
+server.get('/api/clips/', routes.page, routes.index);
 
 server.post('/api/clip/:id', [
   routes.validateId,

@@ -12,7 +12,7 @@ function run() {
     <Route handler={App}>
       <Route path='/' name="clipapp" handler={ClipApp} />
       <Route path='/?q=:q' name="?" handler={ClipApp} />
-      <Route path='/page/:page' name="clip" handler={ClipApp} />
+      <Route path='/page/' name="clip" handler={ClipApp} />
       <Route path='/clipd/:hash/:name?' name="clipDetails" handler={ClipDetail} />
     </Route>
   );
