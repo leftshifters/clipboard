@@ -16,7 +16,9 @@ import ClipsStore from '../../stores/ClipStore';
 import ClipActions from '../../actions/ClipActions';
 import FileActions from '../../actions/FileActions';
 
+
 let log = debug('clipboard:dashboard');
+//debug('clipboard:ClipApp');
 var counter = 0;
 
 @withStyles(Styles)
@@ -45,10 +47,11 @@ class ClipApp extends React.Component {
       counter++;
       log('Drag counter is %s', counter);
       this.setState({
-        dragClass: 'drop-container active'
+      dragClass: 'drop-container active'
       });
     }
   }
+
 
   handleDragLeave(e) {
     e.preventDefault();
@@ -72,16 +75,17 @@ class ClipApp extends React.Component {
 
   componentDidMount() {
     log('Clips component mount');
-    let parms = this.props.params;
+    //let parms = this.props.params;
     let query = this.props.query;
-    let page = !_.isNaN(_.parseInt(parms.page)) ? _.parseInt(parms.page) : 1;
-
+    log('in the clipApp, query', query);
+    let page = !_.isNaN(_.parseInt(query.page)) ? _.parseInt(query.page) : 0;
+    log('In the clipapp, page = ', page);
     ClipsStore.addChangeListener(this.onStoreChange);
 
     log(this.refs.searchbutton);
 
     if(query && !_.isEmpty(query.q)) {
-      ClipActions.searchClips(query.q, parms.page);
+      ClipActions.searchClips(query.q, query.page);
     } else {
       ClipActions.getClips(page);
     }
@@ -104,7 +108,7 @@ class ClipApp extends React.Component {
 
   destroy(clip) {
     log('Deleted clip: Store change');
-    let page = this.props.params.page || 1;
+    let page = this.props.query.page || 1;
     if(clip.uploading) {
       ClipActions.getClips(page);
     } else {

@@ -23,12 +23,13 @@ export default {
   },
 
   getClips(p) {
+    log('In the getClips', p);
     if(!p) {
-      p = 1;
+      p = 0;
     }
 
-    let url = `/api/clips/${p}`;
-
+    let url = `/api/clips/?page=` + p; //${p}
+    log(url);
     return new Promise((resolve, reject) => {
       basicUtils
         .get(url)
@@ -82,11 +83,12 @@ export default {
   },
 
   searchClips(q, p) {
-    if(!p) {
-      p = 1;
+    //if(p)
+     {
+      p = 0;
     }
 
-    let url = `/api/clips/${p}?q=${q}`;
+    let url = `/api/clips/?page=${p}&q=${q}`;
 
     return new Promise((resolve, reject) => {
       basicUtils

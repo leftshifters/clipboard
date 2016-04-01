@@ -54,15 +54,17 @@ class SearchForm extends React.Component {
 
   submitsearch(e) {
     e.preventDefault();
-    ClipActions.searchClips(this.state.searchText, 1);
+    ClipActions.searchClips(this.state.searchText, 0);
   }
 
   keypress(e) {
     let code = e.keyCode || e.which;
     log('Key code is %s', code);
+    log('my caller ', arguments);
     if(code !== 13) {
       return;
     }
+
 
     React.findDOMNode(this.refs.searchbutton).click();
   }

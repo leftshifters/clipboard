@@ -14,7 +14,7 @@ export default {
   getClips(page) {
     apiUtils.getClips(page)
       .then((res) => {
-        console.log('Got clips in actions %o', res);
+        log('Got clips in actions %o', res);
         Dispatcher.dispatch({
           actionType: SET_CLIPS,
           payload: {
@@ -59,8 +59,8 @@ export default {
       });
   },
 
-  searchClips(page) {
-    apiUtils.searchClips(page)
+  searchClips(q, page) {
+    apiUtils.searchClips(q, page)
       .then((res) => {
         log('Got clips in actions %o', res);
         Dispatcher.dispatch({
@@ -109,14 +109,15 @@ export default {
   },
 
   deleteClip(id, page) {
+    log('Get clip initialized');
     apiUtils.deleteClip(id, page)
-    .then((res) => {
-      log('Got response after deleting clips %o', res);
-      Dispatcher.dispatch({
-        actionType: DELETE_CLIP,
-        payload: res
-      });
-    })
+      .then((res) => {
+        log('Got response after deleting clips %o', res);
+        Dispatcher.dispatch({
+          actionType: DELETE_CLIP,
+          payload: res
+        });
+      })
     .catch((err) => {
       Dispatcher.dispatch({
         actionType: GOT_ERROR,
@@ -129,8 +130,7 @@ export default {
 
   addClip(clip, data) {
     log('Got clip on actions %o', data);
-    apiUtils
-      .tempClip(clip)
+    apiUtils.tempClip(clip)
       .then((res) => {
         apiUtils
           .addClip(res.clip, data)

@@ -34,13 +34,13 @@ function nextPageLink(page, query) {
     urlobj.search = 'q=' + query;
   }
 
-  return (debug('urlobj after format '+ url.format(urlobj)));
+  return (url.format(urlobj));
 }
 
 function prevPageLink(page, query) {
   debug('prevPageLink page value :' + page);
 
-  if(page > 1) {
+  if(page > 0) {
     var urlobj = {
     search: 'page=' + (page - 1)
 
@@ -295,18 +295,19 @@ exports.detectify = function(req, res) {
 
 exports.page = function(req, res, next) {
 
-   var page = req.query.page || req.params.page;
+  var page = req.query.page;
   debug('url ', req.url);
   debug('query is ', req.query);
   debug('In page module ' + page);
-  debug('In page module' + req.params.page);
-  // if(isNaN(page)) {
-  //   return next(new Error('Invalid request !!'));
-  // }
+
+  if(isNaN(page)) {
+    return next(new Error('Record not Found !!'));
+  }
+
   page = parseInt(page, 10);
 
   if(!(page >= 0)) {
-    return next(new Error('Not a valid page Request !!'));
+    return next(new Error('Record Not found !!'));
   }
 
   req.store.page = page;
