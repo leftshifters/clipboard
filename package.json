@@ -43,7 +43,7 @@
     "moment": "~2.5.1",
     "mongodb": "^2.0.39",
     "morgan": "^1.6.1",
-    "multiparty": "^3.2.10",
+    "multiparty": "^4.3.0",
     "newrelic": "^1.22.0",
     "node-jsx": "^0.13.3",
     "normalize.css": "^3.0.3",
